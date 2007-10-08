@@ -11,7 +11,6 @@ public abstract class AbstractComputeNode extends MbJavaComputeNode {
 
 	public void evaluate(MbMessageAssembly assembly) throws MbException {
 		MbOutputTerminal out = getOutputTerminal("out");
-		MbOutputTerminal alt = getOutputTerminal("alternate");
 
 		MbMessage inMessage = assembly.getMessage();
 
@@ -34,7 +33,7 @@ public abstract class AbstractComputeNode extends MbJavaComputeNode {
 	}
 	
 	protected void evaulate(MbMessage inMessage, MbMessage outMessage) throws MbException {
-		// default does nothing
+		// no-op
 	}
 	
 	protected void copyMessageHeaders(MbMessage inMessage, MbMessage outMessage)
