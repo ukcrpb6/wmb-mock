@@ -1,54 +1,40 @@
 package com.googlecode.wmbutil;
 
+
+import org.apache.log4j.Logger;
+
+import com.googlecode.wmbutil.messages.ExtendedMessage;
 import com.ibm.broker.javacompute.MbJavaComputeNode;
-import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 import com.ibm.broker.plugin.MbMessage;
 import com.ibm.broker.plugin.MbMessageAssembly;
 import com.ibm.broker.plugin.MbOutputTerminal;
 
 public abstract class AbstractComputeNode extends MbJavaComputeNode {
+	private static final Logger LOG = Logger.getLogger(AbstractComputeNode.class);
 
 	public void evaluate(MbMessageAssembly assembly) throws MbException {
 		MbOutputTerminal out = getOutputTerminal("out");
 
 		MbMessage inMessage = assembly.getMessage();
 
-		// ----------------------------------------------------------
-		// Add user code below
-
-		MbMessage outMessage = new MbMessage();
+		ExtendedMessage outMessage;
+		try {
+			outMessage = evaluate(ExtendedMessage.wrap(inMessage, true));
+		} catch(MbException e) {
+			LOG.error("MbException caught during evaulation of message", e);
+			throw e;
+		} catch(RuntimeException e) {
+			LOG.error("RuntimeException caught during evaulation of message", e);
+			throw e;
+		}
 		
-		evaulate(inMessage, outMessage);
+		MbMessageAssembly outAssembly = new MbMessageAssembly(assembly, outMessage.getMbMessage());
 		
-		MbMessageAssembly outAssembly = new MbMessageAssembly(assembly, outMessage);
-		
-		// End of user code
-		// ----------------------------------------------------------
-
-		// The following should only be changed
-		// if not propagating message to the 'out' terminal
-
 		out.propagate(outAssembly);
 	}
 	
-	protected void evaulate(MbMessage inMessage, MbMessage outMessage) throws MbException {
-		// no-op
-	}
+	protected abstract ExtendedMessage evaluate(ExtendedMessage inMessage) throws MbException;
 	
-	protected void copyMessageHeaders(MbMessage inMessage, MbMessage outMessage)
-			throws MbException {
-		MbElement outRoot = outMessage.getRootElement();
 
-		// iterate though the headers starting with the first child of the root
-		// element
-		MbElement header = inMessage.getRootElement().getFirstChild();
-		// stop before the last child (body)
-		while (header != null && header.getNextSibling() != null) {
-			// copy the header and add it to the out message
-			outRoot.addAsLastChild(header.copy());
-			// move along to next header
-			header = header.getNextSibling();
-		}
-	}
 }

@@ -18,6 +18,11 @@
             <artifactId>jplugin2</artifactId>
             <version>6.0.0.5</version>
         </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.14</version>
+        </dependency>
     </dependencies>
 
     <build>
