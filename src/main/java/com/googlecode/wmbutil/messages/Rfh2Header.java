@@ -2,6 +2,7 @@ package com.googlecode.wmbutil.messages;
 
 import org.apache.log4j.Logger;
 
+import com.googlecode.wmbutil.NiceMbException;
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 import com.ibm.broker.plugin.MbMessage;
@@ -9,40 +10,68 @@ import com.ibm.broker.plugin.MbMessage;
 public class Rfh2Header extends Header {
 	private static final Logger LOG = Logger.getLogger(Rfh2Header.class);
 
-	public static boolean hasRfh2Header(WMQMessage msg) throws MbException {
-		MbElement elm = msg.getMbMessage().getRootElement().getFirstElementByPath("/MQRFH2");
+	public static Rfh2Header wrap(MbMessage msg, boolean readOnly) throws MbException {
+		MbElement elm = msg.getRootElement().getFirstElementByPath("/MQRFH2");
+
+		if(elm == null) {
+			throw new NiceMbException("Failed to find Rfh2Header");
+		}
+		
+		return new Rfh2Header(elm, readOnly);
+	}
+
+	public static Rfh2Header create(MbMessage msg) throws MbException {
+		if(has(msg)) {
+			throw new NiceMbException("Already have RFH2 header");
+		}
+
+		MbElement elm;
+		
+		LOG.debug("RFH2 header element not found, trying to locate MQMD");
+		MbElement mqmd = msg.getRootElement().getFirstElementByPath("/MQMD");
+		
+		if(mqmd != null) {
+			LOG.debug("Found MQMD, creating RFH2 element after");
+			elm = mqmd.createElementAfter("MQHRF2");
+			 
+			MbElement mqmdFormat = mqmd.getFirstElementByPath("Format");
+			
+			elm.createElementAsFirstChild(MbElement.TYPE_NAME_VALUE, "Format", mqmdFormat.getValue());
+			mqmdFormat.setValue("MQHRF2  ");
+			
+			return new Rfh2Header(elm, false);
+		} else {
+			throw new NiceMbException("Can not find MQMD");
+		}
+
+	}
+	
+	public static Rfh2Header wrapOrCreate(MbMessage msg) throws MbException {
+		if(has(msg)) {
+			return wrap(msg, false);
+		} else {
+			return create(msg);
+		}
+	}
+
+	public static Rfh2Header remove(MbMessage msg) throws MbException {
+		MbElement elm = msg.getRootElement().getFirstElementByPath("/MQRFH2");
+		
+		if(elm != null) {
+			elm.detach();
+			return new Rfh2Header(elm, true);
+		} else {
+			throw new NiceMbException("Failed to find Rfh2Header");
+		}		
+	}
+
+	public static boolean has(MbMessage msg) throws MbException {
+		MbElement elm = msg.getRootElement().getFirstElementByPath("/MQRFH2");
 		return elm != null;
 	}
 	
-	private static MbElement locateHeader(MbMessage msg, boolean readOnly) throws MbException {
-		MbElement elm = msg.getRootElement().getFirstElementByPath("/MQRFH2");
-		
-		if(elm !=  null) {
-			LOG.debug("RFH2 header element found");
-			return elm;
-		} else {
-			LOG.debug("RFH2 header element not found, trying to locate MQMD");
-			MbElement mqmd = msg.getRootElement().getFirstElementByPath("/MQMD");
-			
-			if(mqmd != null) {
-				LOG.debug("Found MQMD, creating RFH2 element after");
-				elm = mqmd.createElementAfter("MQHRF2");
-				 
-				MbElement mqmdFormat = mqmd.getFirstElementByPath("Format");
-				
-				elm.createElementAsFirstChild(MbElement.TYPE_NAME_VALUE, "Format", mqmdFormat.getValue());
-				mqmdFormat.setValue("MQHRF2  ");
-				
-				return elm;
-			} else {
-				throw new RuntimeException("Can not find MQMD");
-			}
-		}
-		
-	}
-	
-	public Rfh2Header(MbMessage msg, boolean readOnly) throws MbException {
-		super(locateHeader(msg, readOnly), readOnly);
+	private Rfh2Header(MbElement elm, boolean readOnly) throws MbException {
+		super(elm, readOnly);
 	}
 
 	public String getStringProperty(String area, String name) throws MbException {
@@ -56,7 +85,15 @@ public class Rfh2Header extends Header {
 		
 	}
 
+	private void checkReadOnly() throws MbException {
+		if(isReadOnly()) {
+			throw new NiceMbException(this, "Message is read-only, can not be changed");
+		}
+	}
+	
 	public void setStringProperty(String area, String name, String value) throws MbException {
+		checkReadOnly();
+		
 		MbElement areaElm = getMbElement().getFirstElementByPath(area);
 		if(areaElm == null) {
 			areaElm = getMbElement().createElementAsLastChild(MbElement.TYPE_NAME);

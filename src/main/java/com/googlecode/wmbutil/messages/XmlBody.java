@@ -47,10 +47,6 @@ public class XmlBody extends Body {
 		this(locateXmlBody(msg), readOnly);
 	}
 
-	public XmlBody(ExtendedMessage msg) throws MbException {
-		this(locateXmlBody(msg.getMbMessage()), msg.isReadOnly());
-	}
-	
 	public XmlElement getDocumentElement() {
 		return docElm;
 	}
