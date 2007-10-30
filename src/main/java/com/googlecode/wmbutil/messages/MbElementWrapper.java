@@ -13,11 +13,11 @@ public class MbElementWrapper {
 		this.readOnly = readOnly;
 	}
 	
-	public MbElement getMbElement() {
+	protected MbElement getMbElement() {
 		return wrappedElm;
 	}
 
-	public boolean isReadOnly() {
+	protected boolean isReadOnly() {
 		return readOnly;
 	}
 }

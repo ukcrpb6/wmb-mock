@@ -1,7 +1,6 @@
 package com.googlecode.wmbutil.messages;
 
-import org.apache.log4j.Logger;
-
+import com.googlecode.wmbutil.NiceMbException;
 import com.googlecode.wmbutil.util.XmlUtil;
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
@@ -9,9 +8,66 @@ import com.ibm.broker.plugin.MbMessage;
 import com.ibm.broker.plugin.MbXMLNS;
 
 public class XmlBody extends Body {
-	private static final Logger LOG = Logger.getLogger(XmlBody.class);
 
 	private XmlElement docElm;
+	
+	public static XmlBody wrap(MbMessage msg, boolean readOnly) throws MbException {
+		MbElement elm = msg.getRootElement().getFirstElementByPath("/MQRFH2");
+
+		if(elm == null) {
+			throw new NiceMbException("Failed to find Rfh2Header");
+		}
+		
+		return new XmlBody(elm, readOnly);
+	}
+
+	public static XmlBody create(MbMessage msg) throws MbException {
+		if(has(msg)) {
+			throw new NiceMbException("Already have RFH2 header");
+		}
+
+		MbElement elm;
+		
+		MbElement mqmd = msg.getRootElement().getFirstElementByPath("/MQMD");
+		
+		if(mqmd != null) {
+			elm = mqmd.createElementAfter("MQHRF2");
+			 
+			MbElement mqmdFormat = mqmd.getFirstElementByPath("Format");
+			
+			elm.createElementAsFirstChild(MbElement.TYPE_NAME_VALUE, "Format", mqmdFormat.getValue());
+			mqmdFormat.setValue("MQHRF2  ");
+			
+			return new XmlBody(elm, false);
+		} else {
+			throw new NiceMbException("Can not find MQMD");
+		}
+
+	}
+	
+	public static XmlBody wrapOrCreate(MbMessage msg) throws MbException {
+		if(has(msg)) {
+			return wrap(msg, false);
+		} else {
+			return create(msg);
+		}
+	}
+
+	public static XmlBody remove(MbMessage msg) throws MbException {
+		MbElement elm = msg.getRootElement().getFirstElementByPath("/MQRFH2");
+		
+		if(elm != null) {
+			elm.detach();
+			return new XmlBody(elm, true);
+		} else {
+			throw new NiceMbException("Failed to find Rfh2Header");
+		}		
+	}
+
+	public static boolean has(MbMessage msg) throws MbException {
+		MbElement elm = msg.getRootElement().getFirstElementByPath("/MQRFH2");
+		return elm != null;
+	}
 	
 	private static MbElement locateXmlBody(MbMessage msg) throws MbException {
 		MbElement elm = msg.getRootElement().getFirstElementByPath("/XMLNSC");

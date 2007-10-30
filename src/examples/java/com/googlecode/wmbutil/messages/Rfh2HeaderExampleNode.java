@@ -7,7 +7,6 @@ import com.ibm.broker.plugin.MbMessageAssembly;
 
 public class Rfh2HeaderExampleNode extends MbJavaComputeNode {
 
-	@Override
 	public void evaluate(MbMessageAssembly inAssembly) throws MbException {
 
 		MbMessage inMsg = inAssembly.getMessage();

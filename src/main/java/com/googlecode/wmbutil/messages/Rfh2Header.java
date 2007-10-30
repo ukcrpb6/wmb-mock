@@ -1,14 +1,11 @@
 package com.googlecode.wmbutil.messages;
 
-import org.apache.log4j.Logger;
-
 import com.googlecode.wmbutil.NiceMbException;
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 import com.ibm.broker.plugin.MbMessage;
 
 public class Rfh2Header extends Header {
-	private static final Logger LOG = Logger.getLogger(Rfh2Header.class);
 
 	public static Rfh2Header wrap(MbMessage msg, boolean readOnly) throws MbException {
 		MbElement elm = msg.getRootElement().getFirstElementByPath("/MQRFH2");
@@ -27,11 +24,9 @@ public class Rfh2Header extends Header {
 
 		MbElement elm;
 		
-		LOG.debug("RFH2 header element not found, trying to locate MQMD");
 		MbElement mqmd = msg.getRootElement().getFirstElementByPath("/MQMD");
 		
 		if(mqmd != null) {
-			LOG.debug("Found MQMD, creating RFH2 element after");
 			elm = mqmd.createElementAfter("MQHRF2");
 			 
 			MbElement mqmdFormat = mqmd.getFirstElementByPath("Format");
