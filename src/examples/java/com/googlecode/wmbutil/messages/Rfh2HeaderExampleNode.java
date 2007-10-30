@@ -31,10 +31,23 @@ public class Rfh2HeaderExampleNode extends MbJavaComputeNode {
 		rfh2.setStringProperty("usr", "foo", "bar");
 		rfh2.setIntProperty("usr", "MyInt", 123);
 		
+		CsvPayload csv = CsvPayload.wrap(inMsg, true);
+
 		XmlPayload payload = XmlPayload.create(outMsg);
 		XmlElement rootElm = payload.createDocumentElement("foo");
-		XmlElement barElm = rootElm.createLastChild("bar");
-		barElm.setAttribute("xyz", "123");
+		
+		CsvRecord[] records = csv.getRecords("record");
+		
+		for (int i = 0; i < records.length; i++) {
+			CsvRecord record = records[i];
+			
+			XmlElement barElm = rootElm.createLastChild("bar");
+			
+			barElm.setValue(record.getStringField("field1"));
+			barElm.setAttribute("xyz", Integer.toString(record.getIntField("field2")));
+			
+		}
+		
 		
 		out.propagate(outAssembly);
 	}

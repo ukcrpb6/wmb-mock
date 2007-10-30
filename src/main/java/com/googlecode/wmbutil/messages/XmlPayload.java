@@ -89,10 +89,6 @@ public class XmlPayload extends Payload {
 			}
 		}
 	}
-	
-	public XmlPayload(MbMessage msg, boolean readOnly) throws MbException {
-		this(locateXmlBody(msg), readOnly);
-	}
 
 	public XmlElement getDocumentElement() {
 		return docElm;
@@ -103,6 +99,8 @@ public class XmlPayload extends Payload {
 	}
 
 	public XmlElement createDocumentElement(String ns, String name) throws MbException {
+		checkReadOnly();
+		
 		MbElement elm = getMbElement().createElementAsLastChild(XmlUtil.getFolderElementType(getMbElement()));
 		elm.setName(name);
 		if(ns != null) {
@@ -115,6 +113,8 @@ public class XmlPayload extends Payload {
 	}
 
 	public void declareNamespace(String prefix, String ns) throws MbException {
+		checkReadOnly();
+		
 		docElm.getMbElement().createElementAsFirstChild(MbXMLNS.NAMESPACE_DECL, prefix, ns).setNamespace("xmlns");
 	}
 }

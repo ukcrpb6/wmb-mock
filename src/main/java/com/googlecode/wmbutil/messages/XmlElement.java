@@ -37,20 +37,24 @@ public class XmlElement extends MbElementWrapper {
 	}
 	
 	public XmlElement createLastChild(String name) throws MbException {
+		return createLastChild(null, name);
+	}
+
+	public XmlElement createLastChild(String ns, String name) throws MbException {
 		MbElement elm = getMbElement().createElementAsLastChild(MbXMLNS.ELEMENT, name, null);
+		
+		if(ns != null) {
+			elm.setNamespace(ns);
+		}
+		
 		return new XmlElement(elm, isReadOnly());
 	}
-
-	public XmlElement createLastChild(String ns, String name) {
-		return null;
-	}
 	
-	public XmlElement getElementByXPath(String xpath) {
-		return null;
+	public String getValue() throws MbException {
+		return (String)getMbElement().getValue();
 	}
 
-	public XmlElement[] getElementsByXPath(String xpath) {
-		return null;
+	public void setValue(String value) throws MbException {
+		getMbElement().setValue(value);
 	}
-
 }
