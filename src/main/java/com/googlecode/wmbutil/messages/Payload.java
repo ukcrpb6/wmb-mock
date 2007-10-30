@@ -3,9 +3,9 @@ package com.googlecode.wmbutil.messages;
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 
-public abstract class Body extends MbElementWrapper {
+public abstract class Payload extends MbElementWrapper {
 
-	public Body(MbElement elm, boolean readOnly) throws MbException {
+	public Payload(MbElement elm, boolean readOnly) throws MbException {
 		super(elm, readOnly);
 	}
 }

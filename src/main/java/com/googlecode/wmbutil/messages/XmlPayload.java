@@ -7,45 +7,34 @@ import com.ibm.broker.plugin.MbException;
 import com.ibm.broker.plugin.MbMessage;
 import com.ibm.broker.plugin.MbXMLNS;
 
-public class XmlBody extends Body {
+public class XmlPayload extends Payload {
 
+	private static final String DEFAULT_PARSER = "XMLNS";
+	
 	private XmlElement docElm;
 	
-	public static XmlBody wrap(MbMessage msg, boolean readOnly) throws MbException {
-		MbElement elm = msg.getRootElement().getFirstElementByPath("/MQRFH2");
+	public static XmlPayload wrap(MbMessage msg, boolean readOnly) throws MbException {
+		MbElement elm = locateXmlBody(msg);
 
 		if(elm == null) {
-			throw new NiceMbException("Failed to find Rfh2Header");
+			throw new NiceMbException("Failed to find XML payload");
 		}
 		
-		return new XmlBody(elm, readOnly);
+		return new XmlPayload(elm, readOnly);
 	}
 
-	public static XmlBody create(MbMessage msg) throws MbException {
-		if(has(msg)) {
-			throw new NiceMbException("Already have RFH2 header");
-		}
-
-		MbElement elm;
-		
-		MbElement mqmd = msg.getRootElement().getFirstElementByPath("/MQMD");
-		
-		if(mqmd != null) {
-			elm = mqmd.createElementAfter("MQHRF2");
-			 
-			MbElement mqmdFormat = mqmd.getFirstElementByPath("Format");
-			
-			elm.createElementAsFirstChild(MbElement.TYPE_NAME_VALUE, "Format", mqmdFormat.getValue());
-			mqmdFormat.setValue("MQHRF2  ");
-			
-			return new XmlBody(elm, false);
-		} else {
-			throw new NiceMbException("Can not find MQMD");
-		}
-
+	/**
+	 * Creates a payload as the last child, even if one already exists
+	 * @param msg
+	 * @return
+	 * @throws MbException
+	 */
+	public static XmlPayload create(MbMessage msg) throws MbException {
+		MbElement elm = msg.getRootElement().createElementAsLastChild(DEFAULT_PARSER);
+		return new XmlPayload(elm, false);
 	}
 	
-	public static XmlBody wrapOrCreate(MbMessage msg) throws MbException {
+	public static XmlPayload wrapOrCreate(MbMessage msg) throws MbException {
 		if(has(msg)) {
 			return wrap(msg, false);
 		} else {
@@ -53,19 +42,25 @@ public class XmlBody extends Body {
 		}
 	}
 
-	public static XmlBody remove(MbMessage msg) throws MbException {
-		MbElement elm = msg.getRootElement().getFirstElementByPath("/MQRFH2");
+	/** 
+	 * Removes the first XML payload
+	 * @param msg
+	 * @return
+	 * @throws MbException
+	 */
+	public static XmlPayload remove(MbMessage msg) throws MbException {
+		MbElement elm = locateXmlBody(msg);
 		
 		if(elm != null) {
 			elm.detach();
-			return new XmlBody(elm, true);
+			return new XmlPayload(elm, true);
 		} else {
-			throw new NiceMbException("Failed to find Rfh2Header");
+			throw new NiceMbException("Failed to find XML payload");
 		}		
 	}
 
 	public static boolean has(MbMessage msg) throws MbException {
-		MbElement elm = msg.getRootElement().getFirstElementByPath("/MQRFH2");
+		MbElement elm = locateXmlBody(msg);
 		return elm != null;
 	}
 	
@@ -79,14 +74,10 @@ public class XmlBody extends Body {
 			elm = msg.getRootElement().getFirstElementByPath("/XML");
 		}
 
-		if(elm == null) {
-			elm = msg.getRootElement().createElementAsLastChild("XMLNS");
-		}
-		
 		return elm;
 	}
 	
-	public XmlBody(MbElement elm, boolean readOnly) throws MbException {
+	private XmlPayload(MbElement elm, boolean readOnly) throws MbException {
 		super(elm, readOnly);
 
 		MbElement child = getMbElement().getFirstChild();
@@ -99,7 +90,7 @@ public class XmlBody extends Body {
 		}
 	}
 	
-	public XmlBody(MbMessage msg, boolean readOnly) throws MbException {
+	public XmlPayload(MbMessage msg, boolean readOnly) throws MbException {
 		this(locateXmlBody(msg), readOnly);
 	}
 

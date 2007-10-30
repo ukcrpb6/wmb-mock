@@ -3,6 +3,7 @@ package com.googlecode.wmbutil.messages;
 import com.googlecode.wmbutil.util.XmlUtil;
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
+import com.ibm.broker.plugin.MbXMLNS;
 
 public class XmlElement extends MbElementWrapper {
 
@@ -35,8 +36,9 @@ public class XmlElement extends MbElementWrapper {
 		return null;
 	}
 	
-	public XmlElement createLastChild(String name) {
-		return null;
+	public XmlElement createLastChild(String name) throws MbException {
+		MbElement elm = getMbElement().createElementAsLastChild(MbXMLNS.ELEMENT, name, null);
+		return new XmlElement(elm, isReadOnly());
 	}
 
 	public XmlElement createLastChild(String ns, String name) {
