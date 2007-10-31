@@ -1,6 +1,5 @@
 package com.googlecode.wmbutil.messages;
 
-import java.util.Iterator;
 import java.util.List;
 
 import com.googlecode.wmbutil.NiceMbException;
@@ -8,16 +7,16 @@ import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 import com.ibm.broker.plugin.MbMessage;
 
-public class CsvPayload extends Payload {
+public class TdsPayload extends Payload {
 
-	public static CsvPayload wrap(MbMessage msg, boolean readOnly) throws MbException {
+	public static TdsPayload wrap(MbMessage msg, boolean readOnly) throws MbException {
 		MbElement elm = locatePayload(msg);
 
 		if(elm == null) {
 			throw new NiceMbException("Failed to find CSV payload");
 		}
 		
-		return new CsvPayload(elm, readOnly);
+		return new TdsPayload(elm, readOnly);
 	}
 
 	/**
@@ -26,12 +25,12 @@ public class CsvPayload extends Payload {
 	 * @return
 	 * @throws MbException
 	 */
-	public static CsvPayload create(MbMessage msg) throws MbException {
+	public static TdsPayload create(MbMessage msg) throws MbException {
 		MbElement elm = msg.getRootElement().createElementAsLastChild("MRM");
-		return new CsvPayload(elm, false);
+		return new TdsPayload(elm, false);
 	}
 	
-	public static CsvPayload wrapOrCreate(MbMessage msg) throws MbException {
+	public static TdsPayload wrapOrCreate(MbMessage msg) throws MbException {
 		if(has(msg)) {
 			return wrap(msg, false);
 		} else {
@@ -45,12 +44,12 @@ public class CsvPayload extends Payload {
 	 * @return
 	 * @throws MbException
 	 */
-	public static CsvPayload remove(MbMessage msg) throws MbException {
+	public static TdsPayload remove(MbMessage msg) throws MbException {
 		MbElement elm = locatePayload(msg);
 		
 		if(elm != null) {
 			elm.detach();
-			return new CsvPayload(elm, true);
+			return new TdsPayload(elm, true);
 		} else {
 			throw new NiceMbException("Failed to find XML payload");
 		}		
@@ -67,26 +66,26 @@ public class CsvPayload extends Payload {
 		return elm;
 	}
 	
-	private CsvPayload(MbElement elm, boolean readOnly) throws MbException {
+	private TdsPayload(MbElement elm, boolean readOnly) throws MbException {
 		super(elm, readOnly);
 
 	}
 
-	public CsvRecord createRecord(String name) throws MbException {
+	public TdsRecord createRecord(String name) throws MbException {
 		checkReadOnly();
 		
 		MbElement elm = getMbElement().createElementAsLastChild(MbElement.TYPE_NAME, name, null);
 		
-		return new CsvRecord(elm, isReadOnly());
+		return new TdsRecord(elm, isReadOnly());
 	}
 	
-	public CsvRecord[] getRecords(String name) throws MbException {
+	public TdsRecord[] getRecords(String name) throws MbException {
 		List elms = (List) getMbElement().evaluateXPath(name);
 		
-		CsvRecord[] records = new CsvRecord[elms.size()];
+		TdsRecord[] records = new TdsRecord[elms.size()];
 		
 		for (int i = 0; i<elms.size(); i++) {
-			records[i] = new CsvRecord((MbElement) elms.get(i), isReadOnly());
+			records[i] = new TdsRecord((MbElement) elms.get(i), isReadOnly());
 		}
 		
 		return records;

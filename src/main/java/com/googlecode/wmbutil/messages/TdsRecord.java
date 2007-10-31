@@ -4,9 +4,9 @@ import com.googlecode.wmbutil.NiceMbException;
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 
-public class CsvRecord extends MbElementWrapper {
+public class TdsRecord extends MbElementWrapper {
 
-	public CsvRecord(MbElement wrappedElm, boolean readOnly) throws MbException {
+	public TdsRecord(MbElement wrappedElm, boolean readOnly) throws MbException {
 		super(wrappedElm, readOnly);
 	}
 	

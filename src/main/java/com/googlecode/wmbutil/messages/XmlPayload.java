@@ -94,7 +94,7 @@ public class XmlPayload extends Payload {
 		return docElm;
 	}
 
-	public XmlElement createDocumentElement(String name) throws MbException {
+	public XmlElement createRootElement(String name) throws MbException {
 		return createDocumentElement(null, name);
 	}
 
