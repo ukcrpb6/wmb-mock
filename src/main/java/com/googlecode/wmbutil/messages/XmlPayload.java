@@ -30,18 +30,27 @@ public class XmlPayload extends Payload {
 	 * @throws MbException
 	 */
 	public static XmlPayload create(MbMessage msg) throws MbException {
-		MbElement elm = msg.getRootElement().createElementAsLastChild(DEFAULT_PARSER);
+		return create(msg, DEFAULT_PARSER);
+	}
+
+	public static XmlPayload create(MbMessage msg, String parser) throws MbException {
+		MbElement elm = msg.getRootElement().createElementAsLastChild(parser);
 		return new XmlPayload(elm, false);
 	}
 	
 	public static XmlPayload wrapOrCreate(MbMessage msg) throws MbException {
+		return wrapOrCreate(msg, DEFAULT_PARSER);
+	}
+
+	public static XmlPayload wrapOrCreate(MbMessage msg, String parser) throws MbException {
 		if(has(msg)) {
 			return wrap(msg, false);
 		} else {
-			return create(msg);
+			return create(msg, parser);
 		}
 	}
 
+	
 	/** 
 	 * Removes the first XML payload
 	 * @param msg
@@ -73,6 +82,9 @@ public class XmlPayload extends Payload {
 		if(elm == null) {
 			elm = msg.getRootElement().getFirstElementByPath("/XML");
 		}
+		if(elm == null) {
+			elm = msg.getRootElement().getFirstElementByPath("/MRM");
+		}
 
 		return elm;
 	}
@@ -84,7 +96,7 @@ public class XmlPayload extends Payload {
 		
 		while(child != null) {
 			// find first and only element
-			if(child.getType() == MbXMLNS.ELEMENT) {
+			if(child.getType() == XmlUtil.getFolderElementType(child)) {
 				docElm = new XmlElement(child, isReadOnly());
 			}
 		}
@@ -115,6 +127,8 @@ public class XmlPayload extends Payload {
 	public void declareNamespace(String prefix, String ns) throws MbException {
 		checkReadOnly();
 		
-		docElm.getMbElement().createElementAsFirstChild(MbXMLNS.NAMESPACE_DECL, prefix, ns).setNamespace("xmlns");
+		if(docElm.getMbElement().getParserClassName().toUpperCase().equals(MbXMLNS.PARSER_NAME)) {
+			docElm.getMbElement().createElementAsFirstChild(MbXMLNS.NAMESPACE_DECL, prefix, ns).setNamespace("xmlns");
+		}
 	}
 }

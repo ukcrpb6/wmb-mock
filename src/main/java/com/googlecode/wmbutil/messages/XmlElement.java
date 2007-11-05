@@ -3,7 +3,6 @@ package com.googlecode.wmbutil.messages;
 import com.googlecode.wmbutil.util.XmlUtil;
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
-import com.ibm.broker.plugin.MbXMLNS;
 
 public class XmlElement extends MbElementWrapper {
 
@@ -41,7 +40,8 @@ public class XmlElement extends MbElementWrapper {
 	}
 
 	public XmlElement createLastChild(String ns, String name) throws MbException {
-		MbElement elm = getMbElement().createElementAsLastChild(MbXMLNS.ELEMENT, name, null);
+		MbElement parent = getMbElement();
+		MbElement elm = parent.createElementAsLastChild(XmlUtil.getFolderElementType(parent), name, null);
 		
 		if(ns != null) {
 			elm.setNamespace(ns);
