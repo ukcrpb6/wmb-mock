@@ -130,5 +130,6 @@ public class XmlPayload extends Payload {
 		if(docElm.getMbElement().getParserClassName().toUpperCase().equals(MbXMLNS.PARSER_NAME)) {
 			docElm.getMbElement().createElementAsFirstChild(MbXMLNS.NAMESPACE_DECL, prefix, ns).setNamespace("xmlns");
 		}
+		//TODO Hantera namespaces
 	}
 }
