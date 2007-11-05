@@ -17,7 +17,7 @@ public class TdsRecord extends MbElementWrapper {
         super(wrappedElm, readOnly);
     }
 
-    private Object getField(String name) throws MbException {
+    public Object getField(String name) throws MbException {
         MbElement elm = getMbElement().getFirstElementByPath(name);
 
         if (elm != null) {
@@ -27,7 +27,7 @@ public class TdsRecord extends MbElementWrapper {
         }
     }
 
-    private void setField(String name, Object value) throws MbException {
+    public void setField(String name, Object value) throws MbException {
         checkReadOnly();
 
         MbElement elm = getMbElement().getFirstElementByPath(name);
@@ -42,26 +42,68 @@ public class TdsRecord extends MbElementWrapper {
         return (String) getField(name);
     }
 
-    public void setStringField(String name, String value) throws MbException {
-        setField(name, value);
-    }
-
     public int getIntField(String name) throws MbException {
         return ((Integer) getField(name)).intValue();
+    }
+
+    public long getLongField(String name) throws MbException {
+        return ((Long) getField(name)).longValue();
+    }
+
+    public float getFloatField(String name) throws MbException {
+        return ((Float) getField(name)).floatValue();
+    }
+
+    public double getDoubleValue(String name) throws MbException {
+        return ((Double) getField(name)).doubleValue();
+    }
+
+    public boolean getBooleanValue(String name) throws MbException {
+        return ((Boolean) getField(name)).booleanValue();
+    }
+
+    public Date getDateField(String name) throws MbException {
+        if (getField(name) instanceof MbTimestamp) {
+            return ((MbTimestamp) getField(name)).getTime();
+        } else if (getField(name) instanceof MbDate) {
+            return ((MbDate) getField(name)).getTime();
+        } else {
+            return ((MbTime) getField(name)).getTime();
+        }
+    }
+
+    public void setStringField(String name, String value) throws MbException {
+        setField(name, value);
     }
 
     public void setIntField(String name, int value) throws MbException {
         setField(name, new Integer(value));
     }
 
-    public Date getDateField(String name) throws MbException {
-        return ((MbTimestamp) getField(name)).getTime();
+    public void setLongField(String name, long value) throws MbException {
+        setField(name, new Long(value));
+    }
+
+    public void setFloatField(String name, float value) throws MbException {
+        setField(name, new Float(value));
+    }
+
+    public void setDoubleField(String name, double value) throws MbException {
+        setField(name, new Double(value));
+    }
+
+    public void setBooleanField(String name, boolean value) throws MbException {
+        setField(name, new Boolean(value));
     }
 
     /**
-     * Sets the date for a known element. The date is extracted out of a Date object and an MbDate object is created.
-     * @param name The element whos value is to be changed.
-     * @param value A Date object that contains a specific date.
+     * Sets the date for a known element. The date is extracted out of a Date
+     * object and an MbDate object is created.
+     * 
+     * @param name
+     *            The element whos value is to be changed.
+     * @param value
+     *            A Date object that contains a specific date.
      * @throws MbException
      */
     public void setDateField(String name, Date value) throws MbException {
@@ -73,9 +115,13 @@ public class TdsRecord extends MbElementWrapper {
     }
 
     /**
-     * Sets the time for a known element. The time is extracted out of a Date object and an MbTime object is created.
-     * @param name The element whos value is to be changed.
-     * @param value A Date object that contains a specific time.
+     * Sets the time for a known element. The time is extracted out of a Date
+     * object and an MbTime object is created.
+     * 
+     * @param name
+     *            The element whos value is to be changed.
+     * @param value
+     *            A Date object that contains a specific time.
      * @throws MbException
      */
     public void setTimeField(String name, Date value) throws MbException {
@@ -83,13 +129,17 @@ public class TdsRecord extends MbElementWrapper {
         cal.setTime(value);
         MbTime mbTime = new MbTime(cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal
                 .get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
-        setField(name, (MbTime) mbTime);
+        setField(name, mbTime);
     }
 
     /**
-     * Sets the timestamp for a known element. The timestamp is extracted out of a Date object and an MbTimestamp object is created.
-     * @param name The element whos value is to be changed.
-     * @param value A Date object that contains a specific timestamp.
+     * Sets the timestamp for a known element. The timestamp is extracted out of
+     * a Date object and an MbTimestamp object is created.
+     * 
+     * @param name
+     *            The element whos value is to be changed.
+     * @param value
+     *            A Date object that contains a specific timestamp.
      * @throws MbException
      */
     public void setTimestampField(String name, Date value) throws MbException {
@@ -98,6 +148,6 @@ public class TdsRecord extends MbElementWrapper {
         MbTimestamp mbTimestamp = new MbTimestamp(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH),
                 cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE),
                 cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
-        setField(name, (MbTimestamp) mbTimestamp);
+        setField(name, mbTimestamp);
     }
 }
