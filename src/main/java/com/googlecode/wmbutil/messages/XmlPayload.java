@@ -1,6 +1,7 @@
 package com.googlecode.wmbutil.messages;
 
 import com.googlecode.wmbutil.NiceMbException;
+import com.googlecode.wmbutil.util.ElementUtil;
 import com.googlecode.wmbutil.util.XmlUtil;
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
@@ -107,18 +108,23 @@ public class XmlPayload extends Payload {
 	}
 
 	public XmlElement createRootElement(String name) throws MbException {
-		return createDocumentElement(null, name);
+		return createRootElement(null, name);
 	}
 
-	public XmlElement createDocumentElement(String ns, String name) throws MbException {
+	public XmlElement createRootElement(String ns, String name) throws MbException {
 		checkReadOnly();
 		
-		MbElement elm = getMbElement().createElementAsLastChild(XmlUtil.getFolderElementType(getMbElement()));
-		elm.setName(name);
-		if(ns != null) {
-			elm.setNamespace(ns);
+		MbElement elm;
+		if(ElementUtil.isMRM(getMbElement())) {
+			// for MRM, don't generate a root element
+			elm = getMbElement();
+		} else  {
+			elm = getMbElement().createElementAsLastChild(XmlUtil.getFolderElementType(getMbElement()));
+			elm.setName(name);
+			if(ns != null) {
+				elm.setNamespace(ns);
+			}
 		}
-		
 		docElm = new XmlElement(elm, isReadOnly());
 		
 		return docElm;
@@ -127,9 +133,12 @@ public class XmlPayload extends Payload {
 	public void declareNamespace(String prefix, String ns) throws MbException {
 		checkReadOnly();
 		
-		if(docElm.getMbElement().getParserClassName().toUpperCase().equals(MbXMLNS.PARSER_NAME)) {
+		String parserName = docElm.getMbElement().getParserClassName().toUpperCase(); 
+		
+		if(ElementUtil.isXML(docElm.getMbElement()) ||
+				ElementUtil.isXMLNS(docElm.getMbElement()) ||
+				ElementUtil.isXMLNSC(docElm.getMbElement())) {
 			docElm.getMbElement().createElementAsFirstChild(MbXMLNS.NAMESPACE_DECL, prefix, ns).setNamespace("xmlns");
 		}
-		//TODO Hantera namespaces
 	}
 }

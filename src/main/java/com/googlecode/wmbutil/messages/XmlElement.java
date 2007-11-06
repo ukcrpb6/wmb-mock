@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import com.googlecode.wmbutil.util.ElementUtil;
 import com.googlecode.wmbutil.util.XmlUtil;
 import com.ibm.broker.plugin.MbDate;
 import com.ibm.broker.plugin.MbElement;
@@ -59,70 +60,74 @@ public class XmlElement extends MbElementWrapper {
         return new XmlElement(elm, isReadOnly());
     }
 
-    public Object getValue() throws MbException {
+    private Object getValue() throws MbException {
         return getMbElement().getValue();
     }
 
     public String getStringValue() throws MbException {
-        return (String) getMbElement().getValue();
+        return (String) getValue();
     }
 
     public int getIntValue() throws MbException {
-        return Integer.parseInt((String) getMbElement().getValue());
+        return Integer.parseInt((String) getValue());
     }
 
     public long getLongValue() throws MbException {
-        return Long.parseLong((String) getMbElement().getValue());
+        return Long.parseLong((String) getValue());
     }
 
     public float getFloatValue() throws MbException {
-        return Float.parseFloat((String) getMbElement().getValue());
+        return Float.parseFloat((String) getValue());
     }
 
     public double getDoubleValue() throws MbException {
-        return Double.parseDouble((String) getMbElement().getValue());
+        return Double.parseDouble((String) getValue());
     }
 
     public boolean getBooleanValue() throws MbException {
-        return Boolean.getBoolean((String) getMbElement().getValue());
+        return Boolean.getBoolean((String) getValue());
     }
 
     public Date getDateValue() throws MbException {
         if (getMbElement().getValue() instanceof MbTimestamp) {
-            return ((MbTimestamp) getMbElement().getValue()).getTime();
+            return ((MbTimestamp) getValue()).getTime();
         } else if (getMbElement().getValue() instanceof MbDate) {
-            return ((MbDate) getMbElement().getValue()).getTime();
+            return ((MbDate) getValue()).getTime();
         } else {
-            return ((MbTime) getMbElement().getValue()).getTime();
+            return ((MbTime) getValue()).getTime();
         }
     }
 
-    public void setValue(Object value) throws MbException {
-        getMbElement().setValue(value);
+    private void setValue(Object value) throws MbException {
+    	if(ElementUtil.isMRM(getMbElement())) {
+    		getMbElement().createElementAsLastChild(MbElement.TYPE_VALUE, null, value);
+    	} else {
+    	    getMbElement().setValue(value);
+    	}
     }
 
     public void setStringValue(String value) throws MbException {
-        getMbElement().setValue(value);
+        setValue(value);
     }
 
     public void setIntValue(int value) throws MbException {
-        getMbElement().setValue(new Integer(value));
+        setValue(new Integer(value));
     }
 
     public void setLongValue(long value) throws MbException {
-        getMbElement().setValue(new Long(value));
+        setValue(new Long(value));
     }
 
     public void setFloatValue(float value) throws MbException {
-        getMbElement().setValue(new Float(value));
+        setValue(new Float(value));
     }
 
     public void setDoubleValue(double value) throws MbException {
-        getMbElement().setValue(new Double(value));
+        setValue(new Double(value));
     }
 
     public void setBooleanValue(boolean value) throws MbException {
-        getMbElement().setValue(new Boolean(value));
+        setValue(new Boolean(value));
     }
 
     public void setTimeValue(Date value) throws MbException {
@@ -130,7 +135,7 @@ public class XmlElement extends MbElementWrapper {
         cal.setTime(value);
         MbTime mbTime = new MbTime(cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal
                 .get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
-        getMbElement().setValue(mbTime);
+        setValue(mbTime);
     }
 
     public void setDateValue(Date value) throws MbException {
@@ -138,7 +143,7 @@ public class XmlElement extends MbElementWrapper {
         cal.setTime(value);
         MbDate mbDate = new MbDate(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal
                 .get(Calendar.DAY_OF_MONTH));
-        getMbElement().setValue(mbDate);
+        setValue(mbDate);
     }
 
     public void setTimestampValue(Date value) throws MbException {
@@ -147,6 +152,6 @@ public class XmlElement extends MbElementWrapper {
         MbTimestamp mbTimestamp = new MbTimestamp(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH),
                 cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE),
                 cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
-        getMbElement().setValue(mbTimestamp);
+        setValue(mbTimestamp);
     }
 }

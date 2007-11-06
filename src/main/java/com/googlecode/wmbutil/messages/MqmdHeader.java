@@ -50,7 +50,7 @@ public class MqmdHeader extends Header {
 			throw new NiceMbException("Already have MQMD header");
 		}
 
-		MbElement elm = msg.getRootElement().createElementAsFirstChild("MQHMD");
+		MbElement elm = msg.getRootElement().createElementAsLastChild("MQHMD");
 		
 		MqmdHeader mqmd = new MqmdHeader(elm, false); 
 		

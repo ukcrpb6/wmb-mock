@@ -6,7 +6,7 @@ import com.ibm.broker.plugin.MbMessage;
 import com.ibm.broker.plugin.MbMessageAssembly;
 import com.ibm.broker.plugin.MbOutputTerminal;
 
-public class Rfh2HeaderExampleNode extends MbJavaComputeNode {
+public class WmbUtil1ExampleNode extends MbJavaComputeNode {
 
 	public void evaluate(MbMessageAssembly inAssembly) throws MbException {
 
@@ -21,20 +21,26 @@ public class Rfh2HeaderExampleNode extends MbJavaComputeNode {
 
 		// create MQMD for the out message
 		MqmdHeader mqmd = MqmdHeader.create(outMsg);
-		mqmd.setCorrelId("FOOOO".getBytes());
 		
 		// create an RFH2 header
 		// creating the RFH2 header will automatically set the MQMD format correctly
-		Rfh2Header rfh2 = Rfh2Header.create(outMsg);
-		
+		Rfh2Header outRfh2 = Rfh2Header.create(outMsg);
+
 		// since we'll be creating XML, wer set the format to be a string
-		rfh2.setFormat("MQSTR");
+		outRfh2.setFormat("MQSTR");
+
+		// make sure it is a valid JMS message
+		outRfh2.setStringProperty("mcd", "Msd", "jms_text");
 		
-		// set a string value in the usr folder
-		rfh2.setStringProperty("usr", "foo", "bar");
-		
-		// set a int value in the usr folder
-		rfh2.setIntProperty("usr", "MyInt", 123);
+		// wrap incoming RFH2 header, if it exists
+		if(Rfh2Header.has(inMsg)) {
+			Rfh2Header inRfh2 = Rfh2Header.wrap(inMsg, true);
+			// set a string value in the usr folder
+			outRfh2.setStringProperty("usr", "baz", inRfh2.getStringProperty("usr", "foo"));
+		} else {
+			// set it to a default value
+			outRfh2.setStringProperty("usr", "baz", "default");
+		}
 		
 		// wrap the incoming record based message
 		TdsPayload csv = TdsPayload.wrap(inMsg, true);
@@ -43,7 +49,7 @@ public class Rfh2HeaderExampleNode extends MbJavaComputeNode {
 		XmlPayload payload = XmlPayload.create(outMsg);
 		
 		// create the root element
-		XmlElement rootElm = payload.createRootElement("foo");
+		XmlElement rootElm = payload.createRootElement("root");
 		
 		// get all records named "record"
 		TdsRecord[] records = csv.getRecords("record");
@@ -52,13 +58,13 @@ public class Rfh2HeaderExampleNode extends MbJavaComputeNode {
 		for (int i = 0; i < records.length; i++) {
 			TdsRecord record = records[i];
 			
-			XmlElement barElm = rootElm.createLastChild("bar");
+			XmlElement barElm = rootElm.createLastChild("child");
 			
 			// set the text content on the element
 			barElm.setStringValue(record.getStringField("field1"));
 			
 			// create and attribte and set its value
-			barElm.setAttribute("xyz", Integer.toString(record.getIntField("field2")));
+			barElm.setAttribute("attr", Integer.toString(record.getIntField("field2")));
 		}
 
 		// send out message
