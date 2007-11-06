@@ -55,7 +55,13 @@ public class TdsRecord extends MbElementWrapper {
     }
 
     public String getStringField(String name) throws MbException {
-        return (String) getField(name);
+    	Object o = getField(name);
+    	
+    	if(o != null) {
+    		return o.toString();
+    	} else {
+    		return null;
+    	}
     }
 
     public int getIntField(String name) throws MbException {
