@@ -75,6 +75,10 @@ public class MbElementWrapper {
 		}
 	}
 
+	protected void setStringValue(String field, String value) throws MbException {
+		setValue(field, value);
+	}
+	
 	protected byte[] getByteArrayValue(String field) throws MbException {
 		return (byte[])getValue(field);
 	}

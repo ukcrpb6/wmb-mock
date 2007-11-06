@@ -1,7 +1,6 @@
 package com.googlecode.wmbutil.messages;
 
 import com.ibm.broker.javacompute.MbJavaComputeNode;
-import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 import com.ibm.broker.plugin.MbMessage;
 import com.ibm.broker.plugin.MbMessageAssembly;
@@ -9,6 +8,8 @@ import com.ibm.broker.plugin.MbOutputTerminal;
 
 public class WmbUtil2ExampleNode extends MbJavaComputeNode {
 
+	private static final String NS = "http://www.portgot.se";
+	
 	public void evaluate(MbMessageAssembly inAssembly) throws MbException {
 
 		MbOutputTerminal out = getOutputTerminal("out");
@@ -24,23 +25,23 @@ public class WmbUtil2ExampleNode extends MbJavaComputeNode {
 		String messageType = "message2";
 		String messageFormat = "XML1";
 
-		MbElement props = outMsg.getRootElement().createElementAsFirstChild("MQPROPERTYPARSER");
-		props.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "MessageSet", messageSetId);
-		props.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "MessageType", messageType);
-		props.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "MessageFormat", messageFormat);
+		// Properties header must be created first, before the MQMD
+		PropertiesHeader props = PropertiesHeader.create(outMsg);
+		
+		props.setMessageSet("B3JDCVK002001");
+		props.setMessageType("message2");
+		props.setMessageFormat("XML1");
 
 		// create MQMD for the out message
 		MqmdHeader mqmd = MqmdHeader.create(outMsg);
-		
-		String ns = "http://www.mrmnames.net";
 		
 		// create an XML based out message
 		XmlPayload payload = XmlPayload.create(outMsg, "MRM");
 		
 		// create the root element
-		XmlElement rootElm = payload.createRootElement(ns, "root");
+		XmlElement rootElm = payload.createRootElement(NS, "root");
 		
-		XmlElement barElm = rootElm.createLastChild(ns, "child");
+		XmlElement barElm = rootElm.createLastChild(NS, "child");
 		
 		barElm.setAttribute("attr", "somevalue");
 		

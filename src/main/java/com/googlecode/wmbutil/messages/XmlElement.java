@@ -19,11 +19,13 @@ public class XmlElement extends MbElementWrapper {
     }
 
     public String getAttribute(String name) {
-        return null;
+    	// TODO implement
+    	throw new UnsupportedOperationException("Not yet implemented");
     }
 
     public String getAttribute(String ns, String name) {
-        return null;
+    	// TODO implement
+    	throw new UnsupportedOperationException("Not yet implemented");
     }
 
     public void setAttribute(String name, String value) throws MbException {
@@ -38,10 +40,13 @@ public class XmlElement extends MbElementWrapper {
     }
 
     public void setAttribute(String ns, String name, String value) {
+    	// TODO implement
+    	throw new UnsupportedOperationException("Not yet implemented");
     }
 
     public String[] getAttributeNames() {
-        return null;
+    	// TODO implement
+    	throw new UnsupportedOperationException("Not yet implemented");
     }
 
     public XmlElement createLastChild(String name) throws MbException {
@@ -61,7 +66,12 @@ public class XmlElement extends MbElementWrapper {
     }
 
     private Object getValue() throws MbException {
-        return getMbElement().getValue();
+    	if(ElementUtil.isMRM(getMbElement())) {
+        	// TODO implement for MRM
+    		throw new UnsupportedOperationException("Not yet implemented for MRM");
+    	} else {
+    		return getMbElement().getValue();
+    	}
     }
 
     public String getStringValue() throws MbException {
