@@ -93,17 +93,24 @@ public class XmlPayload extends Payload {
 	private XmlPayload(MbElement elm, boolean readOnly) throws MbException {
 		super(elm, readOnly);
 
-		MbElement child = getMbElement().getFirstChild();
-		
-		while(child != null) {
-			// find first and only element
-			if(child.getType() == XmlUtil.getFolderElementType(child)) {
-				docElm = new XmlElement(child, isReadOnly());
+		if(ElementUtil.isMRM(getMbElement())) {
+			docElm = new XmlElement(getMbElement(), isReadOnly());
+		} else {
+			MbElement child = getMbElement().getFirstChild();
+			
+			while(child != null) {
+				// find first and only element
+				if(child.getType() == XmlUtil.getFolderElementType(child)) {
+					docElm = new XmlElement(child, isReadOnly());
+					break;
+				}
+				
+				child = child.getNextSibling();
 			}
 		}
 	}
 
-	public XmlElement getDocumentElement() {
+	public XmlElement getRootElement() {
 		return docElm;
 	}
 
@@ -132,8 +139,6 @@ public class XmlPayload extends Payload {
 
 	public void declareNamespace(String prefix, String ns) throws MbException {
 		checkReadOnly();
-		
-		String parserName = docElm.getMbElement().getParserClassName().toUpperCase(); 
 		
 		if(ElementUtil.isXML(docElm.getMbElement()) ||
 				ElementUtil.isXMLNS(docElm.getMbElement()) ||

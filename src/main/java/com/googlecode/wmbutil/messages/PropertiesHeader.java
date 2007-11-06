@@ -65,10 +65,6 @@ public class PropertiesHeader extends Header {
 		super(elm, readOnly);
 	}
 
-	private String messageSet;
-	private String messageType;
-	private String messageFormat;
-	
 	public String getMessageFormat() throws MbException {
 		return getStringValue(PROPERTY_FORMAT);
 	}
