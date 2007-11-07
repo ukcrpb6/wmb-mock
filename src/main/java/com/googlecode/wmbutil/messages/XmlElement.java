@@ -193,11 +193,7 @@ public class XmlElement extends MbElementWrapper {
     }
 
     private void setValue(Object value) throws MbException {
-    	if(ElementUtil.isMRM(getMbElement())) {
-    		getMbElement().createElementAsLastChild(MbElement.TYPE_VALUE, null, value);
-    	} else {
-    	    getMbElement().setValue(value);
-    	}
+	    getMbElement().setValue(value);
     }
 
     public void setStringValue(String value) throws MbException {

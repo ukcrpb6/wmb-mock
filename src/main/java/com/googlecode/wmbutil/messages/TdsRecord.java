@@ -29,7 +29,6 @@ import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 import com.ibm.broker.plugin.MbTime;
 import com.ibm.broker.plugin.MbTimestamp;
-import com.sun.media.sound.DataPusher;
 
 public class TdsRecord extends MbElementWrapper {
 
