@@ -23,12 +23,12 @@ public class NiceMbException extends MbUserException {
 	private static final long serialVersionUID = -5760540385903728797L;
 
 	public NiceMbException(Object source, String msg) {
-		super(source.getClass().getName(), null, null, null, msg, null);
+		super(source.getClass().getName(), "", "", "", msg, new Object[0]);
 	}
 
 	public NiceMbException(String msg) {
 		
-		super(null, null, null, null, msg, null);
+		super("", "", "", "", msg, new Object[0]);
 	}
 
 

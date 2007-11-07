@@ -16,6 +16,9 @@
 
 package com.googlecode.wmbutil.messages;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -26,6 +29,7 @@ import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 import com.ibm.broker.plugin.MbTime;
 import com.ibm.broker.plugin.MbTimestamp;
+import com.sun.media.sound.DataPusher;
 
 public class TdsRecord extends MbElementWrapper {
 
@@ -94,6 +98,34 @@ public class TdsRecord extends MbElementWrapper {
         }
     }
 
+    /**
+     * Get a date value based on a String field and a date pattern which
+     * is used for parsing. Useful for example 
+     * when handling dates with time zones, something that WMB does not currently
+     * support.
+     * 
+     * @param name The element whos value if to be retrieved
+     * @param datePattern The date pattern to use for parsning, see {@link SimpleDateFormat} 
+     * 			  for documentation of the allowed tokens
+     * @return A date based on the String field value
+     * @throws MbException
+     */
+    public Date getDateField(String name, String datePattern) throws MbException {
+    	String dateStr = getStringField(name);
+    	
+    	if(dateStr != null) {
+	    	DateFormat df = new SimpleDateFormat(datePattern);
+	    	
+	    	try {
+				return df.parse(dateStr);
+			} catch (ParseException e) {
+				throw new NiceMbException("Failed to parse date \"" + dateStr + "\" with format \"" + datePattern + "\"");
+			}
+    	} else  {
+    		return null;
+    	}
+    }
+
     public void setStringField(String name, String value) throws MbException {
         setField(name, value);
     }
@@ -136,6 +168,7 @@ public class TdsRecord extends MbElementWrapper {
         setField(name, mbDate);
     }
 
+    
     /**
      * Sets the time for a known element. The time is extracted out of a Date
      * object and an MbTime object is created.
@@ -171,5 +204,27 @@ public class TdsRecord extends MbElementWrapper {
                 cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE),
                 cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
         setField(name, mbTimestamp);
+    }
+    
+    /**
+     * Sets the timestamp for a known element. The timestamp is formated using 
+     * the provided date pattern and set as a String field. Useful for example 
+     * when handling dates with time zones, something that WMB does not currently
+     * support.
+     * 
+     * Note that this method can also be used for times and dates only.
+     * 
+     * @param name
+     *            The element whos value is to be changed.
+     * @param value
+     *            A Date object that contains a specific timestamp.
+     * @param datePattern The date pattern to use for formating, see {@link SimpleDateFormat} 
+     * 			  for documentation of the allowed tokens
+     * @throws MbException
+     */    
+    public void setTimestampField(String name, Date value, String datePattern) throws MbException {
+        DateFormat df = new SimpleDateFormat(datePattern);
+        
+        setStringField(name, df.format(value));
     }
 }
