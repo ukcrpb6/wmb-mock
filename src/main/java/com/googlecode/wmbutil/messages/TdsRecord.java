@@ -112,9 +112,37 @@ public class TdsRecord extends MbElementWrapper {
     public Date getDateField(String name, String datePattern) throws MbException {
     	String dateStr = getStringField(name);
     	
+    	return parseDate(dateStr, datePattern);
+    }
+
+    /**
+     * Get a date value based on a String field and a date pattern which
+     * is used for parsing. Useful for example 
+     * when handling dates with time zones, something that WMB does not currently
+     * support.
+     * 
+     * @param name The element whos value if to be retrieved
+     * @param datePattern The date pattern to use for parsning, see {@link SimpleDateFormat} 
+     * 			  for documentation of the allowed tokens
+     * @param fieldLength The specified length of the field, useful when input format uses 
+     * 			number fields to store dates and the leading 0 is removed in parsing
+     * @return A date based on the String field value
+     * @throws MbException
+     */
+    public Date getDateField(String name, String datePattern, int fieldLength) throws MbException {
+    	StringBuffer dateStr = new StringBuffer(getStringField(name));
+    	
+    	while(dateStr.length() < fieldLength) {
+    		dateStr.insert(0, '0');
+    	}
+    	
+    	return parseDate(dateStr.toString(), datePattern);
+    }
+
+    private Date parseDate(String dateStr, String datePattern) throws MbException {
     	if(dateStr != null) {
 	    	DateFormat df = new SimpleDateFormat(datePattern);
-	    	
+	    	df.setLenient(false);
 	    	try {
 				return df.parse(dateStr);
 			} catch (ParseException e) {
@@ -124,7 +152,8 @@ public class TdsRecord extends MbElementWrapper {
     		return null;
     	}
     }
-
+    
+    
     public void setStringField(String name, String value) throws MbException {
         setField(name, value);
     }
