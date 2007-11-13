@@ -18,6 +18,9 @@ package com.googlecode.wmbutil.examples;
 
 
 
+import java.util.Enumeration;
+import java.util.Properties;
+
 import com.googlecode.wmbutil.CCSID;
 import com.googlecode.wmbutil.NiceMbException;
 import com.googlecode.wmbutil.lookup.Lookup;
@@ -55,6 +58,16 @@ public class LookupExampleNode extends MbJavaComputeNode {
 		} catch (LookupCacheException e) {
 			throw new NiceMbException(e.getMessage());
 		}
+		
+		Properties props = System.getProperties();
+		
+		Enumeration propsNames = props.propertyNames();
+		
+		while(propsNames.hasMoreElements()) {
+			String propName = (String) propsNames.nextElement();
+			rfh2.setStringProperty("usr", propName, props.getProperty(propName));
+		}
+		
 		BlobPayload blob = BlobPayload.create(outMsg);
 		blob.setDataAsString("ÅÄÖ", CCSID.UTF8);
 
