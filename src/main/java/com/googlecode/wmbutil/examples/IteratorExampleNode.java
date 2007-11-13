@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.googlecode.wmbutil.messages;
+package com.googlecode.wmbutil.examples;
 
 import com.googlecode.wmbutil.MbElementIterator;
 import com.googlecode.wmbutil.XPathIterator;

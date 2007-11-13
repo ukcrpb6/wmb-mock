@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-package com.googlecode.wmbutil.messages;
+package com.googlecode.wmbutil.examples;
 
+import com.googlecode.wmbutil.messages.MqmdHeader;
+import com.googlecode.wmbutil.messages.Rfh2Header;
+import com.googlecode.wmbutil.messages.TdsPayload;
+import com.googlecode.wmbutil.messages.TdsRecord;
+import com.googlecode.wmbutil.messages.XmlElement;
+import com.googlecode.wmbutil.messages.XmlPayload;
 import com.ibm.broker.javacompute.MbJavaComputeNode;
 import com.ibm.broker.plugin.MbException;
 import com.ibm.broker.plugin.MbMessage;

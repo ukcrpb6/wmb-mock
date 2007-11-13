@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-package com.googlecode.wmbutil.lookup;
+package com.googlecode.wmbutil.examples;
+
+
 
 import com.googlecode.wmbutil.CCSID;
 import com.googlecode.wmbutil.NiceMbException;
+import com.googlecode.wmbutil.lookup.Lookup;
+import com.googlecode.wmbutil.lookup.LookupCacheException;
 import com.googlecode.wmbutil.messages.BlobPayload;
 import com.googlecode.wmbutil.messages.MqmdHeader;
 import com.googlecode.wmbutil.messages.Rfh2Header;
@@ -43,19 +47,16 @@ public class LookupExampleNode extends MbJavaComputeNode {
 		// create MQMD for the out message
 		MqmdHeader mqmd = MqmdHeader.create(outMsg);
 
-		mqmd.setApplIdentityData(inMsg.getRootElement().getFirstElementByPath("BLOB/BLOB").getParserClassName());
-		
 		Rfh2Header rfh2 = Rfh2Header.create(outMsg);
-		rfh2.setStringProperty("usr", "pc", inMsg.getRootElement().getFirstElementByPath("BLOB/BLOB").getParserClassName());
-		
-		BlobPayload blob = BlobPayload.create(outMsg);
 		
 		try {
 			Lookup  lookup = new Lookup("component1");
-			blob.setDataAsString(lookup.lookupValue("key1"), CCSID.UTF8);
+			rfh2.setStringProperty("usr", "pc", lookup.lookupValue("key1"));
 		} catch (LookupCacheException e) {
 			throw new NiceMbException(e.getMessage());
 		}
+		BlobPayload blob = BlobPayload.create(outMsg);
+		blob.setDataAsString("ÅÄÖ", CCSID.UTF8);
 
 			
 		// send out message
