@@ -4,7 +4,6 @@ import org.apache.log4j.Logger;
 import com.googlecode.wmbutil.util.WmbLogger;
 import com.ibm.broker.javacompute.MbJavaComputeNode;
 import com.ibm.broker.plugin.MbException;
-import com.ibm.broker.plugin.MbMessage;
 import com.ibm.broker.plugin.MbMessageAssembly;
 import com.ibm.broker.plugin.MbOutputTerminal;
 
@@ -12,9 +11,6 @@ public class CatchNode extends MbJavaComputeNode {
 
 	public void evaluate(MbMessageAssembly assembly) throws MbException {
 		MbOutputTerminal out = getOutputTerminal("out");
-		MbOutputTerminal alt = getOutputTerminal("alternate");
-
-		MbMessage message = assembly.getMessage();
 
 		// ----------------------------------------------------------
 		// Add user code below
