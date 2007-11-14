@@ -16,6 +16,8 @@
 
 package com.googlecode.wmbutil.examples;
 
+import java.util.List;
+
 import com.googlecode.wmbutil.messages.MqmdHeader;
 import com.googlecode.wmbutil.messages.Rfh2Header;
 import com.googlecode.wmbutil.messages.TdsPayload;
@@ -74,11 +76,11 @@ public class WmbUtil1ExampleNode extends MbJavaComputeNode {
 		XmlElement rootElm = payload.createRootElement("root");
 		
 		// get all records named "record"
-		TdsRecord[] records = csv.getRecords("record");
+		List records = csv.getRecords("record");
 		
 		// loop over all records and create a new XML element for each
-		for (int i = 0; i < records.length; i++) {
-			TdsRecord record = records[i];
+		for (int i = 0; i < records.size(); i++) {
+			TdsRecord record = (TdsRecord) records.get(i);
 			
 			XmlElement barElm = rootElm.createLastChild("child");
 			
