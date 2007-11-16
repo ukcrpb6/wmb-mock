@@ -8,7 +8,5 @@
 	<classpathentry kind="var" path="M2_REPO/log4j/log4j/1.2.14/log4j-1.2.14.jar" sourcepath="M2_REPO/log4j/log4j/1.2.14/log4j-1.2.14-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/commons-dbcp/commons-dbcp/1.2.2/commons-dbcp-1.2.2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/commons-pool/commons-pool/1.3/commons-pool-1.3.jar"/>
-	<classpathentry kind="lib" path="C:/home/niklas/callista/portgot/svn/tools/db2/db2jcc.jar"/>
-	<classpathentry kind="lib" path="C:/home/niklas/callista/portgot/svn/tools/db2/db2jcc_license_cisuz.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
