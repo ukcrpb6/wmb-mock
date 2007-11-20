@@ -124,11 +124,11 @@ public class XmlElement extends MbElementWrapper {
         return new XmlElement(elm, isReadOnly());
     }
     
-    public XmlElement[] getChildByName(String name) throws MbException {
-    	return getChildByName(null, name);
+    public List getChildrenByName(String name) throws MbException {
+    	return getChildrenByName(null, name);
     }
 
-    public XmlElement[] getChildByName(String ns, String name) throws MbException {
+    public List getChildrenByName(String ns, String name) throws MbException {
     	// TODO change to XPath impl
     	
     	MbElement child = getMbElement().getFirstChild();
@@ -144,7 +144,7 @@ public class XmlElement extends MbElementWrapper {
     		child = child.getNextSibling();
     	}
     	
-    	return (XmlElement[]) childList.toArray(new XmlElement[0]);
+    	return childList;
     }
     
     
