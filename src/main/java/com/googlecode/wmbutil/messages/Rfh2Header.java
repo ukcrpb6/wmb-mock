@@ -17,6 +17,7 @@
 package com.googlecode.wmbutil.messages;
 
 import com.googlecode.wmbutil.NiceMbException;
+import com.googlecode.wmbutil.WmqFormat;
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 import com.ibm.broker.plugin.MbMessage;
@@ -46,7 +47,7 @@ public class Rfh2Header extends Header {
 
 		if(MqmdHeader.has(msg)) {
 			MqmdHeader mqmd = MqmdHeader.wrap(msg, false);
-			mqmd.setFormat("MQHRF2  ");
+			mqmd.setFormat(WmqFormat.MQ_RFH2);
 			
 			MbElement mqmdElm = mqmd.getMbElement();
 			
