@@ -62,7 +62,7 @@ public class WmbUtil2ExampleNode extends MbJavaComputeNode {
 		XmlElement outChild = rootElm.createLastChild(NS, "child");
 		
 		XmlElement inRoot = inXml.getRootElement();
-		XmlElement inChild = inRoot.getChildByName(NS, "child")[0];
+		XmlElement inChild = inRoot.getFirstChildByName(NS, "child");
 		
 		String[] attrs = inChild.getAttributeNames();
 		

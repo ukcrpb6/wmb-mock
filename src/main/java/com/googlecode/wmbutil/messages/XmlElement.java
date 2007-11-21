@@ -33,215 +33,230 @@ import com.ibm.broker.plugin.MbXPath;
 
 public class XmlElement extends MbElementWrapper {
 
-    public XmlElement(MbElement wrappedElm, boolean readOnly) throws MbException {
-        super(wrappedElm, readOnly);
-    }
+	public XmlElement(MbElement wrappedElm, boolean readOnly) throws MbException {
+		super(wrappedElm, readOnly);
+	}
 
-    private MbElement getAttributeElement(String ns, String name) throws MbException {
-    	MbXPath xpath = new MbXPath("@" + name, getMbElement());
-    	
-    	if(ns != null) {
-    		xpath.setDefaultNamespace(ns);
-    	}
-    	
-    	List matches = (List) getMbElement().evaluateXPath(xpath);
-    	
-    	if(matches.size() > 0) {
-    		return ((MbElement)matches.get(0));
-    	} else {
-    		return null;
-    	}
-    }
-    
-    public String getAttribute(String name) throws MbException {
-    	return getAttribute(null, name);
-    }
+	private MbElement getAttributeElement(String ns, String name) throws MbException {
+		MbXPath xpath = new MbXPath("@" + name, getMbElement());
 
-    public String getAttribute(String ns, String name) throws MbException {
-    	MbElement attr = getAttributeElement(ns, name);
-    	
-    	if(attr != null) {
-    		return attr.getValue().toString();
-    	} else {
-    		return null;
-    	}
-    }
-
-    public void setAttribute(String name, String value) throws MbException {
-        setAttribute(null, name, value);
-    }
-
-    public void setAttribute(String ns, String name, String value) throws MbException {
-    	MbElement attr = getAttributeElement(ns, name);
-
-        if (attr == null) {
-            attr = getMbElement().createElementAsFirstChild(
-                    XmlUtil.getAttributeType(getMbElement()), name, value);
-            
-            if(ns != null) {
-            	attr.setNamespace(ns);
-            }
-        } else {
-            attr.setValue(value);
-        }
-    }
-
-    public String[] getAttributeNames() throws MbException {
-    	return getAttributeNames(null);
-    }
-
-    public String[] getAttributeNames(String ns) throws MbException {
-    	MbXPath xpath = new MbXPath("@*", getMbElement());
-    	
-    	if(ns != null) {
-    		xpath.setDefaultNamespace(ns);
-    	}
-    	
-    	List matches = (List) getMbElement().evaluateXPath(xpath);
-    	
-    	String[] names = new String[matches.size()];
-    	
-    	for (int i = 0; i < names.length; i++) {
-			names[i] = ((MbElement)matches.get(i)).getName();
+		if (ns != null) {
+			xpath.setDefaultNamespace(ns);
 		}
 
-    	return names;
-    }
+		List matches = (List) getMbElement().evaluateXPath(xpath);
 
-    public XmlElement createLastChild(String name) throws MbException {
-        return createLastChild(null, name);
-    }
+		if (matches.size() > 0) {
+			return ((MbElement) matches.get(0));
+		} else {
+			return null;
+		}
+	}
 
-    public XmlElement createLastChild(String ns, String name) throws MbException {
-        MbElement parent = getMbElement();
-        MbElement elm = parent.createElementAsLastChild(XmlUtil.getFolderElementType(parent), name,
-                null);
+	public String getAttribute(String name) throws MbException {
+		return getAttribute(null, name);
+	}
 
-        if (ns != null) {
-            elm.setNamespace(ns);
-        }
+	public String getAttribute(String ns, String name) throws MbException {
+		MbElement attr = getAttributeElement(ns, name);
 
-        return new XmlElement(elm, isReadOnly());
-    }
-    
-    public List getChildrenByName(String name) throws MbException {
-    	return getChildrenByName(null, name);
-    }
+		if (attr != null) {
+			return attr.getValue().toString();
+		} else {
+			return null;
+		}
+	}
 
-    public List getChildrenByName(String ns, String name) throws MbException {
-    	// TODO change to XPath impl
-    	
-    	MbElement child = getMbElement().getFirstChild();
-    	
-    	List childList = new ArrayList();
-    	while(child != null) {
-    		if(name.equals(child.getName())) {
-    			if(ns != null && ns.equals(child.getNamespace())) {
-    				childList.add(new XmlElement(child, isReadOnly()));
-    			}
-    		}
-    		
-    		child = child.getNextSibling();
-    	}
-    	
-    	return childList;
-    }
-    
-    
+	public void setAttribute(String name, String value) throws MbException {
+		setAttribute(null, name, value);
+	}
 
-    private Object getValue() throws MbException {
-    	if(ElementUtil.isMRM(getMbElement())) {
-        	// TODO implement for MRM
-    		throw new UnsupportedOperationException("Not yet implemented for MRM");
-    	} else {
-    		return getMbElement().getValue();
-    	}
-    }
+	public void setAttribute(String ns, String name, String value) throws MbException {
+		MbElement attr = getAttributeElement(ns, name);
 
-    public String getStringValue() throws MbException {
-        return (String) getValue();
-    }
+		if (attr == null) {
+			attr = getMbElement().createElementAsFirstChild(
+					XmlUtil.getAttributeType(getMbElement()), name, value);
 
-    public int getIntValue() throws MbException {
-        return Integer.parseInt((String) getValue());
-    }
+			if (ns != null) {
+				attr.setNamespace(ns);
+			}
+		} else {
+			attr.setValue(value);
+		}
+	}
 
-    public long getLongValue() throws MbException {
-        return Long.parseLong((String) getValue());
-    }
+	public String[] getAttributeNames() throws MbException {
+		return getAttributeNames(null);
+	}
 
-    public float getFloatValue() throws MbException {
-        return Float.parseFloat((String) getValue());
-    }
+	public String[] getAttributeNames(String ns) throws MbException {
+		MbXPath xpath = new MbXPath("@*", getMbElement());
 
-    public double getDoubleValue() throws MbException {
-        return Double.parseDouble((String) getValue());
-    }
+		if (ns != null) {
+			xpath.setDefaultNamespace(ns);
+		}
 
-    public boolean getBooleanValue() throws MbException {
-        return Boolean.getBoolean((String) getValue());
-    }
+		List matches = (List) getMbElement().evaluateXPath(xpath);
 
-    public Date getDateValue() throws MbException {
-        if (getMbElement().getValue() instanceof MbTimestamp) {
-            return ((MbTimestamp) getValue()).getTime();
-        } else if (getMbElement().getValue() instanceof MbDate) {
-            return ((MbDate) getValue()).getTime();
-        } else {
-            return ((MbTime) getValue()).getTime();
-        }
-    }
+		String[] names = new String[matches.size()];
 
-    private void setValue(Object value) throws MbException {
-	    getMbElement().setValue(value);
-    }
+		for (int i = 0; i < names.length; i++) {
+			names[i] = ((MbElement) matches.get(i)).getName();
+		}
 
-    public void setStringValue(String value) throws MbException {
-        setValue(value);
-    }
+		return names;
+	}
 
-    public void setIntValue(int value) throws MbException {
-        setValue(new Integer(value));
-    }
+	public XmlElement createLastChild(String name) throws MbException {
+		return createLastChild(null, name);
+	}
 
-    public void setLongValue(long value) throws MbException {
-        setValue(new Long(value));
-    }
+	public XmlElement createLastChild(String ns, String name) throws MbException {
+		MbElement parent = getMbElement();
+		MbElement elm = parent.createElementAsLastChild(XmlUtil.getFolderElementType(parent), name,
+				null);
 
-    public void setFloatValue(float value) throws MbException {
-        setValue(new Float(value));
-    }
+		if (ns != null) {
+			elm.setNamespace(ns);
+		}
 
-    public void setDoubleValue(double value) throws MbException {
-        setValue(new Double(value));
-    }
+		return new XmlElement(elm, isReadOnly());
+	}
 
-    public void setBooleanValue(boolean value) throws MbException {
-        setValue(new Boolean(value));
-    }
+	public List getChildrenByName(String name) throws MbException {
+		return getChildrenByName(null, name);
+	}
 
-    public void setTimeValue(Date value) throws MbException {
-        Calendar cal = new GregorianCalendar();
-        cal.setTime(value);
-        MbTime mbTime = new MbTime(cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal
-                .get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
-        setValue(mbTime);
-    }
+	public List getChildrenByName(String ns, String name) throws MbException {
+		// TODO change to XPath impl
 
-    public void setDateValue(Date value) throws MbException {
-        Calendar cal = new GregorianCalendar();
-        cal.setTime(value);
-        MbDate mbDate = new MbDate(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal
-                .get(Calendar.DAY_OF_MONTH));
-        setValue(mbDate);
-    }
+		MbElement child = getMbElement().getFirstChild();
 
-    public void setTimestampValue(Date value) throws MbException {
-        Calendar cal = new GregorianCalendar();
-        cal.setTime(value);
-        MbTimestamp mbTimestamp = new MbTimestamp(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH),
-                cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE),
-                cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
-        setValue(mbTimestamp);
-    }
+		List childList = new ArrayList();
+		while (child != null) {
+			if (name.equals(child.getName())) {
+				if (ns != null && ns.equals(child.getNamespace())) {
+					childList.add(new XmlElement(child, isReadOnly()));
+				}
+			}
+
+			child = child.getNextSibling();
+		}
+
+		return childList;
+	}
+
+	public XmlElement getFirstChildByName(String name) throws MbException {
+		return getFirstChildByName(null, name);
+	}
+
+	public XmlElement getFirstChildByName(String ns, String name) throws MbException {
+		MbElement child = getMbElement().getFirstChild();
+		while (child != null) {
+			if (name.equals(child.getName())) {
+				if (ns != null && ns.equals(child.getNamespace())) {
+					return new XmlElement(child, isReadOnly());
+				}
+			}
+			child = child.getNextSibling();
+		}
+		return null;
+	}
+
+	private Object getValue() throws MbException {
+		if (ElementUtil.isMRM(getMbElement())) {
+			// TODO implement for MRM
+			throw new UnsupportedOperationException("Not yet implemented for MRM");
+		} else {
+			return getMbElement().getValue();
+		}
+	}
+
+	public String getStringValue() throws MbException {
+		return (String) getValue();
+	}
+
+	public int getIntValue() throws MbException {
+		return Integer.parseInt((String) getValue());
+	}
+
+	public long getLongValue() throws MbException {
+		return Long.parseLong((String) getValue());
+	}
+
+	public float getFloatValue() throws MbException {
+		return Float.parseFloat((String) getValue());
+	}
+
+	public double getDoubleValue() throws MbException {
+		return Double.parseDouble((String) getValue());
+	}
+
+	public boolean getBooleanValue() throws MbException {
+		return Boolean.getBoolean((String) getValue());
+	}
+
+	public Date getDateValue() throws MbException {
+		if (getMbElement().getValue() instanceof MbTimestamp) {
+			return ((MbTimestamp) getValue()).getTime();
+		} else if (getMbElement().getValue() instanceof MbDate) {
+			return ((MbDate) getValue()).getTime();
+		} else {
+			return ((MbTime) getValue()).getTime();
+		}
+	}
+
+	private void setValue(Object value) throws MbException {
+		getMbElement().setValue(value);
+	}
+
+	public void setStringValue(String value) throws MbException {
+		setValue(value);
+	}
+
+	public void setIntValue(int value) throws MbException {
+		setValue(new Integer(value));
+	}
+
+	public void setLongValue(long value) throws MbException {
+		setValue(new Long(value));
+	}
+
+	public void setFloatValue(float value) throws MbException {
+		setValue(new Float(value));
+	}
+
+	public void setDoubleValue(double value) throws MbException {
+		setValue(new Double(value));
+	}
+
+	public void setBooleanValue(boolean value) throws MbException {
+		setValue(new Boolean(value));
+	}
+
+	public void setTimeValue(Date value) throws MbException {
+		Calendar cal = new GregorianCalendar();
+		cal.setTime(value);
+		MbTime mbTime = new MbTime(cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal
+				.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
+		setValue(mbTime);
+	}
+
+	public void setDateValue(Date value) throws MbException {
+		Calendar cal = new GregorianCalendar();
+		cal.setTime(value);
+		MbDate mbDate = new MbDate(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal
+				.get(Calendar.DAY_OF_MONTH));
+		setValue(mbDate);
+	}
+
+	public void setTimestampValue(Date value) throws MbException {
+		Calendar cal = new GregorianCalendar();
+		cal.setTime(value);
+		MbTimestamp mbTimestamp = new MbTimestamp(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH),
+				cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE),
+				cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
+		setValue(mbTimestamp);
+	}
 }
