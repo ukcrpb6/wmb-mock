@@ -107,4 +107,13 @@ public class TdsPayload extends Payload {
         return records;
     }
 
+
+    public List getAllRecords() throws MbException {
+        List elms = (List) getMbElement().evaluateXPath("*");
+        List records = new ArrayList();
+        for (int i = 0; i < elms.size(); i++) {
+            records.add(new TdsRecord((MbElement) elms.get(i), isReadOnly()));
+        }
+        return records;
+    }
 }

@@ -38,19 +38,48 @@ public class XmlElement extends MbElementWrapper {
 	}
 
 	private MbElement getAttributeElement(String ns, String name) throws MbException {
-		MbXPath xpath = new MbXPath("@" + name, getMbElement());
+		List elms = getAttributeElements(ns, name);
+		
+		if(elms.size() > 0) {
+			return (MbElement) elms.get(0);
+		} else {
+			return null;
+		}
+	}
+	
+	private List getAttributeElements(String ns, String name) throws MbException {
+		MbXPath xpath = new MbXPath("@*", getMbElement());
 
 		if (ns != null) {
 			xpath.setDefaultNamespace(ns);
 		}
 
 		List matches = (List) getMbElement().evaluateXPath(xpath);
-
-		if (matches.size() > 0) {
-			return ((MbElement) matches.get(0));
-		} else {
-			return null;
+		List filtered = new ArrayList();
+		
+		// WMB prepends a @ on MRM attributes
+		String atName = "@" + name;
+		
+		for(int i = 0; i<matches.size(); i++) {
+			MbElement elm = (MbElement) matches.get(0);
+			if(name != null) {
+				
+				if(name.equals(elm.getName()) || atName.equals(elm.getName())) {
+					if(ns == null || ns.equals(elm.getNamespace())) {
+						filtered.add(elm);
+						// there can be only one attribute with a specific name
+						break;
+					}
+				}
+				
+			}else {
+				filtered.add(elm);
+			}
+			
 		}
+		
+		return filtered;
+
 	}
 
 	public String getAttribute(String name) throws MbException {
@@ -61,7 +90,12 @@ public class XmlElement extends MbElementWrapper {
 		MbElement attr = getAttributeElement(ns, name);
 
 		if (attr != null) {
-			return attr.getValue().toString();
+			Object value = attr.getValue();
+			if(value != null) {
+				return value.toString();
+			} else {
+				return null;
+			}
 		} else {
 			return null;
 		}
@@ -91,18 +125,19 @@ public class XmlElement extends MbElementWrapper {
 	}
 
 	public String[] getAttributeNames(String ns) throws MbException {
-		MbXPath xpath = new MbXPath("@*", getMbElement());
-
-		if (ns != null) {
-			xpath.setDefaultNamespace(ns);
-		}
-
-		List matches = (List) getMbElement().evaluateXPath(xpath);
+		List matches = getAttributeElements(null, null);
 
 		String[] names = new String[matches.size()];
 
 		for (int i = 0; i < names.length; i++) {
-			names[i] = ((MbElement) matches.get(i)).getName();
+			String name = ((MbElement) matches.get(i)).getName();
+			
+			if(name.charAt(0) == '@') {
+				// remove leading @, WMB prepends it in the MRM domain. Why oh god why. 
+				name = name.substring(1);
+			}
+			
+			names[i] = name;
 		}
 
 		return names;
@@ -129,22 +164,19 @@ public class XmlElement extends MbElementWrapper {
 	}
 
 	public List getChildrenByName(String ns, String name) throws MbException {
-		// TODO change to XPath impl
-
-		MbElement child = getMbElement().getFirstChild();
-
-		List childList = new ArrayList();
-		while (child != null) {
-			if (name.equals(child.getName())) {
-				if (ns != null && ns.equals(child.getNamespace())) {
-					childList.add(new XmlElement(child, isReadOnly()));
-				}
-			}
-
-			child = child.getNextSibling();
+		MbXPath xpath = new MbXPath(name, getMbElement());
+		
+		if(ns != null) {
+			xpath.setDefaultNamespace(ns);
 		}
-
-		return childList;
+		
+		List childList = (List) getMbElement().evaluateXPath(xpath);
+		List returnList = new ArrayList();
+		for(int i = 0; i<childList.size(); i++) {
+			returnList.add(new XmlElement((MbElement) childList.get(i), isReadOnly()));
+		}
+		
+		return returnList;
 	}
 
 	public XmlElement getFirstChildByName(String name) throws MbException {
@@ -152,25 +184,23 @@ public class XmlElement extends MbElementWrapper {
 	}
 
 	public XmlElement getFirstChildByName(String ns, String name) throws MbException {
-		MbElement child = getMbElement().getFirstChild();
-		while (child != null) {
-			if (name.equals(child.getName())) {
-				if (ns != null && ns.equals(child.getNamespace())) {
-					return new XmlElement(child, isReadOnly());
-				}
-			}
-			child = child.getNextSibling();
+		MbXPath xpath = new MbXPath(name + "[0]", getMbElement());
+		
+		if(ns != null) {
+			xpath.setDefaultNamespace(ns);
 		}
-		return null;
+		
+		List childList = (List) getMbElement().evaluateXPath(xpath);
+
+		if(childList.size() > 0 ) {
+			return new XmlElement((MbElement) childList.get(0), isReadOnly());
+		} else {
+			return null;
+		}
 	}
 
 	private Object getValue() throws MbException {
-		if (ElementUtil.isMRM(getMbElement())) {
-			// TODO implement for MRM
-			throw new UnsupportedOperationException("Not yet implemented for MRM");
-		} else {
-			return getMbElement().getValue();
-		}
+		return getMbElement().getValue();
 	}
 
 	public String getStringValue() throws MbException {
