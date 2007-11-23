@@ -17,7 +17,6 @@
 package com.googlecode.wmbutil.messages;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.CharsetEncoder;
 
 import com.googlecode.wmbutil.CCSID;
 import com.googlecode.wmbutil.NiceMbException;
@@ -110,8 +109,6 @@ public class BlobPayload extends Payload {
 	}
 
 	public void setDataAsString(String s, int ccsid) throws MbException {
-		System.out.println(ccsid);
-		
 		String encoding = CCSID.ccsidToCharset(ccsid);
 		try {
 			setData(s.getBytes(encoding));

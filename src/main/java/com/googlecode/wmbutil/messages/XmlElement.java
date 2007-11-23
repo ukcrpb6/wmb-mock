@@ -22,7 +22,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import com.googlecode.wmbutil.util.ElementUtil;
 import com.googlecode.wmbutil.util.XmlUtil;
 import com.ibm.broker.plugin.MbDate;
 import com.ibm.broker.plugin.MbElement;
@@ -184,7 +183,7 @@ public class XmlElement extends MbElementWrapper {
 	}
 
 	public XmlElement getFirstChildByName(String ns, String name) throws MbException {
-		MbXPath xpath = new MbXPath(name + "[0]", getMbElement());
+		MbXPath xpath = new MbXPath(name + "[1]", getMbElement());
 		
 		if(ns != null) {
 			xpath.setDefaultNamespace(ns);
@@ -204,36 +203,88 @@ public class XmlElement extends MbElementWrapper {
 	}
 
 	public String getStringValue() throws MbException {
-		return (String) getValue();
+		Object value = getValue();
+		
+		if(value != null) {
+			return value.toString();
+		} else {
+			return null;
+		}
 	}
 
 	public int getIntValue() throws MbException {
-		return Integer.parseInt((String) getValue());
+		Object value = getValue();
+
+		if(value == null) {
+			return 0;
+		} else if(value instanceof Integer) {
+			return ((Integer)value).intValue();
+		} else {
+			return Integer.parseInt(value.toString());
+		}
 	}
 
 	public long getLongValue() throws MbException {
-		return Long.parseLong((String) getValue());
+		Object value = getValue();
+
+		if(value == null) {
+			return 0;
+		} else if(value instanceof Long) {
+			return ((Long)value).longValue();
+		} else {
+			return Long.parseLong(value.toString());
+		}
 	}
 
 	public float getFloatValue() throws MbException {
-		return Float.parseFloat((String) getValue());
+		Object value = getValue();
+
+		if(value == null) {
+			return 0;
+		} else if(value instanceof Float) {
+			return ((Float)value).floatValue();
+		} else {
+			return Float.parseFloat(value.toString());
+		}
 	}
 
 	public double getDoubleValue() throws MbException {
-		return Double.parseDouble((String) getValue());
+		Object value = getValue();
+
+		if(value == null) {
+			return 0;
+		} else if(value instanceof Double) {
+			return ((Double)value).doubleValue();
+		} else {
+			return Double.parseDouble(value.toString());
+		}
 	}
 
 	public boolean getBooleanValue() throws MbException {
-		return Boolean.getBoolean((String) getValue());
+		Object value = getValue();
+
+		if(value == null) {
+			return false;
+		} else if(value instanceof Boolean) {
+			return ((Boolean)value).booleanValue();
+		} else {
+			return Boolean.parseBoolean(value.toString());
+		}
 	}
 
 	public Date getDateValue() throws MbException {
-		if (getMbElement().getValue() instanceof MbTimestamp) {
+		Object value = getValue();
+
+		if(value == null) {
+			return null;
+		} else if (value instanceof MbTimestamp) {
 			return ((MbTimestamp) getValue()).getTime();
-		} else if (getMbElement().getValue() instanceof MbDate) {
+		} else if (value instanceof MbDate) {
 			return ((MbDate) getValue()).getTime();
-		} else {
+		} else if(value instanceof MbTime){
 			return ((MbTime) getValue()).getTime();
+		} else {
+			throw new ClassCastException("Type can not be cast to a date type: " + value.getClass());
 		}
 	}
 
