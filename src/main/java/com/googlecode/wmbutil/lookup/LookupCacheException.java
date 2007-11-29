@@ -17,7 +17,7 @@
 package com.googlecode.wmbutil.lookup;
 
 
-public class LookupCacheException extends Exception {
+public class LookupCacheException extends RuntimeException {
 
 	private static final long serialVersionUID = 4179883252546965905L;
 
