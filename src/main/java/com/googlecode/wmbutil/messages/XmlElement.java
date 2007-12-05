@@ -178,11 +178,20 @@ public class XmlElement extends MbElementWrapper {
 		return returnList;
 	}
 
+	public XmlElement getFirstChild() throws MbException {
+		return getFirstChildByName(null, null);
+	}
+
+	
 	public XmlElement getFirstChildByName(String name) throws MbException {
 		return getFirstChildByName(null, name);
 	}
 
 	public XmlElement getFirstChildByName(String ns, String name) throws MbException {
+		if(name == null) {
+			name = "*";
+		}
+		
 		MbXPath xpath = new MbXPath(name + "[1]", getMbElement());
 		
 		if(ns != null) {

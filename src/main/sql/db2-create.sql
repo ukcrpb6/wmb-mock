@@ -14,7 +14,7 @@ CREATE TABLE lookup (
   value VARCHAR(255), 
   ttl INTEGER NOT NULL, 
   ttd INTEGER NOT NULL, 
-  CONSTRAINT ix1 UNIQUE (name), 
+  CONSTRAINT ix1 UNIQUE (COMPONENT_ID, NAME), 
   PRIMARY KEY (id), 
   CONSTRAINT fk1 FOREIGN KEY (component_id) REFERENCES component (id) 
 );

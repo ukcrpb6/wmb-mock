@@ -75,6 +75,10 @@ public class Cache {
 			throw new CacheRefreshException("Failed to refresh cache", e);
 		}
 	}
+
+	private boolean shouldBeCached(LookupData data) {
+		return data.getTtd() > 0 && data.getTtl() > 0;
+	}
 	
 	private boolean dataHasPassedTTL(LookupData data) {
 		return data.getTtl() +  cacheRefreshTime > System.currentTimeMillis();
