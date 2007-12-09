@@ -24,6 +24,12 @@ import com.ibm.broker.plugin.MbException;
 import com.ibm.broker.plugin.MbMessage;
 import com.ibm.broker.plugin.MbXMLNS;
 
+/**
+ * Helper class for working with SOAP messages. If automatically handles the
+ * required Envelope and Body elements. A developer typically
+ * only needs to deal with the document element (the element inside of the 
+ * Body element).
+ */
 public class SoapPayload extends Payload {
 
 	private static final String NS_SOAP_ENV = "http://www.w3.org/2001/12/soap-envelope";
@@ -32,7 +38,16 @@ public class SoapPayload extends Payload {
 	private XmlElement envElm;
 	private XmlElement bodyElm;
 	private XmlElement docElm;
-	
+
+	/**
+	 * Wrap an message containing a SOAP message with the helper class.
+	 * Automatically locates the XML tree.
+	 * @param msg The message to wrap.
+	 * @param readOnly Indicates whether the message is read-only (input message) 
+	 * 	   or not.
+	 * @return The helper class
+	 * @throws MbException
+	 */
 	public static SoapPayload wrap(MbMessage msg, boolean readOnly) throws MbException {
 		MbElement elm = locateXmlBody(msg);
 
@@ -45,23 +60,43 @@ public class SoapPayload extends Payload {
 
 	/**
 	 * Creates a payload as the last child, even if one already exists
-	 * @param msg
-	 * @return
+	 * @param msg The message on which the payload should be created
+	 * @return The helper class
 	 * @throws MbException
 	 */
 	public static SoapPayload create(MbMessage msg) throws MbException {
 		return create(msg, DEFAULT_PARSER);
 	}
 
+	/**
+	 * Creates a payload as the last child, even if one already exists
+	 * @param msg The message on which the payload should be created
+	 * @param parser The name of the parser to use, for exampel XMSNS or MRM.
+	 * @return The helper class
+	 * @throws MbException
+	 */
 	public static SoapPayload create(MbMessage msg, String parser) throws MbException {
 		MbElement elm = msg.getRootElement().createElementAsLastChild(parser);
 		return new SoapPayload(elm, true, false);
 	}
 	
+	/**
+	 * Wraps if payload already exists, of creates payload otherwise.
+	 * @param msg The message on which to wrap the payload
+	 * @return The helper class
+	 * @throws MbException
+	 */
 	public static SoapPayload wrapOrCreate(MbMessage msg) throws MbException {
 		return wrapOrCreate(msg, DEFAULT_PARSER);
 	}
 
+	/**
+	 * Wraps if payload already exists, of creates payload otherwise.
+	 * @param msg The message on which to wrap the payload
+	 * @param parser The name of the parser to use, for exampel XMSNS or MRM.
+	 * @return The helper class
+	 * @throws MbException
+	 */
 	public static SoapPayload wrapOrCreate(MbMessage msg, String parser) throws MbException {
 		if(has(msg)) {
 			return wrap(msg, false);
@@ -72,9 +107,9 @@ public class SoapPayload extends Payload {
 
 	
 	/** 
-	 * Removes the first XML payload
-	 * @param msg
-	 * @return
+	 * Removes the first SOAP payload
+	 * @param msg The message on which to remove the payload
+	 * @return The helper class for the removed payload
 	 * @throws MbException
 	 */
 	public static SoapPayload remove(MbMessage msg) throws MbException {
@@ -88,6 +123,12 @@ public class SoapPayload extends Payload {
 		}		
 	}
 
+	/**
+	 * Checks if the message has a payload of this type
+	 * @param msg The message to check
+	 * @return true if the payload exists, false otherwise.
+	 * @throws MbException
+	 */
 	public static boolean has(MbMessage msg) throws MbException {
 		MbElement elm = locateXmlBody(msg);
 		return elm != null;
@@ -151,14 +192,32 @@ public class SoapPayload extends Payload {
 	
 	}
 
+	/**
+	 * Get the XML element for the part inside the SOAP Body element
+	 * @return The XML element inside of the SOAP Body, or null if such an element
+	 *   does not exist ({@link #createDocumentElement(String)}
+	 */
 	public XmlElement getDocumentElement() {
 		return docElm;
 	}
 
+	/**
+	 * Create the XML element for the part inside the SOAP Body element
+	 * @param name The local name to use for the element
+	 * @return The XML element inside of the SOAP Body
+	 * @throws MbException
+	 */
 	public XmlElement createDocumentElement(String name) throws MbException {
 		return createDocumentElement(null, name);
 	}
 
+	/**
+	 * Create the XML element for the part inside the SOAP Body element
+	 * @param name The local name to use for the element
+	 * @param ns The namespace URI to use for the element
+	 * @return The XML element inside of the SOAP Body
+	 * @throws MbException
+	 */
 	public XmlElement createDocumentElement(String ns, String name) throws MbException {
 		checkReadOnly();
 		
@@ -167,6 +226,12 @@ public class SoapPayload extends Payload {
 		return docElm;
 	}
 
+	/**
+	 * Declare a nice prefix for a namespace URI. If not called, WMB will generate a prefix automatically.
+	 * @param prefix The prefix to use for the namespace
+	 * @param ns The namespace URI
+	 * @throws MbException
+	 */
 	public void declareNamespace(String prefix, String ns) throws MbException {
 		checkReadOnly();
 		

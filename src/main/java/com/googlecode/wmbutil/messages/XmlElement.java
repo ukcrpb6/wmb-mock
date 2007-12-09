@@ -35,7 +35,15 @@ public class XmlElement extends MbElementWrapper {
 	public XmlElement(MbElement wrappedElm, boolean readOnly) throws MbException {
 		super(wrappedElm, readOnly);
 	}
+	
+	public String getName() throws MbException {
+		return getMbElement().getName();
+	}
 
+	public String getNameSpace() throws MbException {
+		return getMbElement().getNamespace();
+	}
+	
 	private MbElement getAttributeElement(String ns, String name) throws MbException {
 		List elms = getAttributeElements(ns, name);
 		
