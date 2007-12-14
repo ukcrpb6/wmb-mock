@@ -16,12 +16,12 @@
 
 package com.googlecode.wmbutil.lookup;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 public class Cache {
 
-	private static final Map caches = new HashMap();
+	private static final Map caches = new WeakHashMap();
 	
 	/**
 	 * Gets or creates an existing cache
@@ -43,7 +43,8 @@ public class Cache {
 	
 	private final String componentName;
 	
-	private Map cachedData;
+	private boolean initialized = false;
+	private LookupRows cachedData;
 	private long cacheRefreshTime;
 	
 	// hide cstr
@@ -51,81 +52,67 @@ public class Cache {
 		this.componentName = componentName;
 	}
 	
-	private final synchronized void refreshCache(LookupDataSource dataSource) throws LookupCacheException {
-		LookupData[] dataArray = dataSource.lookup(componentName);
-		
-		Map oldCachedData = cachedData;
-		
-		if(cachedData != null) {
-			cachedData.clear();
-		} else {
-			cachedData = new HashMap();
-		}
-		
-		try {
-			for (int i = 0; i < dataArray.length; i++) {
-				LookupData data = dataArray[i];
-				
-				cachedData.put(data.getKey(), data);
+	private final synchronized LookupRows refreshCache(LookupDataSource dataSource) throws LookupCacheException {
+		if(needsRefresh()) {
+			LookupRows newData = dataSource.loadComponentData(componentName);
+
+			if(newData.getTTL() > 0 && newData.getTTD() > 0) {
+				// okay, we should cache this
+				cachedData = newData;
+			} else {
+				cachedData = null;
 			}
-			
 			cacheRefreshTime = System.currentTimeMillis();
-		} catch(Exception e) {
-			cachedData = oldCachedData;
-			throw new CacheRefreshException("Failed to refresh cache", e);
+			initialized = true;
+
+			return newData;
+		} else {
+			// not null since needsRefresh() checks for null
+			return cachedData; 
 		}
 	}
 
-	private boolean shouldBeCached(LookupData data) {
-		return data.getTtd() > 0 && data.getTtl() > 0;
+	private boolean isInitialized() {
+		return initialized;
 	}
 	
-	private boolean dataHasPassedTTL(LookupData data) {
-		return data.getTtl() +  cacheRefreshTime > System.currentTimeMillis();
+	private void checkInitialized() {
+		if(!isInitialized()) {
+			throw new IllegalStateException("Cache not initialized");
+		}
 	}
-
-	private boolean dataHasPassedTTD(LookupData data) {
-		return data.getTtd() +  cacheRefreshTime > System.currentTimeMillis();
+	
+	private boolean needsRefresh() {
+		if(!isInitialized()){
+			return true;
+		} else if(cachedData == null) {
+			return true;
+		} else {
+			return cachedData.getTTL() +  cacheRefreshTime < System.currentTimeMillis();
+		}
+	}
+	
+	private boolean staleDataAvailable() {
+		checkInitialized();
+		
+		if(cachedData == null) {
+			return false;
+		} else {
+			return cachedData.getTTD() +  cacheRefreshTime > System.currentTimeMillis();
+		}		
 	}
 	
 	// TODO revisit concurrency
 	public synchronized String lookupValue(String key, LookupDataSource dataSource) throws LookupCacheException {
-		if(cachedData == null) {
-			// initial init failed, try refresh
-			refreshCache(dataSource);
-			
-			if(cachedData == null) {
-				// failed refresh, throw exception
-				throw new StaleCacheException("Failed to init lookup cache");
-			}
-		}
-		
-		LookupData data = (LookupData) cachedData.get(key);
-		
-		if(data == null) {
-			// data not found in cache
-			return null;
-		} else {
-			if(dataHasPassedTTL(data)) {
-				// old data, try refresh
-				try {
-					refreshCache(dataSource);
-					
-					// get new value
-					data = (LookupData) cachedData.get(key);
-					return data.getValue();
-					
-				} catch(CacheRefreshException e) {
-					// refresh failed, so if we can use old value
-					if(dataHasPassedTTD(data)) {
-						throw new StaleCacheException("Cache could not be updated and value has died");
-					} else {
-						// return old, but still alive data
-						return data.getValue();
-					}
-				}
+		try {
+			LookupRows data = refreshCache(dataSource);
+			return (String) data.getRows().get(key);
+		} catch(LookupCacheException e) {
+			// use old cache if we got one
+			if(staleDataAvailable()) {
+				return (String) cachedData.getRows().get(key);
 			} else {
-				return data.getValue();
+				throw new StaleCacheException("Cache has died", e);
 			}
 		}
 	}

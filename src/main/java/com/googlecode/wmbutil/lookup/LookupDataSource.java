@@ -20,6 +20,6 @@ package com.googlecode.wmbutil.lookup;
 public interface LookupDataSource {
 
 	// TODO returns null if cache is not known, should throw?
-	LookupData[] lookup(String componentName) throws LookupCacheException;
+	LookupRows loadComponentData(String componentName) throws LookupCacheException;
 	
 }

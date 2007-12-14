@@ -1,5 +1,5 @@
-cache1;key1;value1;1000;2000
-cache1;key2;value2;1000;2000
-cache1;key3;value3;1000;2000
-cache2;key4;value4;1000;2000
-cache2;key5;value5;1000;2000
+component1;key1;value1;1000;2000
+component1;key2;value2;1000;2000
+component1;key3;value3;1000;2000
+component2;key1;value4;1000;2000
+component2;key5;value5;1000;2000

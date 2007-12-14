@@ -20,9 +20,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class FileLookupDataSource implements LookupDataSource {
@@ -44,14 +42,14 @@ public class FileLookupDataSource implements LookupDataSource {
 			long ttl = Long.parseLong(tokens[3]);
 			long ttd = Long.parseLong(tokens[4]);
 			
-			List dataList = (List) caches.get(cacheName);
+			LookupRows data = (LookupRows)caches.get(cacheName);
 			
-			if(dataList == null) {
-				dataList = new ArrayList();
-				caches.put(cacheName, dataList);
+			if(data == null) {
+				data = new LookupRows(cacheName, ttl, ttd, new HashMap());
+				caches.put(cacheName, data);
 			}
 			
-			dataList.add(new LookupData(key, value, ttl, ttd));
+			data.getRows().put(key, value);
 			
 			line = reader.readLine();
 		}
@@ -59,16 +57,10 @@ public class FileLookupDataSource implements LookupDataSource {
 	}
 	
 	// TODO returns null if cache is not known, should throw?
-	public LookupData[] lookup(String cacheName) throws CacheRefreshException {
+	public LookupRows loadComponentData(String cacheName) throws CacheRefreshException {
 		throwIfSet();
 		
-		List dataList = (List) caches.get(cacheName);
-		
-		if(dataList == null) {
-			return null;
-		} else {
-			return (LookupData[]) dataList.toArray(new LookupData[0]);
-		}
+		return (LookupRows)caches.get(cacheName);
 	}
 
 
