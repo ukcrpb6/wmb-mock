@@ -16,12 +16,14 @@
 
 package com.googlecode.wmbutil.messages;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import com.googlecode.wmbutil.util.ElementUtil;
 import com.googlecode.wmbutil.util.XmlUtil;
 import com.ibm.broker.plugin.MbDate;
 import com.ibm.broker.plugin.MbElement;
@@ -44,6 +46,14 @@ public class XmlElement extends MbElementWrapper {
 		return getMbElement().getNamespace();
 	}
 	
+	public boolean hasAttribute(String name) throws MbException {
+		return hasAttribute(null, name);
+	}
+
+	public boolean hasAttribute(String ns, String name) throws MbException {
+		return getAttributeElement(ns, name) != null;
+	}
+	
 	private MbElement getAttributeElement(String ns, String name) throws MbException {
 		List elms = getAttributeElements(ns, name);
 		
@@ -64,11 +74,11 @@ public class XmlElement extends MbElementWrapper {
 		List matches = (List) getMbElement().evaluateXPath(xpath);
 		List filtered = new ArrayList();
 		
-		// WMB prepends a @ on MRM attributes
+		// WMB prepends a @ on undefined MRM attributes
 		String atName = "@" + name;
 		
 		for(int i = 0; i<matches.size(); i++) {
-			MbElement elm = (MbElement) matches.get(0);
+			MbElement elm = (MbElement) matches.get(i);
 			if(name != null) {
 				
 				if(name.equals(elm.getName()) || atName.equals(elm.getName())) {
@@ -306,7 +316,11 @@ public class XmlElement extends MbElementWrapper {
 	}
 
 	private void setValue(Object value) throws MbException {
-		getMbElement().setValue(value);
+		if(ElementUtil.isMRM(getMbElement())) {
+			getMbElement().setValue(value);
+		} else {
+			getMbElement().setValue(value.toString());
+		}
 	}
 
 	public void setStringValue(String value) throws MbException {
@@ -333,6 +347,10 @@ public class XmlElement extends MbElementWrapper {
 		setValue(new Boolean(value));
 	}
 
+	public void setTimeValue(Date value, DateFormat df) throws MbException {
+		setValue(df.format(value));
+	}
+
 	public void setTimeValue(Date value) throws MbException {
 		Calendar cal = new GregorianCalendar();
 		cal.setTime(value);
@@ -341,6 +359,10 @@ public class XmlElement extends MbElementWrapper {
 		setValue(mbTime);
 	}
 
+	public void setDateValue(Date value, DateFormat df) throws MbException {
+		setValue(df.format(value));
+	}
+	
 	public void setDateValue(Date value) throws MbException {
 		Calendar cal = new GregorianCalendar();
 		cal.setTime(value);
@@ -349,6 +371,10 @@ public class XmlElement extends MbElementWrapper {
 		setValue(mbDate);
 	}
 
+	public void setTimestampValue(Date value, DateFormat df) throws MbException {
+		setValue(df.format(value));
+	}
+	
 	public void setTimestampValue(Date value) throws MbException {
 		Calendar cal = new GregorianCalendar();
 		cal.setTime(value);

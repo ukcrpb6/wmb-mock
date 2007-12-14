@@ -32,7 +32,7 @@ import com.ibm.broker.plugin.MbXMLNS;
  */
 public class SoapPayload extends Payload {
 
-	private static final String NS_SOAP_ENV = "http://www.w3.org/2001/12/soap-envelope";
+	private static final String NS_SOAP_ENV = "http://schemas.xmlsoap.org/soap/envelope/";
 	private static final String DEFAULT_PARSER = "XMLNS";
 	
 	private XmlElement envElm;
