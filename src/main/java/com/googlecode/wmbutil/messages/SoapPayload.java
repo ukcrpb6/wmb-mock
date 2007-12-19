@@ -32,7 +32,12 @@ import com.ibm.broker.plugin.MbXMLNS;
  */
 public class SoapPayload extends Payload {
 
-	private static final String NS_SOAP_ENV = "http://schemas.xmlsoap.org/soap/envelope/";
+	private static final String NS_SOAP_11_ENV = "http://schemas.xmlsoap.org/soap/envelope/";
+	private static final String NS_SOAP_12_WD_ENV = "http://www.w3.org/2001/12/soap-envelope";
+	private static final String NS_SOAP_12_ENV = "http://www.w3.org/2003/05/soap-envelope";
+	
+	private static final String[] NS_SOAP_ALL = new String[] {NS_SOAP_12_ENV, NS_SOAP_11_ENV, NS_SOAP_12_WD_ENV}; 
+	
 	private static final String DEFAULT_PARSER = "XMLNS";
 	
 	private XmlElement envElm;
@@ -49,13 +54,17 @@ public class SoapPayload extends Payload {
 	 * @throws MbException
 	 */
 	public static SoapPayload wrap(MbMessage msg, boolean readOnly) throws MbException {
+		return wrap(msg, readOnly, null);
+	}
+	
+	public static SoapPayload wrap(MbMessage msg, boolean readOnly, String soapNamespace) throws MbException {
 		MbElement elm = locateXmlBody(msg);
 
 		if(elm == null) {
 			throw new NiceMbException("Failed to find SOAP payload");
 		}
 		
-		return new SoapPayload(elm, false, readOnly);
+		return new SoapPayload(elm, false, readOnly, soapNamespace);
 	}
 
 	/**
@@ -65,7 +74,11 @@ public class SoapPayload extends Payload {
 	 * @throws MbException
 	 */
 	public static SoapPayload create(MbMessage msg) throws MbException {
-		return create(msg, DEFAULT_PARSER);
+		return create(msg, DEFAULT_PARSER, null);
+	}
+
+	public static SoapPayload create(MbMessage msg, String soapNamespace) throws MbException {
+		return create(msg, DEFAULT_PARSER, soapNamespace);
 	}
 
 	/**
@@ -75,9 +88,9 @@ public class SoapPayload extends Payload {
 	 * @return The helper class
 	 * @throws MbException
 	 */
-	public static SoapPayload create(MbMessage msg, String parser) throws MbException {
+	public static SoapPayload create(MbMessage msg, String parser, String soapNamespace) throws MbException {
 		MbElement elm = msg.getRootElement().createElementAsLastChild(parser);
-		return new SoapPayload(elm, true, false);
+		return new SoapPayload(elm, true, false, soapNamespace);
 	}
 	
 	/**
@@ -117,7 +130,7 @@ public class SoapPayload extends Payload {
 		
 		if(elm != null) {
 			elm.detach();
-			return new SoapPayload(elm, false, true);
+			return new SoapPayload(elm, false, true, null);
 		} else {
 			throw new NiceMbException("Failed to find SOAP payload");
 		}		
@@ -150,9 +163,31 @@ public class SoapPayload extends Payload {
 		return elm;
 	}
 	
-	private SoapPayload(MbElement elm, boolean create, boolean readOnly) throws MbException {
+	private boolean inArray(String ns, String[] allNs) {
+		if(ns == null)  {
+			return false;
+		}
+		
+		for(int i = 0; i<allNs.length; i++) {
+			if(ns.equals(allNs[i])) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	private SoapPayload(MbElement elm, boolean create, boolean readOnly, String soapNamespace) throws MbException {
 		super(elm, readOnly);
 
+		String[] searchForNamespaces;
+		if(soapNamespace == null) {
+			searchForNamespaces = NS_SOAP_ALL;
+			soapNamespace = NS_SOAP_11_ENV;
+		} else {
+			searchForNamespaces = new String[]{soapNamespace};
+		}
+		
 		if(!create) {
 			if(ElementUtil.isMRM(getMbElement())) {
 				envElm = new XmlElement(getMbElement(), isReadOnly());
@@ -163,13 +198,32 @@ public class SoapPayload extends Payload {
 					// find first and only element
 					if(child.getType() == XmlUtil.getFolderElementType(child)) {
 						envElm = new XmlElement(child, isReadOnly());
+						
+						if(!envElm.getName().equals("Envelope")) {
+							throw new NiceMbException("SOAP root element must have the local name Envelope");
+						} else if(!inArray(envElm.getNameSpace(), searchForNamespaces)) {
+							throw new NiceMbException("Unknown SOAP namespace: " + envElm.getNameSpace());
+						}
 						break;
 					}
 					
 					child = child.getNextSibling();
 				}
 				
-				bodyElm = envElm.getFirstChildByName(NS_SOAP_ENV, "Body");
+				// search for Body in all search namespaces
+				for(int i = 0; i<searchForNamespaces.length; i++) {
+					bodyElm = envElm.getFirstChildByName(searchForNamespaces[i], "Body");
+					
+					if(bodyElm != null) {
+						// found
+						break;
+					}
+				}
+				
+				// body not found
+				if(bodyElm == null) {
+					throw new NiceMbException("Failed to locate SOAP Body");
+				}
 				docElm = bodyElm.getFirstChild();
 			}
 		} else  {
@@ -178,16 +232,16 @@ public class SoapPayload extends Payload {
 				envElm = new XmlElement(elm, readOnly);
 			} else {
 				MbElement tmpElm = elm.createElementAsLastChild(XmlUtil.getFolderElementType(elm), "Envelope", null);
-				tmpElm.setNamespace(NS_SOAP_ENV);
+				tmpElm.setNamespace(soapNamespace);
 				envElm = new XmlElement(tmpElm, readOnly);
 			}
 		
-			bodyElm = envElm.createLastChild(NS_SOAP_ENV, "Body");
+			bodyElm = envElm.createLastChild(soapNamespace, "Body");
 		}
 
 		if(!isReadOnly()) {
 			// declare SOAP namespace
-			declareNamespace("soap", NS_SOAP_ENV);
+			declareNamespace("soap", soapNamespace);
 		}
 	
 	}
