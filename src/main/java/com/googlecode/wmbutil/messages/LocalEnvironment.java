@@ -16,8 +16,6 @@
 
 package com.googlecode.wmbutil.messages;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import com.googlecode.wmbutil.NiceMbException;
@@ -89,47 +87,57 @@ public class LocalEnvironment extends Header {
      * Add a TimeoutRequest to the LocalEnvironment. For more information
      * regarding the parameters see the Websphere Message Broker documentation.
      * 
-     * @param identifier Unique identifier for the message.
-     * @param startDateTime A Date telling when the message will be forwarded.
-     * @param interval The number of seconds between propagation of the message. A null value corresponds to the default value 0.
-     * @param count A null value corresponds to the default value 1.
-     * @param ignoreMissed A null value corresponds to the default value TRUE.
-     * @param allowOverwrite A null value corresponds to the default value TRUE.
-     * @throws MbException
+     * @param timeoutRequest A TimeoutRequest object.
+     * @throws MbException Throws exception if identifier is missing.
      */
-    public void addTimeoutRequest(String identifier, Date startDateTime, Integer interval,
-            Integer count, Boolean ignoreMissed, Boolean allowOverwrite) throws MbException {
-        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm:ss");
-        String startDate = sdfDate.format(startDateTime);
-        String startTime = sdfTime.format(startDateTime);
+    public void addTimeoutRequest(TimeoutRequest timeoutRequest) throws MbException {
+        // <Action>
+        getMbElement().evaluateXPath(
+                "?TimeoutRequest/?Action[set-value('" + timeoutRequest.getAction() + "')]");
 
-        getMbElement().evaluateXPath("?TimeoutRequest/?Action[set-value('SET')]");
-        if (identifier != null || identifier.length() > 0) {
+        // <Identifier>
+        if (timeoutRequest.getIdentifier() != null || timeoutRequest.getIdentifier().length() > 0) {
             getMbElement().evaluateXPath(
-                    "?TimeoutRequest/?Identifier[set-value('" + identifier + "')]");
-        }
-        if (startDateTime != null) {
-            getMbElement().evaluateXPath(
-                    "?TimeoutRequest/?StartDate[set-value('" + startDate + "')]");
-            getMbElement().evaluateXPath(
-                    "?TimeoutRequest/?StartTime[set-value('" + startTime + "')]");
-        }
-        if (interval != null) {
-            getMbElement()
-                    .evaluateXPath("?TimeoutRequest/?Interval[set-value('" + interval + "')]");
-        }
-        if (count != null) {
-            getMbElement().evaluateXPath("?TimeoutRequest/?Count[set-value('" + count + "')]");
-        }
-        if (ignoreMissed != null) {
-            getMbElement().evaluateXPath(
-                    "?TimeoutRequest/?IgnoreMissed[set-value('" + ignoreMissed + "')]");
-        }
-        if (allowOverwrite != null) {
-            getMbElement().evaluateXPath(
-                    "?TimeoutRequest/?AllowOverwrite[set-value('" + allowOverwrite + "')]");
+                    "?TimeoutRequest/?Identifier[set-value('" + timeoutRequest.getIdentifier()
+                            + "')]");
+        } else {
+            throw new NiceMbException("Missing identifier attribute on TimeoutRequest");
         }
 
+        // <StartDate> + <StartTime>
+        if (timeoutRequest.getStartDateTime() != null) {
+            getMbElement().evaluateXPath(
+                    "?TimeoutRequest/?StartDate[set-value('" + timeoutRequest.getStartDate()
+                            + "')]");
+            getMbElement().evaluateXPath(
+                    "?TimeoutRequest/?StartTime[set-value('" + timeoutRequest.getStartTime()
+                            + "')]");
+        }
+
+        // <Interval>
+        if (timeoutRequest.getInterval() != null) {
+            getMbElement().evaluateXPath(
+                    "?TimeoutRequest/?Interval[set-value('" + timeoutRequest.getInterval() + "')]");
+        }
+
+        // <Count>
+        if (timeoutRequest.getCount() != null) {
+            getMbElement().evaluateXPath(
+                    "?TimeoutRequest/?Count[set-value('" + timeoutRequest.getCount() + "')]");
+        }
+
+        // <IgnoreMissed>
+        if (timeoutRequest.getIgnoreMissed() != null) {
+            getMbElement().evaluateXPath(
+                    "?TimeoutRequest/?IgnoreMissed[set-value('" + timeoutRequest.getIgnoreMissed()
+                            + "')]");
+        }
+
+        // <AllowOverwrite>
+        if (timeoutRequest.getAllowOverwrite() != null) {
+            getMbElement().evaluateXPath(
+                    "?TimeoutRequest/?AllowOverwrite[set-value('"
+                            + timeoutRequest.getAllowOverwrite() + "')]");
+        }
     }
 }
