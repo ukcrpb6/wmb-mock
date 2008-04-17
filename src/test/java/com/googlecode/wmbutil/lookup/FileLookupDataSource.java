@@ -77,4 +77,9 @@ public class FileLookupDataSource implements LookupDataSource {
 	public void setExceptionToThrow(CacheRefreshException exceptionToThrow) {
 		this.exceptionToThrow = exceptionToThrow;
 	}
+
+	public void updateComponentData(String componentName, Map values) throws CacheRefreshException {
+		// TODO Auto-generated method stub
+		
+	}
 }

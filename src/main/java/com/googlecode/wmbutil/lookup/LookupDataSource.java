@@ -16,10 +16,14 @@
 
 package com.googlecode.wmbutil.lookup;
 
+import java.util.Map;
 
 public interface LookupDataSource {
 
 	// TODO returns null if cache is not known, should throw?
-	LookupRows loadComponentData(String componentName) throws LookupCacheException;
-	
+	LookupRows loadComponentData(String componentName)
+			throws LookupCacheException;
+
+	void updateComponentData(String componentName, Map values)
+			throws CacheRefreshException;
 }

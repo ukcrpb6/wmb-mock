@@ -3,6 +3,13 @@ package com.googlecode.wmbutil.messages;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * A TimeoutRequest is used by the TimeoutControl/TimeoutNotification nodes to
+ * propagate messages according to its content. For more information regarding
+ * the TimeoutRequest attributes, see the IBM Websphere Message Broker
+ * documentation.
+ * 
+ */
 public class TimeoutRequest {
     public static final String ACTION_SET = "SET";
     public static final String ACTION_CANCEL = "CANCEL";

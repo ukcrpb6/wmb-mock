@@ -16,6 +16,8 @@
 
 package com.googlecode.wmbutil.lookup;
 
+import java.util.Map;
+
 /**
  * Provides a simple way of looking up key-value values
  * from typically a database. Values are also cached to 
@@ -58,4 +60,8 @@ public class Lookup {
 	public String lookupValue(String key) throws LookupCacheException {
 		return cache.lookupValue(key, ds);
 	}
+    
+    public void updateValues(Map newValues) throws LookupCacheException {
+        cache.updateValues(newValues, ds);
+    }
 }

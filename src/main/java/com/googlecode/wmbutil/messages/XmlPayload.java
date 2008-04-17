@@ -24,142 +24,148 @@ import com.ibm.broker.plugin.MbException;
 import com.ibm.broker.plugin.MbMessage;
 import com.ibm.broker.plugin.MbXMLNS;
 
+/**
+ * Helper class for working with XML messages.
+ * 
+ */
 public class XmlPayload extends Payload {
 
-	private static final String DEFAULT_PARSER = "XMLNS";
-	
-	private XmlElement docElm;
-	
-	public static XmlPayload wrap(MbMessage msg, boolean readOnly) throws MbException {
-		MbElement elm = locateXmlBody(msg);
+    private static final String DEFAULT_PARSER = "XMLNS";
 
-		if(elm == null) {
-			throw new NiceMbException("Failed to find XML payload");
-		}
-		
-		return new XmlPayload(elm, readOnly);
-	}
+    private XmlElement docElm;
 
-	/**
-	 * Creates a payload as the last child, even if one already exists
-	 * @param msg
-	 * @return
-	 * @throws MbException
-	 */
-	public static XmlPayload create(MbMessage msg) throws MbException {
-		return create(msg, DEFAULT_PARSER);
-	}
+    public static XmlPayload wrap(MbMessage msg, boolean readOnly) throws MbException {
+        MbElement elm = locateXmlBody(msg);
 
-	public static XmlPayload create(MbMessage msg, String parser) throws MbException {
-		MbElement elm = msg.getRootElement().createElementAsLastChild(parser);
-		return new XmlPayload(elm, false);
-	}
-	
-	public static XmlPayload wrapOrCreate(MbMessage msg) throws MbException {
-		return wrapOrCreate(msg, DEFAULT_PARSER);
-	}
+        if (elm == null) {
+            throw new NiceMbException("Failed to find XML payload");
+        }
 
-	public static XmlPayload wrapOrCreate(MbMessage msg, String parser) throws MbException {
-		if(has(msg)) {
-			return wrap(msg, false);
-		} else {
-			return create(msg, parser);
-		}
-	}
+        return new XmlPayload(elm, readOnly);
+    }
 
-	
-	/** 
-	 * Removes the first XML payload
-	 * @param msg
-	 * @return
-	 * @throws MbException
-	 */
-	public static XmlPayload remove(MbMessage msg) throws MbException {
-		MbElement elm = locateXmlBody(msg);
-		
-		if(elm != null) {
-			elm.detach();
-			return new XmlPayload(elm, true);
-		} else {
-			throw new NiceMbException("Failed to find XML payload");
-		}		
-	}
+    /**
+     * Creates a payload as the last child, even if one already exists
+     * 
+     * @param msg
+     * @return
+     * @throws MbException
+     */
+    public static XmlPayload create(MbMessage msg) throws MbException {
+        return create(msg, DEFAULT_PARSER);
+    }
 
-	public static boolean has(MbMessage msg) throws MbException {
-		MbElement elm = locateXmlBody(msg);
-		return elm != null;
-	}
-	
-	private static MbElement locateXmlBody(MbMessage msg) throws MbException {
-		MbElement elm = msg.getRootElement().getFirstElementByPath("/XMLNSC");
+    public static XmlPayload create(MbMessage msg, String parser) throws MbException {
+        MbElement elm = msg.getRootElement().createElementAsLastChild(parser);
+        return new XmlPayload(elm, false);
+    }
 
-		if(elm == null) {
-			elm = msg.getRootElement().getFirstElementByPath("/XMLNS");
-		}
-		if(elm == null) {
-			elm = msg.getRootElement().getFirstElementByPath("/XML");
-		}
-		if(elm == null) {
-			elm = msg.getRootElement().getFirstElementByPath("/MRM");
-		}
+    public static XmlPayload wrapOrCreate(MbMessage msg) throws MbException {
+        return wrapOrCreate(msg, DEFAULT_PARSER);
+    }
 
-		return elm;
-	}
-	
-	private XmlPayload(MbElement elm, boolean readOnly) throws MbException {
-		super(elm, readOnly);
+    public static XmlPayload wrapOrCreate(MbMessage msg, String parser) throws MbException {
+        if (has(msg)) {
+            return wrap(msg, false);
+        } else {
+            return create(msg, parser);
+        }
+    }
 
-		if(ElementUtil.isMRM(getMbElement())) {
-			docElm = new XmlElement(getMbElement(), isReadOnly());
-		} else {
-			MbElement child = getMbElement().getFirstChild();
-			
-			while(child != null) {
-				// find first and only element
-				if(child.getType() == XmlUtil.getFolderElementType(child)) {
-					docElm = new XmlElement(child, isReadOnly());
-					break;
-				}
-				
-				child = child.getNextSibling();
-			}
-		}
-	}
+    /**
+     * Removes the first XML payload
+     * 
+     * @param msg
+     * @return
+     * @throws MbException
+     */
+    public static XmlPayload remove(MbMessage msg) throws MbException {
+        MbElement elm = locateXmlBody(msg);
 
-	public XmlElement getRootElement() {
-		return docElm;
-	}
+        if (elm != null) {
+            elm.detach();
+            return new XmlPayload(elm, true);
+        } else {
+            throw new NiceMbException("Failed to find XML payload");
+        }
+    }
 
-	public XmlElement createRootElement(String name) throws MbException {
-		return createRootElement(null, name);
-	}
+    public static boolean has(MbMessage msg) throws MbException {
+        MbElement elm = locateXmlBody(msg);
+        return elm != null;
+    }
 
-	public XmlElement createRootElement(String ns, String name) throws MbException {
-		checkReadOnly();
-		
-		MbElement elm;
-		if(ElementUtil.isMRM(getMbElement())) {
-			// for MRM, don't generate a root element
-			elm = getMbElement();
-		} else  {
-			elm = getMbElement().createElementAsLastChild(XmlUtil.getFolderElementType(getMbElement()));
-			elm.setName(name);
-			if(ns != null) {
-				elm.setNamespace(ns);
-			}
-		}
-		docElm = new XmlElement(elm, isReadOnly());
-		
-		return docElm;
-	}
+    private static MbElement locateXmlBody(MbMessage msg) throws MbException {
+        MbElement elm = msg.getRootElement().getFirstElementByPath("/XMLNSC");
 
-	public void declareNamespace(String prefix, String ns) throws MbException {
-		checkReadOnly();
-		
-		if(ElementUtil.isXML(docElm.getMbElement()) ||
-				ElementUtil.isXMLNS(docElm.getMbElement()) ||
-				ElementUtil.isXMLNSC(docElm.getMbElement())) {
-			docElm.getMbElement().createElementAsFirstChild(MbXMLNS.NAMESPACE_DECL, prefix, ns).setNamespace("xmlns");
-		}
-	}
+        if (elm == null) {
+            elm = msg.getRootElement().getFirstElementByPath("/XMLNS");
+        }
+        if (elm == null) {
+            elm = msg.getRootElement().getFirstElementByPath("/XML");
+        }
+        if (elm == null) {
+            elm = msg.getRootElement().getFirstElementByPath("/MRM");
+        }
+
+        return elm;
+    }
+
+    private XmlPayload(MbElement elm, boolean readOnly) throws MbException {
+        super(elm, readOnly);
+
+        if (ElementUtil.isMRM(getMbElement())) {
+            docElm = new XmlElement(getMbElement(), isReadOnly());
+        } else {
+            MbElement child = getMbElement().getFirstChild();
+
+            while (child != null) {
+                // find first and only element
+                if (child.getType() == XmlUtil.getFolderElementType(child)) {
+                    docElm = new XmlElement(child, isReadOnly());
+                    break;
+                }
+
+                child = child.getNextSibling();
+            }
+        }
+    }
+
+    public XmlElement getRootElement() {
+        return docElm;
+    }
+
+    public XmlElement createRootElement(String name) throws MbException {
+        return createRootElement(null, name);
+    }
+
+    public XmlElement createRootElement(String ns, String name) throws MbException {
+        checkReadOnly();
+
+        MbElement elm;
+        if (ElementUtil.isMRM(getMbElement())) {
+            // for MRM, don't generate a root element
+            elm = getMbElement();
+        } else {
+            elm = getMbElement().createElementAsLastChild(
+                    XmlUtil.getFolderElementType(getMbElement()));
+            elm.setName(name);
+            if (ns != null) {
+                elm.setNamespace(ns);
+            }
+        }
+        docElm = new XmlElement(elm, isReadOnly());
+
+        return docElm;
+    }
+
+    public void declareNamespace(String prefix, String ns) throws MbException {
+        checkReadOnly();
+
+        if (ElementUtil.isXML(docElm.getMbElement()) || ElementUtil.isXMLNS(docElm.getMbElement())
+                || ElementUtil.isXMLNSC(docElm.getMbElement())) {
+            docElm.getMbElement().createElementAsFirstChild(MbXMLNS.NAMESPACE_DECL, prefix, ns)
+                    .setNamespace("xmlns");
+        }
+    }
 }
