@@ -48,7 +48,9 @@ public class JdbcLookupDataSource implements LookupDataSource {
 
 	public LookupRows loadComponentData(String componentName)
 			throws CacheRefreshException {
-		Connection conn;
+		Connection conn = null;
+		ResultSet rs = null;
+		Statement stmt = null;
 
 		long ttl = 0;
 		long ttd = 0;
@@ -57,9 +59,8 @@ public class JdbcLookupDataSource implements LookupDataSource {
 
 		try {
 			conn = ds.getConnection();
-
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt
+			stmt = conn.createStatement();
+			rs = stmt
 					.executeQuery("SELECT lookup.name, lookup.value, component.ttl, component.ttd "
 							+ "FROM lookup, component "
 							+ "WHERE component.id = lookup.component_id AND component.name='"
@@ -79,10 +80,23 @@ public class JdbcLookupDataSource implements LookupDataSource {
 				data.put(key, value);
 			}
 
+			System.out.println("JC");
 			return new LookupRows(componentName, ttl, ttd, data);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new CacheRefreshException("Failed to read from database", e);
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (stmt != null)
+					stmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				throw new CacheRefreshException("Failed writing to database", e);
+			}
 		}
 	}
 
@@ -150,6 +164,8 @@ public class JdbcLookupDataSource implements LookupDataSource {
 					stmt.close();
 				if (pstmt != null)
 					pstmt.close();
+				if (conn != null)
+					conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 				throw new CacheRefreshException("Failed writing to database", e);
