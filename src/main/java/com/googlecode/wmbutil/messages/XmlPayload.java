@@ -18,11 +18,13 @@ package com.googlecode.wmbutil.messages;
 
 import com.googlecode.wmbutil.NiceMbException;
 import com.googlecode.wmbutil.util.ElementUtil;
+import com.googlecode.wmbutil.util.WmbUtilDebug;
 import com.googlecode.wmbutil.util.XmlUtil;
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 import com.ibm.broker.plugin.MbMessage;
 import com.ibm.broker.plugin.MbXMLNS;
+import com.ibm.broker.plugin.MbXMLNSC;
 
 /**
  * Helper class for working with XML messages.
@@ -121,7 +123,7 @@ public class XmlPayload extends Payload {
 
             while (child != null) {
                 // find first and only element
-                if (child.getType() == XmlUtil.getFolderElementType(child)) {
+                if (child.getSpecificType() == XmlUtil.getFolderElementType(child)) {
                     docElm = new XmlElement(child, isReadOnly());
                     break;
                 }
