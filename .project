@@ -6,15 +6,8 @@
     <buildCommand>
       <name>org.eclipse.jdt.core.javabuilder</name>
     </buildCommand>
-    <buildCommand>
-      <name>com.ibm.etools.mft.jcn.jcnbuilder</name>
-    </buildCommand>
-    <buildCommand>
-      <name>com.ibm.sse.model.structuredbuilder</name>
-    </buildCommand>
   </buildSpec>
   <natures>
     <nature>org.eclipse.jdt.core.javanature</nature>
-    <nature>com.ibm.etools.mft.jcn.jcnnature</nature>
   </natures>
 </projectDescription>

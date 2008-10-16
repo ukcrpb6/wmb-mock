@@ -23,6 +23,10 @@ import com.ibm.broker.plugin.MbMessage;
 
 public class MqmdHeader extends Header {
 
+    public static final String FORMAT_BINARY    = "        ";
+    public static final String FORMAT_MQSTR     = "MQSTR   ";
+    public static final String FORMAT_RFH2      = "MQHRF2  ";
+    
 	private static final String PROPERTY_VERSION = "Version";
 
 	private static final String PROPERTY_REPORT = "Report";
