@@ -123,7 +123,7 @@ public class XmlPayload extends Payload {
 
             while (child != null) {
                 // find first and only element
-                if (child.getSpecificType() == XmlUtil.getFolderElementType(child)) {
+                if (XmlUtil.isFolderElementType(child)) {
                     docElm = new XmlElement(child, isReadOnly());
                     break;
                 }
