@@ -4,6 +4,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.ibm.broker.plugin.MbException;
+import com.ibm.broker.plugin.MbMessageAssembly;
 import com.ibm.broker.plugin.MbNode;
 
 public class DefaultTransactionLog implements TransactionLog {
@@ -48,61 +49,61 @@ public class DefaultTransactionLog implements TransactionLog {
         }        
     }
     
-    public void debug(String message, String messageId, String[] businessIds) {
+    public void debug(String message, String messageId, String[] businessIds, MbMessageAssembly assembly) {
         log(Level.DEBUG, message, messageId, businessIds);
     }
 
-    public void info(String message, String messageId, String[] businessIds) {
+    public void info(String message, String messageId, String[] businessIds, MbMessageAssembly assembly) {
         log(Level.INFO, message, messageId, businessIds);
     }
 
-    public void warn(String message, String messageId, String[] businessIds) {
+    public void warn(String message, String messageId, String[] businessIds, MbMessageAssembly assembly) {
         log(Level.WARN, message, messageId, businessIds);
     }
 
-    public void error(String message, String messageId, String[] businessIds) {
+    public void error(String message, String messageId, String[] businessIds, MbMessageAssembly assembly) {
         log(Level.ERROR, message, messageId, businessIds);
     }
 
-    public void debug(String message, String messageId, String businessId) {
+    public void debug(String message, String messageId, String businessId, MbMessageAssembly assembly) {
         log(Level.DEBUG, message, messageId, new String[]{businessId});
         
     }
 
-    public void error(String message, String messageId, String businessId) {
+    public void error(String message, String messageId, String businessId, MbMessageAssembly assembly) {
         log(Level.ERROR, message, messageId, new String[]{businessId});
         
     }
 
-    public void info(String message, String messageId, String businessId) {
+    public void info(String message, String messageId, String businessId, MbMessageAssembly assembly) {
         log(Level.INFO, message, messageId, new String[]{businessId});
         
     }
 
-    public void warn(String message, String messageId, String businessId) {
+    public void warn(String message, String messageId, String businessId, MbMessageAssembly assembly) {
         log(Level.WARN, message, messageId, new String[]{businessId});
         
     }
 
-    public void debug(String message, String messageId, String[] businessIds,
+    public void debug(String message, String messageId, String[] businessIds, MbMessageAssembly assembly,
             Throwable t) {
         log(Level.DEBUG, message, messageId, businessIds, t);
         
     }
 
-    public void error(String message, String messageId, String[] businessIds,
+    public void error(String message, String messageId, String[] businessIds, MbMessageAssembly assembly,
             Throwable t) {
         log(Level.ERROR, message, messageId, businessIds, t);
         
     }
 
-    public void info(String message, String messageId, String[] businessIds,
+    public void info(String message, String messageId, String[] businessIds, MbMessageAssembly assembly,
             Throwable t) {
         log(Level.INFO, message, messageId, businessIds, t);
         
     }
 
-    public void warn(String message, String messageId, String[] businessIds,
+    public void warn(String message, String messageId, String[] businessIds, MbMessageAssembly assembly,
             Throwable t) {
         log(Level.WARN, message, messageId, businessIds, t);
         

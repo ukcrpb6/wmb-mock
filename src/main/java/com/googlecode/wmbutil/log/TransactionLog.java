@@ -1,5 +1,7 @@
 package com.googlecode.wmbutil.log;
 
+import com.ibm.broker.plugin.MbMessageAssembly;
+
 /**
  * Main log interface. Will also pick the following from the environment:
  * <ul>
@@ -10,19 +12,19 @@ package com.googlecode.wmbutil.log;
  */
 public interface TransactionLog {
 
-    void debug(String message, String messageId, String businessId);
-    void debug(String message, String messageId, String[] businessIds);
-    void debug(String message, String messageId, String[] businessIds, Throwable t);
+    void debug(String message, String messageId, String businessId, MbMessageAssembly assembly);
+    void debug(String message, String messageId, String[] businessIds, MbMessageAssembly assembly);
+    void debug(String message, String messageId, String[] businessIds, MbMessageAssembly assembly, Throwable t);
+    
+    void info(String message, String messageId, String businessId, MbMessageAssembly assembly);
+    void info(String message, String messageId, String[] businessIds, MbMessageAssembly assembly);
+    void info(String message, String messageId, String[] businessIds, MbMessageAssembly assembly, Throwable t);
 
-    void info(String message, String messageId, String businessId);
-    void info(String message, String messageId, String[] businessIds);
-    void info(String message, String messageId, String[] businessIds, Throwable t);
+    void warn(String message, String messageId, String businessId, MbMessageAssembly assembly);
+    void warn(String message, String messageId, String[] businessIds, MbMessageAssembly assembly);
+    void warn(String message, String messageId, String[] businessIds, MbMessageAssembly assembly, Throwable t);
 
-    void warn(String message, String messageId, String businessId);
-    void warn(String message, String messageId, String[] businessIds);
-    void warn(String message, String messageId, String[] businessIds, Throwable t);
-
-    void error(String message, String messageId, String businessId);
-    void error(String message, String messageId, String[] businessIds);
-    void error(String message, String messageId, String[] businessIds, Throwable t);
+    void error(String message, String messageId, String businessId, MbMessageAssembly assembly);
+    void error(String message, String messageId, String[] businessIds, MbMessageAssembly assembly);
+    void error(String message, String messageId, String[] businessIds, MbMessageAssembly assembly, Throwable t);
 }
