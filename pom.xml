@@ -4,7 +4,7 @@
 	<groupId>com.googlecode.wmbutil</groupId>
 	<artifactId>wmb-util</artifactId>
 	<name>WebSphere Message Broker utilities</name>
-	<version>0.3.2</version>
+	<version>0.3.3-SNAPSHOT</version>
 	<scm>
 		<connection>
 			scm:svn:http://wmb-util.googlecode.com/svn/wmb-util/trunk
