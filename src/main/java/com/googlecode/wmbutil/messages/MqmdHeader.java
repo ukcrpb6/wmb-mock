@@ -229,7 +229,7 @@ public class MqmdHeader extends Header {
     private String asHex(byte[] b) {
         StringBuffer result = new StringBuffer();
         for (int i = 0; i < b.length; i++) {
-            result.append(Integer.toHexString((b[i] & 0xff)));
+            result.append(Integer.toHexString((b[i] & 0xff) + 0x100).substring(1));
         }
         return result.toString();
 
