@@ -40,8 +40,7 @@ public class DefaultTransactionLog implements TransactionLog {
                     if(i > 0) {
                         sb.append(", ");
                     }
-                    sb.append(businessIds[0]);
-                    
+                    sb.append(businessIds[i]);
                 }
                 sb.append("]");
             }
