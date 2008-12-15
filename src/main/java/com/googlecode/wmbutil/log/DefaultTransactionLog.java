@@ -29,6 +29,11 @@ public class DefaultTransactionLog implements TransactionLog {
             
             StringBuffer sb = new StringBuffer();
             sb.append(message);
+            
+            sb.append(" [ComponentMsgFlow: ");
+            sb.append(log.getName());
+            sb.append("]");
+            
             if(messageId != null) {
                 sb.append(" [MessageId: ");
                 sb.append(messageId);
