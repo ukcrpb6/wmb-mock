@@ -48,54 +48,43 @@
 				</configuration>
 			</plugin>
 			<plugin>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.0.2</version>
-                <executions>
-                    <execution>
-                        <id>create-source-jar</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.1</version>
-                <configuration>
-                    <archive>
-                        <addMavenDescriptor>false</addMavenDescriptor>
-                    </archive>
-                </configuration>
-            </plugin>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.0.2</version>
+				<executions>
+					<execution>
+						<id>create-source-jar</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
-	
 	<profiles>
-        <profile>
-            <id>javadoc</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.3</version>
-                        <executions>
-                            <execution>
-                                <id>create-javadoc-jar</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                                <configuration>
-                                    <source>${maven.compile.source}</source>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
+		<profile>
+			<id>javadoc</id>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.3</version>
+						<executions>
+							<execution>
+								<id>create-javadoc-jar</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+								<configuration>
+									<source>${maven.compile.source}</source>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
 	</profiles>	
-	
 	<dependencies>
 		<dependency>
 			<groupId>com.ibm.broker</groupId>
