@@ -24,10 +24,23 @@ import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 import com.ibm.broker.plugin.MbMessage;
 
+
+/** 
+ * Helper class for working with BLOB messages.
+ * 
+ */
 public class BlobPayload extends Payload {
 
 	private static final String DEFAULT_PARSER = "NONE";
 	
+	/**
+	 * Wraps a payload
+	 * 
+	 * @param msg The message containing the BLOB payload
+	 * @param readOnly Specifies whether the payload will be wrapped as read only or not.
+	 * @return The BLOB payload found in the message
+	 * @throws MbException
+	 */
 	public static BlobPayload wrap(MbMessage msg, boolean readOnly) throws MbException {
 		MbElement elm = locateBlob(msg);
 
@@ -40,8 +53,9 @@ public class BlobPayload extends Payload {
 
 	/**
 	 * Creates a payload as the last child, even if one already exists
-	 * @param msg
-	 * @return
+	 * 
+	 * @param msg The message where to create a BLOB payload
+	 * @return A newly created BLOB payload
 	 * @throws MbException
 	 */
 	public static BlobPayload create(MbMessage msg) throws MbException {
@@ -52,6 +66,13 @@ public class BlobPayload extends Payload {
 		return new BlobPayload(blobElm, false);
 	}
 
+    /**
+     * Wraps or creates a payload as the last child, even if one already exists
+     * 
+     * @param msg The message where to look for/create an XML payload
+     * @return An BLOB payload, existent or newly created
+     * @throws MbException
+     */
 	public static BlobPayload wrapOrCreate(MbMessage msg) throws MbException {
 		if(has(msg)) {
 			return wrap(msg, false);
@@ -62,9 +83,10 @@ public class BlobPayload extends Payload {
 
 	
 	/** 
-	 * Removes the first XML payload
-	 * @param msg
-	 * @return
+	 * Removes (detaches) the first XML payload
+	 * 
+	 * @param msg The message containing the BLOB payload
+	 * @return The detached payload
 	 * @throws MbException
 	 */
 	public static BlobPayload remove(MbMessage msg) throws MbException {
@@ -78,27 +100,66 @@ public class BlobPayload extends Payload {
 		}		
 	}
 
+    /**
+     * Checks if a message contains an BLOB payload
+     * 
+     * @param msg The message to check
+     * @return True if there's a BLOB payload in the message
+     * @throws MbException
+     */
 	public static boolean has(MbMessage msg) throws MbException {
 		MbElement elm = locateBlob(msg);
 		return elm != null;
 	}
 	
+    /**
+     * Locates the BLOB in a message
+     * 
+     * @param msg The message to check
+     * @return The BLOB element of the message 
+     * @throws MbException
+     */
 	private static MbElement locateBlob(MbMessage msg) throws MbException {
 		return msg.getRootElement().getFirstElementByPath("/BLOB/BLOB");
 	}
 	
+    /**
+     * Class constructor
+     * 
+     * @param elm 
+     * @param readOnly Specifies whether the payload is readonly 
+     * @throws MbException
+     */
 	private BlobPayload(MbElement elm, boolean readOnly) throws MbException {
 		super(elm, readOnly);
 	}
-
+	/**
+	 * Gets the BLOB data
+	 * 
+	 * @return The BLOB data
+	 * @throws MbException
+	 */
 	public byte[] getData() throws MbException {
 		return (byte[]) getMbElement().getValue();
 	}
 
+	/**
+	 * Sets the BLOB data
+	 * 
+	 * @param b The data 
+	 * @throws MbException
+	 */
 	public void setData(byte[] b) throws MbException {
 		getMbElement().setValue(b);
 	}
-
+	
+	/**
+	 * Gets the data as a string converted using the specified ccsid 
+	 * 
+	 * @param ccsid The Coded Character Set Identifier to use for the conversion
+	 * @return
+	 * @throws MbException
+	 */
 	public String getDataAsString(int ccsid) throws MbException {
 		String encoding = CCSID.ccsidToCharset(ccsid);
 		try {
@@ -108,6 +169,13 @@ public class BlobPayload extends Payload {
 		}
 	}
 
+	/**
+	 * Sets the data from a string converted using the specified ccsid
+	 * 
+	 * @param s The string to convert
+	 * @param ccsid The Coded Character Set Identifier to use for the conversion
+	 * @throws MbException
+	 */
 	public void setDataAsString(String s, int ccsid) throws MbException {
 		String encoding = CCSID.ccsidToCharset(ccsid);
 		try {

@@ -104,10 +104,10 @@ public class XmlPayload extends Payload {
     }
 
     /**
-     * Removes the first XML payload
+     * Removes (detaches) the first XML payload
      * 
      * @param msg The message containing the XML payload
-     * @return TODO: returns what?
+     * @return The detached payload
      * @throws MbException
      */
     public static XmlPayload remove(MbMessage msg) throws MbException {
