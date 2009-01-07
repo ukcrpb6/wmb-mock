@@ -19,8 +19,19 @@ package com.googlecode.wmbutil.messages;
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 
+/**
+ * Abstract base class for the Header helpers.
+ *
+ */
 public abstract class Header extends MbElementWrapper {
 
+	/**
+	 * Constructor defining the header with the specific element.
+	 * 
+	 * @param elm The message element
+	 * @param readOnly Specifies Whether the payload is read only or not
+	 * @throws MbException
+	 */
 	public Header(MbElement elm, boolean readOnly) throws MbException {
 		super(elm, readOnly);
 	}

@@ -33,6 +33,7 @@ public class TdsPayload extends Payload {
 	/**
 	 * Wrap an message containing a flat file message with the helper class.
 	 * Automatically locates the MRM tree.
+	 * 
 	 * @param msg The message to wrap.
 	 * @param readOnly Indicates whether the message is read-only (input message) 
 	 * 	   or not.
@@ -51,6 +52,7 @@ public class TdsPayload extends Payload {
 
 	/**
 	 * Creates a payload as the last child, even if one already exists
+	 * 
 	 * @param msg The message on which the payload should be created
 	 * @return The helper class
 	 * @throws MbException
@@ -62,6 +64,7 @@ public class TdsPayload extends Payload {
 
 	/**
 	 * Wraps if payload already exists, of creates payload otherwise.
+	 * 
 	 * @param msg The message on which to wrap the payload
 	 * @return The helper class
 	 * @throws MbException
@@ -75,7 +78,8 @@ public class TdsPayload extends Payload {
     }
 
 	/** 
-	 * Removes the first MRM payload
+	 * Removes (detaches) the first MRM payload
+	 * 
 	 * @param msg The message on which to remove the payload
 	 * @return The helper class for the removed payload
 	 * @throws MbException
@@ -93,22 +97,36 @@ public class TdsPayload extends Payload {
 
 	/**
 	 * Checks if the message has a payload of this type
+	 * 
 	 * @param msg The message to check
 	 * @return true if the payload exists, false otherwise.
 	 * @throws MbException
 	 */
-
     public static boolean has(MbMessage msg) throws MbException {
         MbElement elm = locatePayload(msg);
         return elm != null;
     }
 
+    /**
+     * Locates the payload in a message
+     * 
+     * @param msg
+     * @return
+     * @throws MbException
+     */
     private static MbElement locatePayload(MbMessage msg) throws MbException {
         MbElement elm = msg.getRootElement().getFirstElementByPath("/MRM");
 
         return elm;
     }
-
+   
+    /**
+     * Class constructor
+     * 
+     * @param elm The message element
+     * @param readOnly Specifies Whether the payload is read only or not
+     * @throws MbException
+     */
     private TdsPayload(MbElement elm, boolean readOnly) throws MbException {
         super(elm, readOnly);
 
@@ -117,6 +135,7 @@ public class TdsPayload extends Payload {
     /**
      * Create a record with the specfied name as the last
      * child in the message
+     * 
      * @param name The name of the record to create
      * @return The created record
      * @throws MbException
@@ -132,6 +151,7 @@ public class TdsPayload extends Payload {
     /**
      * Get all records with the specified name in the order they are 
      * located in the message.
+     * 
      * @param name The name of the records to retrieve
      * @return The list of records
      * @throws MbException
@@ -146,8 +166,8 @@ public class TdsPayload extends Payload {
     }
 
     /**
-     * Get all records in the order they are 
-     * located in the message.
+     * Get all records in the order they are located in the message
+     * 
      * @return List of all records
      * @throws MbException
      */
