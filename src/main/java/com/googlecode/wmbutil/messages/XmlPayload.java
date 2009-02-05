@@ -23,6 +23,7 @@ import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 import com.ibm.broker.plugin.MbMessage;
 import com.ibm.broker.plugin.MbXMLNS;
+import com.ibm.broker.plugin.MbXMLNSC;
 
 /**
  * Helper class for working with XML messages.
@@ -247,5 +248,43 @@ public class XmlPayload extends Payload {
             docElm.getMbElement().createElementAsFirstChild(MbXMLNS.NAMESPACE_DECL, prefix, ns)
                     .setNamespace("xmlns");
         }
+    }
+    
+    /**
+     * Creates an XML declaration in the payload even if one exists
+     * 
+     * @param version XML version
+     * @param encoding XML encoding
+     * @param standalone Specifies whether standalone should be set to yes or no
+     * @throws MbException 
+     */
+    public void createXmlDeclaration(String version, String encoding, Boolean standalone) throws MbException {
+    	checkReadOnly();
+    	
+    	MbElement elm = getMbElement();
+    	
+    	if (ElementUtil.isXMLNSC(elm)) {
+    		MbElement xmlDecl = elm.createElementAsFirstChild(MbXMLNSC.XML_DECLARATION);
+        	xmlDecl.setName("XmlDeclaration");
+       		xmlDecl.createElementAsLastChild(MbXMLNSC.ATTRIBUTE, "Version", version); 
+       		xmlDecl.createElementAsLastChild(MbXMLNSC.ATTRIBUTE, "Encoding", encoding); 
+       		if (standalone) {
+       			xmlDecl.createElementAsLastChild(MbXMLNSC.ATTRIBUTE, "Standalone", "yes");
+       		} else {
+       			xmlDecl.createElementAsLastChild(MbXMLNSC.ATTRIBUTE, "Standalone", "no");
+       		}
+    	} else if (ElementUtil.isXML(elm) || ElementUtil.isXMLNS(elm)) {
+    		MbElement xmlDecl = elm.createElementAsFirstChild(MbXMLNS.XML_DECL);
+        	xmlDecl.setName("XmlDeclaration");
+       		xmlDecl.createElementAsLastChild(MbXMLNS.VERSION, "version", version);
+       		xmlDecl.createElementAsLastChild(MbXMLNS.ENCODING, "encoding", encoding); 
+       		if (standalone) {
+       			xmlDecl.createElementAsLastChild(MbXMLNS.STANDALONE, "standalone", "yes");
+       		} else {
+       			xmlDecl.createElementAsLastChild(MbXMLNS.STANDALONE, "Standalone", "no");
+       		}
+    	} else {
+    		throw new NiceMbException("Failed to create XML declaration for parser " + XmlUtil.getFolderElementType(elm));
+    	}
     }
 }
