@@ -258,7 +258,7 @@ public class XmlPayload extends Payload {
      * @param standalone Specifies whether standalone should be set to yes or no
      * @throws MbException 
      */
-    public void createXmlDeclaration(String version, String encoding, Boolean standalone) throws MbException {
+    public void createXmlDeclaration(String version, String encoding, boolean standalone) throws MbException {
     	checkReadOnly();
     	
     	MbElement elm = getMbElement();
