@@ -7,7 +7,7 @@ import com.ibm.broker.plugin.MbMessageAssembly;
 public abstract class AbstractTransactionLog implements TransactionLog {
 
     protected void log(Level level, String message, String messageId, String[] businessIds, MbMessageAssembly assembly) {
-        log(level, message, messageId, businessIds, null);
+        log(level, message, messageId, businessIds, assembly, null);
     }
     
     protected abstract void log(Level level, String message, String messageId, String[] businessIds, MbMessageAssembly assembly, Throwable t);
