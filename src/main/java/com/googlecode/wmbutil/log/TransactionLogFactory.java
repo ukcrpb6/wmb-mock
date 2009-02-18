@@ -21,6 +21,6 @@ import com.ibm.broker.plugin.MbNode;
 public class TransactionLogFactory {
 
     public static TransactionLog createLog(MbNode node, String componentId) {
-        return new DefaultTransactionLog(node, componentId);
+        return new Log4jTransactionLog(node, componentId);
     }
 }

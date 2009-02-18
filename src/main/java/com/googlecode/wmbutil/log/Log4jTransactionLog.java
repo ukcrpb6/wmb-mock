@@ -23,11 +23,11 @@ import com.ibm.broker.plugin.MbException;
 import com.ibm.broker.plugin.MbMessageAssembly;
 import com.ibm.broker.plugin.MbNode;
 
-public class DefaultTransactionLog extends AbstractTransactionLog {
+public class Log4jTransactionLog extends AbstractTransactionLog {
 
     private Logger log;
     
-    public DefaultTransactionLog(MbNode node, String componentId) {
+    public Log4jTransactionLog(MbNode node, String componentId) {
         try {
             log = Logger.getLogger(componentId + "." + node.getMessageFlow().getName());
         } catch (MbException e) {

@@ -22,32 +22,32 @@ import com.ibm.broker.plugin.MbNode;
 /**
  * Logs messages to a JDBC data source
  */
-public class JdbcLogger extends AbstractTransactionLog {
+public class JdbcTransactionLog extends AbstractTransactionLog {
 
     private String INSERT_SQL = "INSERT INTO TRANS_LOG (broker, message_flow, component, level, message, message_id, exception,  update_time) values(?, ?, ?, ?, ?, ?, ?, ?);";
     private String INSERT_BUSINESS_SQL = "INSERT INTO TRANS_LOG_BUSINESS (log_id, business_id) values(?, ?);";
 
     
-    private Logger log = Logger.getLogger(JdbcLogger.class);
+    private Logger log = Logger.getLogger(JdbcTransactionLog.class);
     private String component;
     private String brokerName;
     private String flowName;
 
     // TODO remove, only used for testing
-    JdbcLogger(String brokerName, String flowName, String component) throws MbException {
+    JdbcTransactionLog(String brokerName, String flowName, String component) throws MbException {
         this.brokerName = brokerName;
         this.flowName = flowName;
         this.component = component;
     }
 
     
-    public JdbcLogger(MbNode node, String component) throws MbException {
+    public JdbcTransactionLog(MbNode node, String component) throws MbException {
         brokerName = node.getBroker().getName();
         flowName = node.getMessageFlow().getName();
         this.component = component;
     }
 
-    public JdbcLogger(MbNode node) throws MbException {
+    public JdbcTransactionLog(MbNode node) throws MbException {
         this(node, null);
     }
 
