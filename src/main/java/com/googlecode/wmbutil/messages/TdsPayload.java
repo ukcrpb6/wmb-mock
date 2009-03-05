@@ -166,6 +166,32 @@ public class TdsPayload extends Payload {
     }
 
     /**
+     * Gets the record of the specified index
+     * 
+     * @param index Position of the wanted record
+     * @return The record
+     * @throws MbException
+     */
+    public TdsRecord getRecord(int index) throws MbException {
+    	List records = getAllRecords();
+    	try {
+    		return new TdsRecord((MbElement) records.get(index), isReadOnly());
+    	} catch (ArrayIndexOutOfBoundsException e) {
+    		throw new NiceMbException("Record of specified number does not exist");
+    	}
+    }
+    
+    /**
+     * Returns the first record
+     * 
+     * @return The first record
+     * @throws MbException
+     */
+    public TdsRecord getRecord() throws MbException {
+    	return getRecord(0);
+    }
+    
+    /**
      * Get all records in the order they are located in the message
      * 
      * @return List of all records
