@@ -19,6 +19,7 @@ package com.googlecode.wmbutil.messages;
 import java.util.List;
 
 import com.googlecode.wmbutil.NiceMbException;
+import com.ibm.broker.plugin.MbBLOB;
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 import com.ibm.broker.plugin.MbMessage;
@@ -139,5 +140,71 @@ public class LocalEnvironment extends Header {
                     "?TimeoutRequest/?AllowOverwrite[set-value('"
                             + timeoutRequest.getAllowOverwrite() + "')]");
         }
+    }
+    /**
+     * Sets an Email destination header
+     * 
+     * @param emailDestination
+     * @throws MbException
+     */
+    public void setEmailDestination(EmailDestination emailDestination) throws MbException {
+    	if (emailDestination.getSmtpServer() != null) {
+    		getMbElement().evaluateXPath(
+    				"?Destination/?Email/?SMTPServer[set-value('"
+    					+ emailDestination.getSmtpServer() + "')]");
+    	}
+    	if (emailDestination.getSecurityIdentity() != null) {
+    		getMbElement().evaluateXPath(
+    				"?Destination/?Email/?SecurityIdentity[set-value('"
+    					+ emailDestination.getSecurityIdentity() + "')]");
+    	}
+    	if (emailDestination.getBodyContentType() != null) {
+    		getMbElement().evaluateXPath(
+    				"?Destination/?Email/?BodyContentType[set-value('"
+    					+ emailDestination.getBodyContentType() + "')]");
+    	}
+    	if (emailDestination.getMultiPartContentType() != null) {
+    		getMbElement().evaluateXPath(
+    				"?Destination/?Email/?MultiPartContentType[set-value('"
+    					+ emailDestination.getMultiPartContentType() + "')]");
+    	}
+    		
+    }
+    /**
+     * Adds an email attachment to the local environment
+     * TODO: Handle XPath/ESQL expressions in Content
+     * 
+     * @param emailAttachment
+     * @throws MbException
+     */
+    public void addEmailAttachment(EmailAttachment emailAttachment) throws MbException {
+   	
+    	getMbElement().evaluateXPath("?Destination/?Email/?$Attachment");
+    	MbElement attachmentElm = getMbElement().getFirstElementByPath("Destination/Email").getLastChild();
+
+       	if (emailAttachment.getAttachmentContentAsBlob() != null) {
+       		attachmentElm.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "Content",
+       				emailAttachment.getAttachmentContentAsBlob());
+       		
+    	} else if (emailAttachment.getAttachmentContentAsText() != null) {
+       		attachmentElm.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "Content",
+       				emailAttachment.getAttachmentContentAsText());
+    	}
+    	
+       	if (emailAttachment.getAttachmentContentType() != null) {
+       		attachmentElm.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "ContentType", 
+       				emailAttachment.getAttachmentContentType());
+    	}
+       	
+       	if (emailAttachment.getAttachmentContentName() != null) {
+       		attachmentElm.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "ContentName", 
+       				emailAttachment.getAttachmentContentName());
+    	}
+       	
+       	if (emailAttachment.getAttachmentContentEncoding() != null) {
+       		attachmentElm.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "ContentEncoding",
+       				emailAttachment.getAttachmentContentEncoding());
+    	}
+
     }
 }
