@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 (C) Port of Göteborg AB.
+ * Copyright 2009 (C) Port of Gï¿½teborg AB.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -114,8 +114,6 @@ public class EmailPayload extends Payload {
 		super(elm, readOnly);
 		headerElm = getMbElement().createElementAsLastChild("EmailOutputHeader");
 		bodyElm = getMbElement().createElementAsLastChild(MbBLOB.PARSER_NAME);
-		//TODO: verify encoding
 		this.messageEncoding = Charset.defaultCharset().name();
 	}
-
 }
