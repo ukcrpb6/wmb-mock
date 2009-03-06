@@ -3,7 +3,6 @@ package com.googlecode.wmbutil.log;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,20 +26,11 @@ public class JdbcTransactionLog extends AbstractTransactionLog {
 
     private String INSERT_SQL = "INSERT INTO TRANS_LOG (broker, message_flow, component, level, message, message_id, exception,  update_time) values(?, ?, ?, ?, ?, ?, ?, ?);";
     private String INSERT_BUSINESS_SQL = "INSERT INTO TRANS_LOG_BUSINESS (log_id, business_id) values(?, ?);";
-
     
     private Logger log = Logger.getLogger(JdbcTransactionLog.class);
     private String component;
     private String brokerName;
     private String flowName;
-
-    // TODO remove, only used for testing
-    JdbcTransactionLog(String brokerName, String flowName, String component) throws MbException {
-        this.brokerName = brokerName;
-        this.flowName = flowName;
-        this.component = component;
-    }
-
     
     public JdbcTransactionLog(MbNode node, String component) throws MbException {
         brokerName = node.getBroker().getName();
@@ -52,7 +42,6 @@ public class JdbcTransactionLog extends AbstractTransactionLog {
         this(node, null);
     }
 
-    
     protected void log(Level level, String message, String messageId, String[] businessIds, MbMessageAssembly assembly, Throwable t) {
         DataSourceLocator dsLocator = DataSourceLocator.getInstance();
         DataSource ds = null;

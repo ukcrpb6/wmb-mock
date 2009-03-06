@@ -19,7 +19,6 @@ package com.googlecode.wmbutil.messages;
 import java.util.List;
 
 import com.googlecode.wmbutil.NiceMbException;
-import com.ibm.broker.plugin.MbBLOB;
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 import com.ibm.broker.plugin.MbMessage;

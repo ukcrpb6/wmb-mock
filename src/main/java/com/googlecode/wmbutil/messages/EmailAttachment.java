@@ -37,27 +37,27 @@ public class EmailAttachment {
 	public byte[] getAttachmentContentAsBlob() {
 		return attachmentContentAsBlob;
 	}
-	public void setAttachmentContentAsBlob(byte[] attachmentContentBlob) {
-		this.attachmentContentAsBlob = attachmentContentBlob;
+	public void setAttachmentContentAsBlob(byte[] attachmentContentAsBlob) {
+		this.attachmentContentAsBlob = attachmentContentAsBlob;
 	}
 	public String getAttachmentContentAsText() {
 		return attachmentContentAsText;
 	}
-	public void setAttachmentContentAsText(String attachmentContentText) {
-		this.attachmentContentAsText = attachmentContentText;
+	public void setAttachmentContentAsText(String attachmentContentAsText) {
+		this.attachmentContentAsText = attachmentContentAsText;
 	}
 	/*
-	public String getAttachmentContentXpath() {
+	public String getAttachmentContentAsXpath() {
 		return attachmentContentAsXpath;
 	}
-	public void setAttachmentContentXpath(String attachmentContentXpath) {
-		this.attachmentContentAsXpath = attachmentContentXpath;
+	public void setAttachmentContentAsXpath(String attachmentContentXpath) {
+		this.attachmentContentAsXpath = attachmentContentAsXpath;
 	}
-	public String getAttachmentContentEsql() {
+	public String getAttachmentContentAsEsql() {
 		return attachmentContentAsEsql;
 	}
-	public void setAttachmentContentEsql(String attachmentContentEsql) {
-		this.attachmentContentAsEsql = attachmentContentEsql;
+	public void setAttachmentContentAsEsql(String attachmentContentEsql) {
+		this.attachmentContentAsEsql = attachmentContentAsEsql;
 	}
 	*/
 	public String getAttachmentContentEncoding() {

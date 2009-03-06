@@ -83,8 +83,8 @@ public class EmailPayload extends Payload {
 	/**
 	 * Sets value in the EmailOutputHeader
 	 * 
-	 * @param field
-	 * @param value
+	 * @param field Name of field
+	 * @param value Value of field
 	 * @throws MbException
 	 */
 	private void set(String field, String value) throws MbException {
@@ -106,8 +106,8 @@ public class EmailPayload extends Payload {
 	/**
 	 * Class constructor
 	 * 
-	 * @param elm
-	 * @param readOnly
+	 * @param elm Root element of message
+	 * @param readOnly Specifies whether the payload is read only or not
 	 * @throws MbException
 	 */
 	private EmailPayload(MbElement elm, boolean readOnly) throws MbException {
