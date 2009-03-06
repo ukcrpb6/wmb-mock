@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 
 import javax.sql.DataSource;
 
@@ -82,7 +83,7 @@ public class JdbcTransactionLog extends AbstractTransactionLog {
             } else {
                 stmt.setString(7, null);
             }
-            stmt.setDate(8, new Date(new java.util.Date().getTime())); 
+            stmt.setTimestamp(8, new Timestamp(new java.util.Date().getTime()));
             
             stmt.executeUpdate();
             
