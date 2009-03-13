@@ -100,6 +100,17 @@ public class JdbcTransactionAppender extends AppenderSkeleton {
                 closeQuitely(busStmt);
                 closeQuitely(conn);
             }
+        } else {
+            StringBuffer sb = new StringBuffer();
+            sb.append("Received log event from ");
+            sb.append(event.getLoggerName());
+            sb.append(". ");
+            sb.append(getClass().getSimpleName());
+            sb.append(" can only handle WMB transaction messages, check Log4j configuration.");
+            
+            LogLog
+                .warn(sb.toString());
+            
         }
     }
 
