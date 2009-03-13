@@ -64,7 +64,9 @@ public class DataSourceLocator {
 		if (configFile.exists()) {
 			config = new Properties();
 			try {
-				config.load(new FileInputStream(configFile));
+				FileInputStream fs = new FileInputStream(configFile);
+				config.load(fs);
+				fs.close();
 			} catch (IOException e) {
 				throw new RuntimeException(
 						"Failed to read lookup connections configuration file at "
