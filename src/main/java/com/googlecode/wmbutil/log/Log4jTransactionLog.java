@@ -44,7 +44,7 @@ public class Log4jTransactionLog extends AbstractTransactionLog {
     protected void transLog(Level level, String message, String messageId,
             String[] businessIds, MbMessageAssembly assembly, Throwable t) {
         if (log.isEnabledFor(level)) {
-            TransMessage msg = new TransMessage(brokerName, nodeName, flowName, message, messageId,
+            TransactionMessage msg = new TransactionMessage(brokerName, nodeName, flowName, message, messageId,
                     businessIds, assembly);
 
             log.log(level, msg, t);

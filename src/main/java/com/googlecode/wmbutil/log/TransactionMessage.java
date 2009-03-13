@@ -3,7 +3,7 @@ package com.googlecode.wmbutil.log;
 import com.ibm.broker.plugin.MbMessageAssembly;
 
 
-public class TransMessage {
+public class TransactionMessage {
 
     private String brokerName;
     private String nodeName;
@@ -14,7 +14,7 @@ public class TransMessage {
     private MbMessageAssembly messageAssembly;
     
     
-    public TransMessage(String brokerName, String nodeName, String flowName, 
+    public TransactionMessage(String brokerName, String nodeName, String flowName, 
             String message, String messageId,
             String[] businessIds, 
             MbMessageAssembly messageAssembly) {

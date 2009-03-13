@@ -31,8 +31,8 @@ public class JdbcTransactionAppender extends AppenderSkeleton {
     protected void append(LoggingEvent event) {
         Object msg = event.getMessage();
 
-        if (msg instanceof TransMessage) {
-            TransMessage transMsg = (TransMessage) msg;
+        if (msg instanceof TransactionMessage) {
+            TransactionMessage transMsg = (TransactionMessage) msg;
 
             DataSourceLocator dsLocator = DataSourceLocator.getInstance();
             DataSource ds = null;
