@@ -16,11 +16,24 @@
 
 package com.googlecode.wmbutil.log;
 
+import com.ibm.broker.plugin.MbException;
 import com.ibm.broker.plugin.MbNode;
 
 public class TransactionLogFactory {
 
     public static TransactionLog createLog(MbNode node, String componentId) {
-        return new Log4jTransactionLog(node, componentId);
+        try {
+            return new Log4jTransactionLog(node.getBroker().getName(), 
+                    node.getName(), node.getMessageFlow().getName(), componentId);
+        } catch (MbException e) {
+            throw new RuntimeException("Failed to create log", e);
+        }
     }
+
+    // only for testing purposes
+    static TransactionLog createLog(String brokerName, String nodeName, String flowName,
+            String componentId) {
+        return new Log4jTransactionLog(brokerName, nodeName, flowName, componentId);
+    }
+
 }

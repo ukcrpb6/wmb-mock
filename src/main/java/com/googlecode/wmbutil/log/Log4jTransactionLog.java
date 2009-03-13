@@ -19,49 +19,35 @@ package com.googlecode.wmbutil.log;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import com.ibm.broker.plugin.MbException;
 import com.ibm.broker.plugin.MbMessageAssembly;
-import com.ibm.broker.plugin.MbNode;
 
 public class Log4jTransactionLog extends AbstractTransactionLog {
 
     private Logger log;
     
-    public Log4jTransactionLog(MbNode node, String componentId) {
-        try {
-            log = Logger.getLogger(componentId + "." + node.getMessageFlow().getName());
-        } catch (MbException e) {
-            // fall back
-            log = Logger.getLogger(componentId);
-        }
+    private String brokerName;
+    private String nodeName;
+    private String flowName;
+
+    public Log4jTransactionLog(String brokerName, String nodeName, String flowName, String componentId) {
+        log = Logger.getLogger(prepareForLoggerName("wmb." + brokerName + "." + componentId + "." + flowName + "." + nodeName));
+        
+        this.brokerName = brokerName;
+        this.nodeName = nodeName;
+        this.flowName = flowName;
+    }
+    
+    private static String prepareForLoggerName(String s) {
+        return s.replace(" ", "");
     }
 
-    protected void log(Level level, String message, String messageId, String[] businessIds, MbMessageAssembly assembly, Throwable t) {
-        if(log.isEnabledFor(level)) {
-            
-            StringBuffer sb = new StringBuffer();
-            sb.append(message);
-            
-            sb.append(" [ComponentMsgFlow: ");
-            sb.append(log.getName());
-            sb.append("]");
-            
-            if(messageId != null) {
-                sb.append(" [MessageId: ");
-                sb.append(messageId);
-                sb.append("]");
-            }
-            if(businessIds != null) {
-                sb.append(" [BusinessIds: ");
-                for(int i = 0; i<businessIds.length; i++) {
-                    if(i > 0) {
-                        sb.append(", ");
-                    }
-                    sb.append(businessIds[i]);
-                }
-                sb.append("]");
-            }
-            log.log(level, sb.toString(), t);
-        }        
+    protected void transLog(Level level, String message, String messageId,
+            String[] businessIds, MbMessageAssembly assembly, Throwable t) {
+        if (log.isEnabledFor(level)) {
+            TransMessage msg = new TransMessage(brokerName, nodeName, flowName, message, messageId,
+                    businessIds, assembly);
+
+            log.log(level, msg, t);
+        }
     }
 }
