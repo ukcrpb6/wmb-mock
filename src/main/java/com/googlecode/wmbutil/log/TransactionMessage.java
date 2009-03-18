@@ -55,7 +55,11 @@ public class TransactionMessage {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append(message);
-                
+        
+        sb.append(" [MessageFlow: ");
+        sb.append(flowName);
+        sb.append("]");
+        
         if(messageId != null) {
             sb.append(" [MessageId: ");
             sb.append(messageId);
