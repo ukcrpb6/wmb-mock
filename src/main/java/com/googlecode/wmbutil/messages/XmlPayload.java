@@ -279,7 +279,7 @@ public class XmlPayload extends Payload {
        		xmlDecl.createElementAsLastChild(MbXMLNS.VERSION, "version", version);
        		xmlDecl.createElementAsLastChild(MbXMLNS.ENCODING, "encoding", encoding); 
        		if (standalone) {
-       			xmlDecl.createElementAsLastChild(MbXMLNS.STANDALONE, "standalone", "yes");
+       			xmlDecl.createElementAsLastChild(MbXMLNS.STANDALONE, "Standalone", "yes");
        		} else {
        			xmlDecl.createElementAsLastChild(MbXMLNS.STANDALONE, "Standalone", "no");
        		}
