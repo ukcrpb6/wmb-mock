@@ -127,18 +127,14 @@ public class LocalEnvironment extends Header {
         }
 
         // <IgnoreMissed>
-        if (timeoutRequest.getIgnoreMissed() != null) {
-            getMbElement().evaluateXPath(
-                    "?TimeoutRequest/?IgnoreMissed[set-value('" + timeoutRequest.getIgnoreMissed()
-                            + "')]");
-        }
+        getMbElement().evaluateXPath(
+        		"?TimeoutRequest/?IgnoreMissed[set-value('" + timeoutRequest.getIgnoreMissed()
+        		+ "')]");
 
         // <AllowOverwrite>
-        if (timeoutRequest.getAllowOverwrite() != null) {
-            getMbElement().evaluateXPath(
-                    "?TimeoutRequest/?AllowOverwrite[set-value('"
-                            + timeoutRequest.getAllowOverwrite() + "')]");
-        }
+        getMbElement().evaluateXPath(
+        		"?TimeoutRequest/?AllowOverwrite[set-value('" + timeoutRequest.getAllowOverwrite()
+        		+ "')]");
     }
     /**
      * Sets an Email destination header

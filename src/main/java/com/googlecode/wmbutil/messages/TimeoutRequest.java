@@ -35,20 +35,36 @@ public class TimeoutRequest {
     private Date startDateTime;
     private Integer interval;
     private Integer count;
-    private Boolean ignoreMissed;
-    private Boolean allowOverwrite;
+    private boolean ignoreMissed;
+    private boolean allowOverwrite;
 
     private SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
     private SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm:ss");
 
+    /**
+     * Class constructor
+     *
+     */
     public TimeoutRequest() {
         this.action = TimeoutRequest.ACTION_SET;
+        // Default values in WMB
+        this.ignoreMissed = true;
+        this.allowOverwrite = true;
     }
 
+    /**
+     * Class constructor using an identifier & start date/time
+     * 
+     * @param identifier An alphanumeric identifier  
+     * @param startDateTime When the Timeout should occur
+     */
     public TimeoutRequest(String identifier, Date startDateTime) {
         this.action = TimeoutRequest.ACTION_SET;
         this.identifier = identifier;
-        this.startDateTime = startDateTime;
+        this.startDateTime = startDateTime;        
+        // Default values in WMB
+        this.ignoreMissed = true;
+        this.allowOverwrite = true;
     }
 
     public String getAction() {
@@ -59,11 +75,11 @@ public class TimeoutRequest {
         this.action = action;
     }
 
-    public Boolean getAllowOverwrite() {
+    public boolean getAllowOverwrite() {
         return allowOverwrite;
     }
 
-    public void setAllowOverwrite(Boolean allowOverwrite) {
+    public void setAllowOverwrite(boolean allowOverwrite) {
         this.allowOverwrite = allowOverwrite;
     }
 
@@ -83,11 +99,11 @@ public class TimeoutRequest {
         this.identifier = identifier;
     }
 
-    public Boolean getIgnoreMissed() {
+    public boolean getIgnoreMissed() {
         return ignoreMissed;
     }
 
-    public void setIgnoreMissed(Boolean ignoreMissed) {
+    public void setIgnoreMissed(boolean ignoreMissed) {
         this.ignoreMissed = ignoreMissed;
     }
 
