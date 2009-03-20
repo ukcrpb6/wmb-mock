@@ -82,6 +82,13 @@ public class TimeoutRequest {
     public void setAllowOverwrite(boolean allowOverwrite) {
         this.allowOverwrite = allowOverwrite;
     }
+    
+    /** 
+     * @deprecated Use primitive data type boolean instead     
+     */  
+    public void setAllowOverwrite(Boolean allowOverwrite){
+        this.allowOverwrite = allowOverwrite.booleanValue();
+    }
 
     public Integer getCount() {
         return count;
@@ -106,7 +113,14 @@ public class TimeoutRequest {
     public void setIgnoreMissed(boolean ignoreMissed) {
         this.ignoreMissed = ignoreMissed;
     }
-
+    
+    /** 
+     * @deprecated Use primitive data type boolean instead     
+     */
+    public void setIgnoreMissed(Boolean ignoreMissed) {
+        this.ignoreMissed = ignoreMissed.booleanValue();
+    }
+    
     public Integer getInterval() {
         return interval;
     }
