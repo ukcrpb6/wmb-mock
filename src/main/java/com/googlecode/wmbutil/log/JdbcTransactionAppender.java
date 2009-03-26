@@ -22,7 +22,7 @@ import com.googlecode.wmbutil.jdbc.DataSourceLocator;
  */
 public class JdbcTransactionAppender extends AppenderSkeleton {
 
-    private String INSERT_SQL = "INSERT INTO TRANS_LOG (broker, message_flow, component, level, message, message_id, exception,  update_time) values(?, ?, ?, ?, ?, ?, ?, ?);";
+    private String INSERT_SQL = "INSERT INTO TRANS_LOG (broker, message_flow, component, log_level, message, message_id, exception,  update_time) values(?, ?, ?, ?, ?, ?, ?, ?);";
 
     private String INSERT_BUSINESS_SQL = "INSERT INTO TRANS_LOG_BUSINESS (log_id, business_id) values(?, ?);";
 
