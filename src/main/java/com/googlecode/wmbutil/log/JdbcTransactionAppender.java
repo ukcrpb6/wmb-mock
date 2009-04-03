@@ -4,9 +4,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Timestamp;
 
 import javax.sql.DataSource;
@@ -16,15 +14,13 @@ import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.spi.LoggingEvent;
 
 import com.googlecode.wmbutil.jdbc.DataSourceLocator;
+import com.googlecode.wmbutil.log.db.DatabaseStrategy;
+import com.googlecode.wmbutil.log.db.DbUtil;
 
 /**
  * Logs messages to a JDBC data source
  */
 public class JdbcTransactionAppender extends AppenderSkeleton {
-
-    private String INSERT_SQL = "INSERT INTO TRANS_LOG (broker, message_flow, component, log_level, message, message_id, exception,  update_time) values(?, ?, ?, ?, ?, ?, ?, ?);";
-
-    private String INSERT_BUSINESS_SQL = "INSERT INTO TRANS_LOG_BUSINESS (log_id, business_id) values(?, ?);";
 
     private String dataSource;
     
@@ -40,6 +36,7 @@ public class JdbcTransactionAppender extends AppenderSkeleton {
             PreparedStatement stmt = null;
             PreparedStatement busStmt = null;
 
+            
             try {
                 ds = dsLocator.lookup(dataSource);
 
@@ -47,7 +44,10 @@ public class JdbcTransactionAppender extends AppenderSkeleton {
                 conn.setReadOnly(false);
                 conn.setAutoCommit(false);
 
-                stmt = conn.prepareStatement(INSERT_SQL);
+                DatabaseStrategy databaseStrategy = DatabaseStrategy.createStrategy(conn);
+
+                stmt = databaseStrategy.prepareInsertStatement(conn);
+
                 stmt.setString(1, transMsg.getBrokerName());
                 stmt.setString(2, transMsg.getFlowName());
                 stmt.setString(3, transMsg.getNodeName());
@@ -70,17 +70,10 @@ public class JdbcTransactionAppender extends AppenderSkeleton {
 
                 stmt.executeUpdate();
 
-                ResultSet rs = null;
-                int logId;
-                try {
-                    rs = stmt.getGeneratedKeys();
-                    rs.next();
-                    logId = rs.getInt(1);
-                } finally {
-                    closeQuitely(rs);
-                }
+                int logId = databaseStrategy.getGeneratedKey(stmt);
+                
+                busStmt = databaseStrategy.prepareInsertBusinessStatement(conn);
 
-                busStmt = conn.prepareStatement(INSERT_BUSINESS_SQL);
                 if (transMsg.getBusinessIds() != null) {
                     String[] businessIds = transMsg.getBusinessIds();
                     for (int i = 0; i < businessIds.length; i++) {
@@ -96,9 +89,9 @@ public class JdbcTransactionAppender extends AppenderSkeleton {
                                 "Failed to write log message to transaction log database",
                                 e);
             } finally {
-                closeQuitely(stmt);
-                closeQuitely(busStmt);
-                closeQuitely(conn);
+                DbUtil.closeQuitely(stmt);
+                DbUtil.closeQuitely(busStmt);
+                DbUtil.closeQuitely(conn);
             }
         } else {
             StringBuffer sb = new StringBuffer();
@@ -114,35 +107,6 @@ public class JdbcTransactionAppender extends AppenderSkeleton {
         }
     }
 
-    private void closeQuitely(Statement stmt) {
-        if (stmt != null) {
-            try {
-                stmt.close();
-            } catch (SQLException e) {
-                // ignore
-            }
-        }
-    }
-
-    private void closeQuitely(ResultSet rs) {
-        if (rs != null) {
-            try {
-                rs.close();
-            } catch (SQLException e) {
-                // ignore
-            }
-        }
-    }
-
-    private void closeQuitely(Connection conn) {
-        if (conn != null) {
-            try {
-                conn.close();
-            } catch (SQLException e) {
-                // ignore
-            }
-        }
-    }
 
     public void close() {
         // do nothing
