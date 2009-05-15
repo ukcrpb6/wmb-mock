@@ -95,7 +95,7 @@ public class DataSourceLocator {
 	 *             definition is missing
 	 */
 	public synchronized DataSource lookup(String dataSourceName) {
-		BasicDataSource ds ;
+		BasicDataSource ds;
 		if(dataSources.containsKey(dataSourceName)) {
 			ds = (BasicDataSource) dataSources.get(dataSourceName);
 			

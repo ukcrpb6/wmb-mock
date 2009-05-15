@@ -86,7 +86,7 @@ public class TimeoutRequest {
     /** 
      * @deprecated Use primitive data type boolean instead     
      */  
-    public void setAllowOverwrite(Boolean allowOverwrite){
+    public void setAllowOverwrite(Boolean allowOverwrite) {
         this.allowOverwrite = allowOverwrite.booleanValue();
     }
 

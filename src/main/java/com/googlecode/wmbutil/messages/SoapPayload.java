@@ -168,7 +168,7 @@ public class SoapPayload extends Payload {
 			return false;
 		}
 		
-		for(int i = 0; i<allNs.length; i++) {
+		for(int i = 0; i < allNs.length; i++) {
 			if(ns.equals(allNs[i])) {
 				return true;
 			}
@@ -211,7 +211,7 @@ public class SoapPayload extends Payload {
 				}
 				
 				// search for Body in all search namespaces
-				for(int i = 0; i<searchForNamespaces.length; i++) {
+				for(int i = 0; i < searchForNamespaces.length; i++) {
 					bodyElm = envElm.getFirstChildByName(searchForNamespaces[i], "Body");
 					
 					if(bodyElm != null) {

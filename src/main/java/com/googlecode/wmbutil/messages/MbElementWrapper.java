@@ -84,7 +84,7 @@ public class MbElementWrapper {
 			StringBuffer sb = new StringBuffer(length);
 			sb.append(value);
 			
-			for(int i = value.length(); i<length; i++) {
+			for(int i = value.length(); i < length; i++) {
 				sb.append(' ');
 			}
 			setValue(field, sb.toString());

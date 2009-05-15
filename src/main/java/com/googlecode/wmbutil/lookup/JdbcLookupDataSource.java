@@ -87,12 +87,15 @@ public class JdbcLookupDataSource implements LookupDataSource {
 			throw new CacheRefreshException("Failed to read from database", e);
 		} finally {
 			try {
-				if (rs != null)
+				if (rs != null) {
 					rs.close();
-				if (stmt != null)
+				}
+				if (stmt != null) {
 					stmt.close();
-				if (conn != null)
+				}
+				if (conn != null) {
 					conn.close();
+				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 				throw new CacheRefreshException("Failed writing to database", e);
@@ -158,14 +161,18 @@ public class JdbcLookupDataSource implements LookupDataSource {
 			throw new CacheRefreshException("Failed writing to database", e);
 		} finally {
 			try {
-				if (rs != null)
+				if (rs != null) {
 					rs.close();
-				if (stmt != null)
+				}
+				if (stmt != null) {
 					stmt.close();
-				if (pstmt != null)
+				}
+				if (pstmt != null) {
 					pstmt.close();
-				if (conn != null)
+				}
+				if (conn != null) {
 					conn.close();
+				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 				throw new CacheRefreshException("Failed writing to database", e);

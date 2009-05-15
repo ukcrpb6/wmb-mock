@@ -51,7 +51,7 @@ public class TdsRecord extends MbElementWrapper {
 
 		MbElement elm = getMbElement().getFirstElementByPath(name);
 		if (elm == null) {
-			elm = getMbElement().createElementAsLastChild(
+			getMbElement().createElementAsLastChild(
 					MbElement.TYPE_NAME_VALUE, name, value);
 		} else {
 			elm.setValue(value);
@@ -73,24 +73,27 @@ public class TdsRecord extends MbElementWrapper {
 	}
 
 	public long getLongField(String name) throws MbException {
-		if (getField(name) instanceof Integer)
+		if (getField(name) instanceof Integer) {
 			return ((Integer) getField(name)).longValue();
-		else
+		} else {
 			return ((Long) getField(name)).longValue();
+		}
 	}
 
 	public float getFloatField(String name) throws MbException {
-		if (getField(name) instanceof Integer)
+		if (getField(name) instanceof Integer) {
 			return ((Integer) getField(name)).floatValue();
-		else
+		} else {
 			return ((Float) getField(name)).floatValue();
+		}
 	}
 
 	public double getDoubleValue(String name) throws MbException {
-		if (getField(name) instanceof Integer)
+		if (getField(name) instanceof Integer) {
 			return ((Integer) getField(name)).doubleValue();
-		else
+		} else {
 			return ((Double) getField(name)).doubleValue();
+		}
 	}
 
 	public boolean getBooleanValue(String name) throws MbException {

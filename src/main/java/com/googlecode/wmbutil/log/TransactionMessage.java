@@ -67,7 +67,7 @@ public class TransactionMessage {
         }
         if(businessIds != null) {
             sb.append(" [BusinessIds: ");
-            for(int i = 0; i<businessIds.length; i++) {
+            for(int i = 0; i < businessIds.length; i++) {
                 if(i > 0) {
                     sb.append(", ");
                 }

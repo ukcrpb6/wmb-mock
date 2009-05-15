@@ -132,7 +132,7 @@ public class XmlElement extends MbElementWrapper {
 		// WMB prepends a @ on undefined MRM attributes
 		String atName = "@" + name;
 		
-		for(int i = 0; i<matches.size(); i++) {
+		for(int i = 0; i < matches.size(); i++) {
 			MbElement elm = (MbElement) matches.get(i);
 			if(name != null) {
 				
@@ -144,7 +144,7 @@ public class XmlElement extends MbElementWrapper {
 					}
 				}
 				
-			}else {
+			} else {
 				filtered.add(elm);
 			}
 			
@@ -318,7 +318,7 @@ public class XmlElement extends MbElementWrapper {
 		
 		List childList = (List) getMbElement().evaluateXPath(xpath);
 		List returnList = new ArrayList();
-		for(int i = 0; i<childList.size(); i++) {
+		for(int i = 0; i < childList.size(); i++) {
 			returnList.add(new XmlElement((MbElement) childList.get(i), isReadOnly()));
 		}
 		
@@ -367,7 +367,7 @@ public class XmlElement extends MbElementWrapper {
 		
 		List childList = (List) getMbElement().evaluateXPath(xpath);
 
-		if(childList.size() > 0 ) {
+		if(childList.size() > 0) {
 			return new XmlElement((MbElement) childList.get(0), isReadOnly());
 		} else {
 			return null;
@@ -505,7 +505,7 @@ public class XmlElement extends MbElementWrapper {
 			return ((MbTimestamp) getValue()).getTime();
 		} else if (value instanceof MbDate) {
 			return ((MbDate) getValue()).getTime();
-		} else if(value instanceof MbTime){
+		} else if(value instanceof MbTime) {
 			return ((MbTime) getValue()).getTime();
 		} else {
 			throw new ClassCastException("Type can not be cast to a date type: " + value.getClass());

@@ -53,7 +53,7 @@ public class CCSID {
 		if(cs != null) {
 			return cs;
 		} else {
-			return "Cp"+ ccsid;
+			return "Cp" + ccsid;
 		}
 	}
 }

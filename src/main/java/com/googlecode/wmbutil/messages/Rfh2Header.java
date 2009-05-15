@@ -111,7 +111,7 @@ public class Rfh2Header extends Header {
 		MbElement valueElm = areaElm.getFirstElementByPath(name);
 		
 		if(valueElm == null) {
-			valueElm = areaElm.createElementAsLastChild(MbElement.TYPE_NAME, name, value);
+			areaElm.createElementAsLastChild(MbElement.TYPE_NAME, name, value);
 		} else {
 			valueElm.setValue(value);
 		}
