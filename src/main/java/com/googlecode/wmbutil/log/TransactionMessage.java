@@ -60,15 +60,15 @@ public class TransactionMessage {
         sb.append(flowName);
         sb.append("]");
         
-        if(messageId != null) {
+        if (messageId != null) {
             sb.append(" [MessageId: ");
             sb.append(messageId);
             sb.append("]");
         }
-        if(businessIds != null) {
+        if (businessIds != null) {
             sb.append(" [BusinessIds: ");
-            for(int i = 0; i < businessIds.length; i++) {
-                if(i > 0) {
+            for (int i = 0; i < businessIds.length; i++) {
+                if (i > 0) {
                     sb.append(", ");
                 }
                 sb.append(businessIds[i]);

@@ -33,7 +33,7 @@ public class Rfh2Header extends Header {
 	public static Rfh2Header wrap(MbMessage msg, boolean readOnly) throws MbException {
 		MbElement elm = msg.getRootElement().getFirstElementByPath("/MQRFH2");
 
-		if(elm == null) {
+		if (elm == null) {
 			throw new NiceMbException("Failed to find Rfh2Header");
 		}
 		
@@ -41,11 +41,11 @@ public class Rfh2Header extends Header {
 	}
 
 	public static Rfh2Header create(MbMessage msg) throws MbException {
-		if(has(msg)) {
+		if (has(msg)) {
 			throw new NiceMbException("Already have RFH2 header");
 		}
 
-		if(MqmdHeader.has(msg)) {
+		if (MqmdHeader.has(msg)) {
 			MqmdHeader mqmd = MqmdHeader.wrap(msg, false);
 			mqmd.setFormat(WmqFormat.MQ_RFH2);
 			
@@ -61,7 +61,7 @@ public class Rfh2Header extends Header {
 	}
 	
 	public static Rfh2Header wrapOrCreate(MbMessage msg) throws MbException {
-		if(has(msg)) {
+		if (has(msg)) {
 			return wrap(msg, false);
 		} else {
 			return create(msg);
@@ -71,7 +71,7 @@ public class Rfh2Header extends Header {
 	public static Rfh2Header remove(MbMessage msg) throws MbException {
 		MbElement elm = msg.getRootElement().getFirstElementByPath("/MQRFH2");
 		
-		if(elm != null) {
+		if (elm != null) {
 			elm.detach();
 			return new Rfh2Header(elm, true);
 		} else {
@@ -91,7 +91,7 @@ public class Rfh2Header extends Header {
 	private Object getProperty(String area, String name) throws MbException {
 		MbElement valueElm = getMbElement().getFirstElementByPath(area + "/" + name);
 		
-		if(valueElm == null) {
+		if (valueElm == null) {
 			return null;
 		} else {
 			return valueElm.getValue();
@@ -103,14 +103,14 @@ public class Rfh2Header extends Header {
 		checkReadOnly();
 		
 		MbElement areaElm = getMbElement().getFirstElementByPath(area);
-		if(areaElm == null) {
+		if (areaElm == null) {
 			areaElm = getMbElement().createElementAsLastChild(MbElement.TYPE_NAME);
 			areaElm.setName(area);
 		}
 		
 		MbElement valueElm = areaElm.getFirstElementByPath(name);
 		
-		if(valueElm == null) {
+		if (valueElm == null) {
 			areaElm.createElementAsLastChild(MbElement.TYPE_NAME, name, value);
 		} else {
 			valueElm.setValue(value);

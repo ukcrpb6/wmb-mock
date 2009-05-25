@@ -47,6 +47,7 @@ public class SoapPayload extends Payload {
 	/**
 	 * Wrap an message containing a SOAP message with the helper class.
 	 * Automatically locates the XML tree.
+	 * 
 	 * @param msg The message to wrap.
 	 * @param readOnly Indicates whether the message is read-only (input message) 
 	 * 	   or not.
@@ -60,7 +61,7 @@ public class SoapPayload extends Payload {
 	public static SoapPayload wrap(MbMessage msg, boolean readOnly, String soapNamespace) throws MbException {
 		MbElement elm = locateXmlBody(msg);
 
-		if(elm == null) {
+		if (elm == null) {
 			throw new NiceMbException("Failed to find SOAP payload");
 		}
 		
@@ -83,8 +84,10 @@ public class SoapPayload extends Payload {
 
 	/**
 	 * Creates a payload as the last child, even if one already exists
+	 * 
 	 * @param msg The message on which the payload should be created
-	 * @param parser The name of the parser to use, for exampel XMSNS or MRM.
+	 * @param parser The name of the parser to use, for example XMSNS or MRM
+	 * @param soapNamespace The XML namespace to use for the payload
 	 * @return The helper class
 	 * @throws MbException
 	 */
@@ -95,6 +98,7 @@ public class SoapPayload extends Payload {
 	
 	/**
 	 * Wraps if payload already exists, of creates payload otherwise.
+	 * 
 	 * @param msg The message on which to wrap the payload
 	 * @return The helper class
 	 * @throws MbException
@@ -105,13 +109,14 @@ public class SoapPayload extends Payload {
 
 	/**
 	 * Wraps if payload already exists, of creates payload otherwise.
+	 * 
 	 * @param msg The message on which to wrap the payload
 	 * @param parser The name of the parser to use, for exampel XMSNS or MRM.
 	 * @return The helper class
 	 * @throws MbException
 	 */
 	public static SoapPayload wrapOrCreate(MbMessage msg, String parser) throws MbException {
-		if(has(msg)) {
+		if (has(msg)) {
 			return wrap(msg, false);
 		} else {
 			return create(msg, parser);
@@ -121,6 +126,7 @@ public class SoapPayload extends Payload {
 	
 	/** 
 	 * Removes the first SOAP payload
+	 * 
 	 * @param msg The message on which to remove the payload
 	 * @return The helper class for the removed payload
 	 * @throws MbException
@@ -128,7 +134,7 @@ public class SoapPayload extends Payload {
 	public static SoapPayload remove(MbMessage msg) throws MbException {
 		MbElement elm = locateXmlBody(msg);
 		
-		if(elm != null) {
+		if (elm != null) {
 			elm.detach();
 			return new SoapPayload(elm, false, true, null);
 		} else {
@@ -138,6 +144,7 @@ public class SoapPayload extends Payload {
 
 	/**
 	 * Checks if the message has a payload of this type
+	 * 
 	 * @param msg The message to check
 	 * @return true if the payload exists, false otherwise.
 	 * @throws MbException
@@ -150,13 +157,13 @@ public class SoapPayload extends Payload {
 	private static MbElement locateXmlBody(MbMessage msg) throws MbException {
 		MbElement elm = msg.getRootElement().getFirstElementByPath("/XMLNSC");
 
-		if(elm == null) {
+		if (elm == null) {
 			elm = msg.getRootElement().getFirstElementByPath("/XMLNS");
 		}
-		if(elm == null) {
+		if (elm == null) {
 			elm = msg.getRootElement().getFirstElementByPath("/XML");
 		}
-		if(elm == null) {
+		if (elm == null) {
 			elm = msg.getRootElement().getFirstElementByPath("/MRM");
 		}
 
@@ -164,12 +171,12 @@ public class SoapPayload extends Payload {
 	}
 	
 	private boolean inArray(String ns, String[] allNs) {
-		if(ns == null)  {
+		if (ns == null)  {
 			return false;
 		}
 		
-		for(int i = 0; i < allNs.length; i++) {
-			if(ns.equals(allNs[i])) {
+		for (int i = 0; i < allNs.length; i++) {
+			if (ns.equals(allNs[i])) {
 				return true;
 			}
 		}
@@ -181,27 +188,27 @@ public class SoapPayload extends Payload {
 		super(elm, readOnly);
 
 		String[] searchForNamespaces;
-		if(soapNamespace == null) {
+		if (soapNamespace == null) {
 			searchForNamespaces = NS_SOAP_ALL;
 			soapNamespace = NS_SOAP_11_ENV;
 		} else {
 			searchForNamespaces = new String[]{soapNamespace};
 		}
 		
-		if(!create) {
-			if(ElementUtil.isMRM(getMbElement())) {
+		if (!create) {
+			if (ElementUtil.isMRM(getMbElement())) {
 				envElm = new XmlElement(getMbElement(), isReadOnly());
 			} else {
 				MbElement child = getMbElement().getFirstChild();
 				
-				while(child != null) {
+				while (child != null) {
 					// find first and only element
-					if(child.getType() == XmlUtil.getFolderElementType(child)) {
+					if (child.getType() == XmlUtil.getFolderElementType(child)) {
 						envElm = new XmlElement(child, isReadOnly());
 						
-						if(!envElm.getName().equals("Envelope")) {
+						if (!envElm.getName().equals("Envelope")) {
 							throw new NiceMbException("SOAP root element must have the local name Envelope");
-						} else if(!inArray(envElm.getNameSpace(), searchForNamespaces)) {
+						} else if (!inArray(envElm.getNameSpace(), searchForNamespaces)) {
 							throw new NiceMbException("Unknown SOAP namespace: " + envElm.getNameSpace());
 						}
 						break;
@@ -211,23 +218,23 @@ public class SoapPayload extends Payload {
 				}
 				
 				// search for Body in all search namespaces
-				for(int i = 0; i < searchForNamespaces.length; i++) {
+				for (int i = 0; i < searchForNamespaces.length; i++) {
 					bodyElm = envElm.getFirstChildByName(searchForNamespaces[i], "Body");
 					
-					if(bodyElm != null) {
+					if (bodyElm != null) {
 						// found
 						break;
 					}
 				}
 				
 				// body not found
-				if(bodyElm == null) {
+				if (bodyElm == null) {
 					throw new NiceMbException("Failed to locate SOAP Body");
 				}
 				docElm = bodyElm.getFirstChild();
 			}
 		} else  {
-			if(ElementUtil.isMRM(getMbElement())) {
+			if (ElementUtil.isMRM(getMbElement())) {
 				// skip first level
 				envElm = new XmlElement(elm, readOnly);
 			} else {
@@ -239,7 +246,7 @@ public class SoapPayload extends Payload {
 			bodyElm = envElm.createLastChild(soapNamespace, "Body");
 		}
 
-		if(!isReadOnly()) {
+		if (!isReadOnly()) {
 			// declare SOAP namespace
 			declareNamespace("soap", soapNamespace);
 		}
@@ -248,6 +255,7 @@ public class SoapPayload extends Payload {
 
 	/**
 	 * Get the XML element for the part inside the SOAP Body element
+	 * 
 	 * @return The XML element inside of the SOAP Body, or null if such an element
 	 *   does not exist ({@link #createDocumentElement(String)}
 	 */
@@ -257,6 +265,7 @@ public class SoapPayload extends Payload {
 
 	/**
 	 * Create the XML element for the part inside the SOAP Body element
+	 * 
 	 * @param name The local name to use for the element
 	 * @return The XML element inside of the SOAP Body
 	 * @throws MbException
@@ -267,6 +276,7 @@ public class SoapPayload extends Payload {
 
 	/**
 	 * Create the XML element for the part inside the SOAP Body element
+	 * 
 	 * @param name The local name to use for the element
 	 * @param ns The namespace URI to use for the element
 	 * @return The XML element inside of the SOAP Body
@@ -282,6 +292,7 @@ public class SoapPayload extends Payload {
 
 	/**
 	 * Declare a nice prefix for a namespace URI. If not called, WMB will generate a prefix automatically.
+	 * 
 	 * @param prefix The prefix to use for the namespace
 	 * @param ns The namespace URI
 	 * @throws MbException
@@ -289,7 +300,7 @@ public class SoapPayload extends Payload {
 	public void declareNamespace(String prefix, String ns) throws MbException {
 		checkReadOnly();
 		
-		if(ElementUtil.isXML(envElm.getMbElement()) ||
+		if (ElementUtil.isXML(envElm.getMbElement()) ||
 				ElementUtil.isXMLNS(envElm.getMbElement()) ||
 				ElementUtil.isXMLNSC(envElm.getMbElement())) {
 			envElm.getMbElement().createElementAsFirstChild(MbXMLNS.NAMESPACE_DECL, prefix, ns).setNamespace("xmlns");

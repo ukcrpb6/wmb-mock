@@ -44,7 +44,7 @@ public class BlobPayload extends Payload {
 	public static BlobPayload wrap(MbMessage msg, boolean readOnly) throws MbException {
 		MbElement elm = locateBlob(msg);
 
-		if(elm == null) {
+		if (elm == null) {
 			throw new NiceMbException("Failed to find BLOB payload");
 		}
 		
@@ -74,7 +74,7 @@ public class BlobPayload extends Payload {
      * @throws MbException
      */
 	public static BlobPayload wrapOrCreate(MbMessage msg) throws MbException {
-		if(has(msg)) {
+		if (has(msg)) {
 			return wrap(msg, false);
 		} else {
 			return create(msg);
@@ -92,7 +92,7 @@ public class BlobPayload extends Payload {
 	public static BlobPayload remove(MbMessage msg) throws MbException {
 		MbElement elm = locateBlob(msg);
 		
-		if(elm != null) {
+		if (elm != null) {
 			elm.detach();
 			return new BlobPayload(elm, true);
 		} else {
@@ -126,7 +126,7 @@ public class BlobPayload extends Payload {
     /**
      * Class constructor
      * 
-     * @param elm 
+     * @param elm The message element
      * @param readOnly Specifies whether the payload is readonly 
      * @throws MbException
      */

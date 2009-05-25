@@ -34,7 +34,7 @@ public class HttpInputHeader extends Header {
 	public static HttpInputHeader wrap(MbMessage msg, boolean readOnly) throws MbException {
 		MbElement elm = msg.getRootElement().getFirstElementByPath("/" + ELEMENT_NAME);
 
-		if(elm == null) {
+		if (elm == null) {
 			throw new NiceMbException("Failed to find " + ELEMENT_NAME);
 		}
 		
@@ -42,7 +42,7 @@ public class HttpInputHeader extends Header {
 	}
 
 	public static HttpInputHeader create(MbMessage msg) throws MbException {
-		if(has(msg)) {
+		if (has(msg)) {
 			throw new NiceMbException("Already have " + ELEMENT_NAME + " header");
 		}
 
@@ -55,7 +55,7 @@ public class HttpInputHeader extends Header {
 	}
 	
 	public static HttpInputHeader wrapOrCreate(MbMessage msg) throws MbException {
-		if(has(msg)) {
+		if (has(msg)) {
 			return wrap(msg, false);
 		} else {
 			return create(msg);
@@ -65,7 +65,7 @@ public class HttpInputHeader extends Header {
 	public static HttpInputHeader remove(MbMessage msg) throws MbException {
 		MbElement elm = msg.getRootElement().getFirstElementByPath("/" + ELEMENT_NAME);
 		
-		if(elm != null) {
+		if (elm != null) {
 			elm.detach();
 			return new HttpInputHeader(elm, true);
 		} else {

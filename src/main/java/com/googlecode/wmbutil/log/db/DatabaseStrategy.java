@@ -12,7 +12,7 @@ public abstract class DatabaseStrategy {
     public static DatabaseStrategy createStrategy(Connection conn) throws SQLException {
         String database = conn.getMetaData().getDatabaseProductName();
 
-        if("Oracle".equals(database)) {
+        if ("Oracle".equals(database)) {
             return new OracleDatabaseStrategy();
         } else {
             return new AutoIncrementDatabaseStrategy();

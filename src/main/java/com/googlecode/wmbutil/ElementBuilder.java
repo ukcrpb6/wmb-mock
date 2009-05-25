@@ -59,8 +59,8 @@ public class ElementBuilder {
 	}
 	
 	public ElementBuilder setValue(Object value) throws MbException {
-		if(value instanceof MbElement) {
-			currentElm.setValue(((MbElement)value).getValue());
+		if (value instanceof MbElement) {
+			currentElm.setValue(((MbElement) value).getValue());
 		} else {
 			currentElm.setValue(value);
 		}

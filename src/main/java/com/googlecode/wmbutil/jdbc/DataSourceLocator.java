@@ -53,7 +53,7 @@ public class DataSourceLocator {
 	private DataSourceLocator() {
 		String brokerWorkpathPath = System.getProperty("broker.workpath");
 		
-		if(brokerWorkpathPath == null) {
+		if (brokerWorkpathPath == null) {
 			throw new IllegalStateException("System property broker.workpath must be set");
 		}
 		
@@ -96,10 +96,10 @@ public class DataSourceLocator {
 	 */
 	public synchronized DataSource lookup(String dataSourceName) {
 		BasicDataSource ds;
-		if(dataSources.containsKey(dataSourceName)) {
+		if (dataSources.containsKey(dataSourceName)) {
 			ds = (BasicDataSource) dataSources.get(dataSourceName);
 			
-			if(ds == null) {
+			if (ds == null) {
 				// we failed to create it earlier
 				throw new RuntimeException("Failed to create data source");
 			}
@@ -141,7 +141,7 @@ public class DataSourceLocator {
 				ds.setDefaultReadOnly(true);
 				
 				dataSources.put(dataSourceName, ds);
-			} catch(RuntimeException e) {
+			} catch (RuntimeException e) {
 				// mark failed to create
 				dataSources.put(dataSourceName, null);
 				throw e;

@@ -50,7 +50,7 @@ public class CCSID {
 	public static String ccsidToCharset(int ccsid) {
 		String cs = (String) CHARSETS.get(new Integer(ccsid));
 		
-		if(cs != null) {
+		if (cs != null) {
 			return cs;
 		} else {
 			return "Cp" + ccsid;

@@ -110,7 +110,7 @@ public class TdsPayload extends Payload {
     /**
      * Locates the payload in a message
      * 
-     * @param msg
+     * @param msg The message containing the payload
      * @return
      * @throws MbException
      */

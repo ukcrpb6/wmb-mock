@@ -139,7 +139,7 @@ public class LocalEnvironment extends Header {
     /**
      * Sets an Email destination header
      * 
-     * @param emailDestination
+     * @param emailDestination The EmailDestination to add
      * @throws MbException
      */
     public void setEmailDestination(EmailDestination emailDestination) throws MbException {
@@ -169,7 +169,7 @@ public class LocalEnvironment extends Header {
      * Adds an email attachment to the local environment
      * TODO: Handle XPath/ESQL expressions in Content
      * 
-     * @param emailAttachment
+     * @param emailAttachment The EmailAttachment to add
      * @throws MbException
      */
     public void addEmailAttachment(EmailAttachment emailAttachment) throws MbException {

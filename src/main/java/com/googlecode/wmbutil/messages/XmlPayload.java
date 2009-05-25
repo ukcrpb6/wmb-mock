@@ -160,7 +160,7 @@ public class XmlPayload extends Payload {
     /**
      * Class constructor
      * 
-     * @param elm 
+     * @param elm The message element
      * @param readOnly Specifies whether the payload is readonly 
      * @throws MbException
      */

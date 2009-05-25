@@ -39,8 +39,8 @@ import com.ibm.broker.plugin.MbXPath;
 public class XmlElement extends MbElementWrapper {
 	/**
 	 * 
-	 * @param wrappedElm
-	 * @param readOnly
+	 * @param wrappedElm The XML element
+	 * @param readOnly Specifies whether the element is read only or not.
 	 * @throws MbException
 	 */
 	public XmlElement(MbElement wrappedElm, boolean readOnly) throws MbException {
@@ -103,7 +103,7 @@ public class XmlElement extends MbElementWrapper {
 	private MbElement getAttributeElement(String ns, String name) throws MbException {
 		List elms = getAttributeElements(ns, name);
 		
-		if(elms.size() > 0) {
+		if (elms.size() > 0) {
 			return (MbElement) elms.get(0);
 		} else {
 			return null;
@@ -132,12 +132,12 @@ public class XmlElement extends MbElementWrapper {
 		// WMB prepends a @ on undefined MRM attributes
 		String atName = "@" + name;
 		
-		for(int i = 0; i < matches.size(); i++) {
+		for (int i = 0; i < matches.size(); i++) {
 			MbElement elm = (MbElement) matches.get(i);
-			if(name != null) {
+			if (name != null) {
 				
-				if(name.equals(elm.getName()) || atName.equals(elm.getName())) {
-					if(ns == null || ns.equals(elm.getNamespace())) {
+				if (name.equals(elm.getName()) || atName.equals(elm.getName())) {
+					if (ns == null || ns.equals(elm.getNamespace())) {
 						filtered.add(elm);
 						// there can be only one attribute with a specific name
 						break;
@@ -178,7 +178,7 @@ public class XmlElement extends MbElementWrapper {
 
 		if (attr != null) {
 			Object value = attr.getValue();
-			if(value != null) {
+			if (value != null) {
 				return value.toString();
 			} else {
 				return null;
@@ -248,7 +248,7 @@ public class XmlElement extends MbElementWrapper {
 		for (int i = 0; i < names.length; i++) {
 			String name = ((MbElement) matches.get(i)).getName();
 			
-			if(name.charAt(0) == '@') {
+			if (name.charAt(0) == '@') {
 				// remove leading @, WMB prepends it in the MRM domain. Why oh god why. 
 				name = name.substring(1);
 			}
@@ -312,13 +312,13 @@ public class XmlElement extends MbElementWrapper {
 	public List getChildrenByName(String ns, String name) throws MbException {
 		MbXPath xpath = new MbXPath(name, getMbElement());
 		
-		if(ns != null) {
+		if (ns != null) {
 			xpath.setDefaultNamespace(ns);
 		}
 		
 		List childList = (List) getMbElement().evaluateXPath(xpath);
 		List returnList = new ArrayList();
-		for(int i = 0; i < childList.size(); i++) {
+		for (int i = 0; i < childList.size(); i++) {
 			returnList.add(new XmlElement((MbElement) childList.get(i), isReadOnly()));
 		}
 		
@@ -355,19 +355,19 @@ public class XmlElement extends MbElementWrapper {
 	 * @throws MbException
 	 */
 	public XmlElement getFirstChildByName(String ns, String name) throws MbException {
-		if(name == null) {
+		if (name == null) {
 			name = "*";
 		}
 		
 		MbXPath xpath = new MbXPath(name + "[1]", getMbElement());
 		
-		if(ns != null) {
+		if (ns != null) {
 			xpath.setDefaultNamespace(ns);
 		}
 		
 		List childList = (List) getMbElement().evaluateXPath(xpath);
 
-		if(childList.size() > 0) {
+		if (childList.size() > 0) {
 			return new XmlElement((MbElement) childList.get(0), isReadOnly());
 		} else {
 			return null;
@@ -393,7 +393,7 @@ public class XmlElement extends MbElementWrapper {
 	public String getStringValue() throws MbException {
 		Object value = getValue();
 		
-		if(value != null) {
+		if (value != null) {
 			return value.toString();
 		} else {
 			return null;
@@ -409,10 +409,10 @@ public class XmlElement extends MbElementWrapper {
 	public int getIntValue() throws MbException {
 		Object value = getValue();
 
-		if(value == null) {
+		if (value == null) {
 			return 0;
-		} else if(value instanceof Integer) {
-			return ((Integer)value).intValue();
+		} else if (value instanceof Integer) {
+			return ((Integer) value).intValue();
 		} else {
 			return Integer.parseInt(value.toString());
 		}
@@ -427,10 +427,10 @@ public class XmlElement extends MbElementWrapper {
 	public long getLongValue() throws MbException {
 		Object value = getValue();
 
-		if(value == null) {
+		if (value == null) {
 			return 0;
-		} else if(value instanceof Long) {
-			return ((Long)value).longValue();
+		} else if (value instanceof Long) {
+			return ((Long) value).longValue();
 		} else {
 			return Long.parseLong(value.toString());
 		}
@@ -445,10 +445,10 @@ public class XmlElement extends MbElementWrapper {
 	public float getFloatValue() throws MbException {
 		Object value = getValue();
 
-		if(value == null) {
+		if (value == null) {
 			return 0;
-		} else if(value instanceof Float) {
-			return ((Float)value).floatValue();
+		} else if (value instanceof Float) {
+			return ((Float) value).floatValue();
 		} else {
 			return Float.parseFloat(value.toString());
 		}
@@ -463,10 +463,10 @@ public class XmlElement extends MbElementWrapper {
 	public double getDoubleValue() throws MbException {
 		Object value = getValue();
 
-		if(value == null) {
+		if (value == null) {
 			return 0;
-		} else if(value instanceof Double) {
-			return ((Double)value).doubleValue();
+		} else if (value instanceof Double) {
+			return ((Double) value).doubleValue();
 		} else {
 			return Double.parseDouble(value.toString());
 		}
@@ -481,10 +481,10 @@ public class XmlElement extends MbElementWrapper {
 	public boolean getBooleanValue() throws MbException {
 		Object value = getValue();
 
-		if(value == null) {
+		if (value == null) {
 			return false;
-		} else if(value instanceof Boolean) {
-			return ((Boolean)value).booleanValue();
+		} else if (value instanceof Boolean) {
+			return ((Boolean) value).booleanValue();
 		} else {
 			return Boolean.parseBoolean(value.toString());
 		}
@@ -499,13 +499,13 @@ public class XmlElement extends MbElementWrapper {
 	public Date getDateValue() throws MbException {
 		Object value = getValue();
 
-		if(value == null) {
+		if (value == null) {
 			return null;
 		} else if (value instanceof MbTimestamp) {
 			return ((MbTimestamp) getValue()).getTime();
 		} else if (value instanceof MbDate) {
 			return ((MbDate) getValue()).getTime();
-		} else if(value instanceof MbTime) {
+		} else if (value instanceof MbTime) {
 			return ((MbTime) getValue()).getTime();
 		} else {
 			throw new ClassCastException("Type can not be cast to a date type: " + value.getClass());
@@ -519,7 +519,7 @@ public class XmlElement extends MbElementWrapper {
 	 * @throws MbException
 	 */
 	private void setValue(Object value) throws MbException {
-		if(ElementUtil.isMRM(getMbElement())) {
+		if (ElementUtil.isMRM(getMbElement())) {
 			getMbElement().setValue(value);
 		} else {
 			getMbElement().setValue(value.toString());

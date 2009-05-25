@@ -26,7 +26,7 @@ public class Cache {
     /**
      * Gets or creates an existing cache
      * 
-     * @param componentName
+     * @param componentName The name of the component
      * @return
      * @throws LookupCacheException
      */
