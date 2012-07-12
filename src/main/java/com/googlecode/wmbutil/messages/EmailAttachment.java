@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 (C) Port of Göteborg AB.
+ * Copyright 2009 (C) Port of Gï¿½teborg AB.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -17,69 +17,79 @@
 package com.googlecode.wmbutil.messages;
 
 public class EmailAttachment {
-	private byte[] attachmentContentAsBlob;
-	private String attachmentContentAsText;
-	
-	/*
-	 * TODO: Not yet implemented
-	 * 
-	private String attachmentContentAsXpath;
-	private String attachmentContentAsEsql;
-	*/
-	private String attachmentContentType;
-	private String attachmentContentName;
-	private String attachmentContentEncoding;
-	
-	public static final String ENCODING_7BIT = "7bit";
-	public static final String ENCODING_BASE64 = "base64";
-	public static final String ENCODING_QUOTED_PRINTABLE = "quoted-printable";
-	
-	public byte[] getAttachmentContentAsBlob() {
-		return attachmentContentAsBlob;
-	}
-	public void setAttachmentContentAsBlob(byte[] attachmentContentAsBlob) {
-		this.attachmentContentAsBlob = attachmentContentAsBlob;
-	}
-	public String getAttachmentContentAsText() {
-		return attachmentContentAsText;
-	}
-	public void setAttachmentContentAsText(String attachmentContentAsText) {
-		this.attachmentContentAsText = attachmentContentAsText;
-	}
-	/*
-	public String getAttachmentContentAsXpath() {
-		return attachmentContentAsXpath;
-	}
-	public void setAttachmentContentAsXpath(String attachmentContentXpath) {
-		this.attachmentContentAsXpath = attachmentContentAsXpath;
-	}
-	public String getAttachmentContentAsEsql() {
-		return attachmentContentAsEsql;
-	}
-	public void setAttachmentContentAsEsql(String attachmentContentEsql) {
-		this.attachmentContentAsEsql = attachmentContentAsEsql;
-	}
-	*/
-	public String getAttachmentContentEncoding() {
-		return attachmentContentEncoding;
-	}
-	public void setAttachmentContentEncoding(String attachmentContentEncoding) {
-		this.attachmentContentEncoding = attachmentContentEncoding;
-	}
-	public String getAttachmentContentName() {
-		return attachmentContentName;
-	}
-	public void setAttachmentContentName(String attachmentContentName) {
-		this.attachmentContentName = attachmentContentName;
-	}
-	public String getAttachmentContentType() {
-		return attachmentContentType;
-	}
-	public void setAttachmentContentType(String attachmentContentType) {
-		this.attachmentContentType = attachmentContentType;
-	}
-	public EmailAttachment() {
-		
-	}
+    private byte[] attachmentContentAsBlob;
+    private String attachmentContentAsText;
+
+    /*
+      * TODO: Not yet implemented
+      *
+     private String attachmentContentAsXpath;
+     private String attachmentContentAsEsql;
+     */
+    private String attachmentContentType;
+    private String attachmentContentName;
+    private String attachmentContentEncoding;
+
+    public static final String ENCODING_7BIT = "7bit";
+    public static final String ENCODING_BASE64 = "base64";
+    public static final String ENCODING_QUOTED_PRINTABLE = "quoted-printable";
+
+    public byte[] getAttachmentContentAsBlob() {
+        return attachmentContentAsBlob;
+    }
+
+    public void setAttachmentContentAsBlob(byte[] attachmentContentAsBlob) {
+        this.attachmentContentAsBlob = attachmentContentAsBlob;
+    }
+
+    public String getAttachmentContentAsText() {
+        return attachmentContentAsText;
+    }
+
+    public void setAttachmentContentAsText(String attachmentContentAsText) {
+        this.attachmentContentAsText = attachmentContentAsText;
+    }
+
+    /*
+     public String getAttachmentContentAsXpath() {
+         return attachmentContentAsXpath;
+     }
+     public void setAttachmentContentAsXpath(String attachmentContentXpath) {
+         this.attachmentContentAsXpath = attachmentContentAsXpath;
+     }
+     public String getAttachmentContentAsEsql() {
+         return attachmentContentAsEsql;
+     }
+     public void setAttachmentContentAsEsql(String attachmentContentEsql) {
+         this.attachmentContentAsEsql = attachmentContentAsEsql;
+     }
+     */
+    public String getAttachmentContentEncoding() {
+        return attachmentContentEncoding;
+    }
+
+    public void setAttachmentContentEncoding(String attachmentContentEncoding) {
+        this.attachmentContentEncoding = attachmentContentEncoding;
+    }
+
+    public String getAttachmentContentName() {
+        return attachmentContentName;
+    }
+
+    public void setAttachmentContentName(String attachmentContentName) {
+        this.attachmentContentName = attachmentContentName;
+    }
+
+    public String getAttachmentContentType() {
+        return attachmentContentType;
+    }
+
+    public void setAttachmentContentType(String attachmentContentType) {
+        this.attachmentContentType = attachmentContentType;
+    }
+
+    public EmailAttachment() {
+
+    }
 
 }

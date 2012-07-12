@@ -16,40 +16,70 @@
 
 package com.googlecode.wmbutil;
 
-import java.util.Iterator;
-import java.util.List;
-
+import com.google.common.collect.*;
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 import com.ibm.broker.plugin.MbMessage;
 import com.ibm.broker.plugin.MbXPath;
 
-public class XPathIterator implements MbElementIterator {
+import java.util.Iterator;
+import java.util.List;
 
-	private Iterator matches;
-	
-	public XPathIterator(MbElement elm, MbXPath xpath) throws MbException {
-		matches = ((List) elm.evaluateXPath(xpath)).iterator();
-	}
+import static com.google.common.base.Preconditions.checkNotNull;
 
-	public XPathIterator(MbElement elm, String xpath) throws MbException {
-		this(elm, new MbXPath(xpath));
-	}
+public class XPathIterator extends ForwardingIterator<MbElement> {
 
-	public XPathIterator(MbMessage msg, MbXPath xpath) throws MbException {
-		matches = ((List) msg.evaluateXPath(xpath)).iterator();
-	}
-	
-	public XPathIterator(MbMessage msg, String xpath) throws MbException {
-		this(msg, new MbXPath(xpath));
-	}
+    private Iterator<MbElement> matches = Iterators.emptyIterator();
 
-	public boolean hasNext() {
-		return matches.hasNext();
-	}
+    public XPathIterator(MbElement element, MbXPath xpath) throws MbException {
+        Object result = checkNotNull(element).evaluateXPath(checkNotNull(xpath));
+        if (result instanceof List) {
+            setMatches((List<?>) result);
+        }
+    }
 
-	public MbElement next() {
-		return (MbElement) matches.next();
-	}
+    public XPathIterator(MbElement element, String xpath) throws MbException {
+        this(element, new MbXPath(xpath));
+    }
+
+    public XPathIterator(MbMessage message, MbXPath xpath) throws MbException {
+        Object result = checkNotNull(message).evaluateXPath(checkNotNull(xpath));
+        if (result instanceof List) {
+            setMatches((List<?>) result);
+        }
+    }
+
+    public XPathIterator(MbMessage msg, String xpath) throws MbException {
+        this(msg, new MbXPath(xpath));
+    }
+
+    private void setMatches(List<?> nodes) {
+        matches = createMbIterable(nodes).iterator();
+    }
+
+    private Iterable<MbElement> createMbIterable(final List<?> untypedList) {
+        final Iterator<?> iterator = ImmutableList.copyOf(untypedList).iterator();
+        return new FluentIterable<MbElement>() {
+            @Override
+            public Iterator<MbElement> iterator() {
+                return new AbstractIterator<MbElement>() {
+                    @Override
+                    protected MbElement computeNext() {
+                        while(iterator.hasNext()) {
+                            Object o = iterator.next();
+                            if(o != null && o instanceof MbElement) {
+                                return (MbElement) o;
+                            }
+                        }
+                        return endOfData();
+                    }
+                };
+            }
+        };
+    }
+
+    protected Iterator<MbElement> delegate() {
+        return matches;
+    }
 
 }

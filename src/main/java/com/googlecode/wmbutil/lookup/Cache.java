@@ -25,7 +25,7 @@ public class Cache {
 
     /**
      * Gets or creates an existing cache
-     * 
+     *
      * @param componentName The name of the component
      * @return
      * @throws LookupCacheException
@@ -122,8 +122,8 @@ public class Cache {
 
     public void updateValues(Map newValues, LookupDataSource ds) {
         try {
-        	this.initialized = false;
-        	ds.updateComponentData(this.componentName, newValues);
+            this.initialized = false;
+            ds.updateComponentData(this.componentName, newValues);
         } finally {
 
         }

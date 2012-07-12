@@ -19,18 +19,18 @@ package com.googlecode.wmbutil.lookup;
 
 public class LookupCacheException extends RuntimeException {
 
-	private static final long serialVersionUID = 4179883252546965905L;
+    private static final long serialVersionUID = 4179883252546965905L;
 
-	public LookupCacheException(String message, Throwable cause) {
-		super(message + " Caused by " + cause.getMessage());
-	}
+    public LookupCacheException(String message, Throwable cause) {
+        super(message + " Caused by " + cause.getMessage());
+    }
 
-	public LookupCacheException(String message) {
-		super(message);
-	}
+    public LookupCacheException(String message) {
+        super(message);
+    }
 
-	public LookupCacheException(Throwable cause) {
-		super(cause.getMessage());
-	}
+    public LookupCacheException(Throwable cause) {
+        super(cause.getMessage());
+    }
 
 }

@@ -24,7 +24,6 @@ import java.util.Date;
  * propagate messages according to its content. For more information regarding
  * the TimeoutRequest attributes, see the IBM Websphere Message Broker
  * documentation.
- * 
  */
 public class TimeoutRequest {
     public static final String ACTION_SET = "SET";
@@ -43,7 +42,6 @@ public class TimeoutRequest {
 
     /**
      * Class constructor
-     *
      */
     public TimeoutRequest() {
         this.action = TimeoutRequest.ACTION_SET;
@@ -54,14 +52,14 @@ public class TimeoutRequest {
 
     /**
      * Class constructor using an identifier & start date/time
-     * 
-     * @param identifier An alphanumeric identifier  
+     *
+     * @param identifier    An alphanumeric identifier
      * @param startDateTime When the Timeout should occur
      */
     public TimeoutRequest(String identifier, Date startDateTime) {
         this.action = TimeoutRequest.ACTION_SET;
         this.identifier = identifier;
-        this.startDateTime = startDateTime;        
+        this.startDateTime = startDateTime;
         // Default values in WMB
         this.ignoreMissed = true;
         this.allowOverwrite = true;
@@ -82,10 +80,10 @@ public class TimeoutRequest {
     public void setAllowOverwrite(boolean allowOverwrite) {
         this.allowOverwrite = allowOverwrite;
     }
-    
-    /** 
-     * @deprecated Use primitive data type boolean instead     
-     */  
+
+    /**
+     * @deprecated Use primitive data type boolean instead
+     */
     public void setAllowOverwrite(Boolean allowOverwrite) {
         this.allowOverwrite = allowOverwrite.booleanValue();
     }
@@ -113,14 +111,14 @@ public class TimeoutRequest {
     public void setIgnoreMissed(boolean ignoreMissed) {
         this.ignoreMissed = ignoreMissed;
     }
-    
-    /** 
-     * @deprecated Use primitive data type boolean instead     
+
+    /**
+     * @deprecated Use primitive data type boolean instead
      */
     public void setIgnoreMissed(Boolean ignoreMissed) {
         this.ignoreMissed = ignoreMissed.booleanValue();
     }
-    
+
     public Integer getInterval() {
         return interval;
     }

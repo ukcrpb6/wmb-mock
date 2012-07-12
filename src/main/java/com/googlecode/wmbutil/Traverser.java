@@ -21,7 +21,7 @@ import com.ibm.broker.plugin.MbException;
 
 public interface Traverser {
 
-	void evaluate(MbElement inElm, MbElement outElm) throws MbException;
-	
-	void forEachElement(MbElement elm) throws MbException;
+    void accept(MbElement inElm, MbElement outElm) throws MbException;
+
+    void visit(MbElement elm) throws MbException;
 }

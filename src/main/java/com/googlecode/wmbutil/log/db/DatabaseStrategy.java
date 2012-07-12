@@ -8,7 +8,7 @@ import java.sql.Statement;
 
 public abstract class DatabaseStrategy {
 
-    
+
     public static DatabaseStrategy createStrategy(Connection conn) throws SQLException {
         String database = conn.getMetaData().getDatabaseProductName();
 
@@ -18,7 +18,7 @@ public abstract class DatabaseStrategy {
             return new AutoIncrementDatabaseStrategy();
         }
     }
-    
+
     public abstract PreparedStatement prepareInsertStatement(Connection conn) throws SQLException;
 
     public abstract int getGeneratedKey(Statement stmt) throws SQLException;

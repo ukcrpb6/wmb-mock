@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 (C) Port of Göteborg AB.
+ * Copyright 2009 (C) Port of Gï¿½teborg AB.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -17,49 +17,49 @@
 package com.googlecode.wmbutil.messages;
 
 public class EmailDestination {
-	private String smtpServer;
-	private String securityIdentity;
-	private String bodyContentType;
-	private String multiPartContentType;
-	
-	public static final String CONTENT_TYPE_TEXT_PLAIN = "text/plain"; 
-	public static final String CONTENT_TYPE_TEXT_HTML = "text/html";
-	public static final String CONTENT_TYPE_TEXT_XML = "text/xml";
-	
-	public String getBodyContentType() {
-		return bodyContentType;
-	}
+    private String smtpServer;
+    private String securityIdentity;
+    private String bodyContentType;
+    private String multiPartContentType;
 
-	public void setBodyContentType(String bodyContentType) {
-		this.bodyContentType = bodyContentType;
-	}
+    public static final String CONTENT_TYPE_TEXT_PLAIN = "text/plain";
+    public static final String CONTENT_TYPE_TEXT_HTML = "text/html";
+    public static final String CONTENT_TYPE_TEXT_XML = "text/xml";
 
-	public String getMultiPartContentType() {
-		return multiPartContentType;
-	}
+    public String getBodyContentType() {
+        return bodyContentType;
+    }
 
-	public void setMultiPartContentType(String multiPartContentType) {
-		this.multiPartContentType = multiPartContentType;
-	}
+    public void setBodyContentType(String bodyContentType) {
+        this.bodyContentType = bodyContentType;
+    }
 
-	public String getSecurityIdentity() {
-		return securityIdentity;
-	}
+    public String getMultiPartContentType() {
+        return multiPartContentType;
+    }
 
-	public void setSecurityIdentity(String securityIdentity) {
-		this.securityIdentity = securityIdentity;
-	}
+    public void setMultiPartContentType(String multiPartContentType) {
+        this.multiPartContentType = multiPartContentType;
+    }
 
-	public String getSmtpServer() {
-		return smtpServer;
-	}
+    public String getSecurityIdentity() {
+        return securityIdentity;
+    }
 
-	public void setSmtpServer(String smtpServer) {
-		this.smtpServer = smtpServer;
-	}
+    public void setSecurityIdentity(String securityIdentity) {
+        this.securityIdentity = securityIdentity;
+    }
 
-	public EmailDestination() {
-		
-	}
-	
+    public String getSmtpServer() {
+        return smtpServer;
+    }
+
+    public void setSmtpServer(String smtpServer) {
+        this.smtpServer = smtpServer;
+    }
+
+    public EmailDestination() {
+
+    }
+
 }

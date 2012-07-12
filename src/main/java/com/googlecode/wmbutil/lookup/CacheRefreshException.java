@@ -18,18 +18,18 @@ package com.googlecode.wmbutil.lookup;
 
 public class CacheRefreshException extends LookupCacheException {
 
-	private static final long serialVersionUID = 6367452043939466587L;
+    private static final long serialVersionUID = 6367452043939466587L;
 
-	public CacheRefreshException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public CacheRefreshException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public CacheRefreshException(String message) {
-		super(message);
-	}
+    public CacheRefreshException(String message) {
+        super(message);
+    }
 
-	public CacheRefreshException(Throwable cause) {
-		super(cause);
-	}
+    public CacheRefreshException(Throwable cause) {
+        super(cause);
+    }
 
 }

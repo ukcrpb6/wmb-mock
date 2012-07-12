@@ -1,5 +1,13 @@
 package com.googlecode.wmbutil.log;
 
+import com.googlecode.wmbutil.jdbc.DataSourceLocator;
+import com.googlecode.wmbutil.log.db.DatabaseStrategy;
+import com.googlecode.wmbutil.log.db.DbUtil;
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.helpers.LogLog;
+import org.apache.log4j.spi.LoggingEvent;
+
+import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Connection;
@@ -7,23 +15,13 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
-import javax.sql.DataSource;
-
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.helpers.LogLog;
-import org.apache.log4j.spi.LoggingEvent;
-
-import com.googlecode.wmbutil.jdbc.DataSourceLocator;
-import com.googlecode.wmbutil.log.db.DatabaseStrategy;
-import com.googlecode.wmbutil.log.db.DbUtil;
-
 /**
  * Logs messages to a JDBC data source
  */
 public class JdbcTransactionAppender extends AppenderSkeleton {
 
     private String dataSource;
-    
+
     protected void append(LoggingEvent event) {
         Object msg = event.getMessage();
 
@@ -36,7 +34,7 @@ public class JdbcTransactionAppender extends AppenderSkeleton {
             PreparedStatement stmt = null;
             PreparedStatement busStmt = null;
 
-            
+
             try {
                 ds = dsLocator.lookup(dataSource);
 
@@ -71,7 +69,7 @@ public class JdbcTransactionAppender extends AppenderSkeleton {
                 stmt.executeUpdate();
 
                 int logId = databaseStrategy.getGeneratedKey(stmt);
-                
+
                 busStmt = databaseStrategy.prepareInsertBusinessStatement(conn);
 
                 if (transMsg.getBusinessIds() != null) {
@@ -100,17 +98,17 @@ public class JdbcTransactionAppender extends AppenderSkeleton {
             sb.append(". ");
             sb.append(getClass().getSimpleName());
             sb.append(" can only handle WMB transaction messages, check Log4j configuration.");
-            
+
             LogLog
-                .warn(sb.toString());
-            
+                    .warn(sb.toString());
+
         }
     }
 
 
     public void close() {
         // do nothing
-        
+
     }
 
     public boolean requiresLayout() {

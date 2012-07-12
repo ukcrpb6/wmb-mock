@@ -16,30 +16,31 @@
 
 package com.googlecode.wmbutil.messages;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.googlecode.wmbutil.NiceMbException;
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
+import com.ibm.broker.plugin.MbMRM;
 import com.ibm.broker.plugin.MbMessage;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Helper class for working with typical flat file data. This class assumes you 
+ * Helper class for working with typical flat file data. This class assumes you
  * have a message containing a set of records, each with a number of fields.
  */
 public class TdsPayload extends Payload {
 
-	/**
-	 * Wrap an message containing a flat file message with the helper class.
-	 * Automatically locates the MRM tree.
-	 * 
-	 * @param msg The message to wrap.
-	 * @param readOnly Indicates whether the message is read-only (input message) 
-	 * 	   or not.
-	 * @return The helper class
-	 * @throws MbException
-	 */
+    /**
+     * Wrap an message containing a flat file message with the helper class.
+     * Automatically locates the MRM tree.
+     *
+     * @param msg      The message to wrap.
+     * @param readOnly Indicates whether the message is read-only (input message)
+     *                 or not.
+     * @return The helper class
+     * @throws MbException
+     */
     public static TdsPayload wrap(MbMessage msg, boolean readOnly) throws MbException {
         MbElement elm = locatePayload(msg);
 
@@ -50,25 +51,25 @@ public class TdsPayload extends Payload {
         return new TdsPayload(elm, readOnly);
     }
 
-	/**
-	 * Creates a payload as the last child, even if one already exists
-	 * 
-	 * @param msg The message on which the payload should be created
-	 * @return The helper class
-	 * @throws MbException
-	 */
+    /**
+     * Creates a payload as the last child, even if one already exists
+     *
+     * @param msg The message on which the payload should be created
+     * @return The helper class
+     * @throws MbException
+     */
     public static TdsPayload create(MbMessage msg) throws MbException {
-        MbElement elm = msg.getRootElement().createElementAsLastChild("MRM");
+        MbElement elm = msg.getRootElement().createElementAsLastChild(MbMRM.PARSER_NAME);
         return new TdsPayload(elm, false);
     }
 
-	/**
-	 * Wraps if payload already exists, of creates payload otherwise.
-	 * 
-	 * @param msg The message on which to wrap the payload
-	 * @return The helper class
-	 * @throws MbException
-	 */
+    /**
+     * Wraps if payload already exists, of creates payload otherwise.
+     *
+     * @param msg The message on which to wrap the payload
+     * @return The helper class
+     * @throws MbException
+     */
     public static TdsPayload wrapOrCreate(MbMessage msg) throws MbException {
         if (has(msg)) {
             return wrap(msg, false);
@@ -77,13 +78,13 @@ public class TdsPayload extends Payload {
         }
     }
 
-	/** 
-	 * Removes (detaches) the first MRM payload
-	 * 
-	 * @param msg The message on which to remove the payload
-	 * @return The helper class for the removed payload
-	 * @throws MbException
-	 */
+    /**
+     * Removes (detaches) the first MRM payload
+     *
+     * @param msg The message on which to remove the payload
+     * @return The helper class for the removed payload
+     * @throws MbException
+     */
     public static TdsPayload remove(MbMessage msg) throws MbException {
         MbElement elm = locatePayload(msg);
 
@@ -95,13 +96,13 @@ public class TdsPayload extends Payload {
         }
     }
 
-	/**
-	 * Checks if the message has a payload of this type
-	 * 
-	 * @param msg The message to check
-	 * @return true if the payload exists, false otherwise.
-	 * @throws MbException
-	 */
+    /**
+     * Checks if the message has a payload of this type
+     *
+     * @param msg The message to check
+     * @return true if the payload exists, false otherwise.
+     * @throws MbException
+     */
     public static boolean has(MbMessage msg) throws MbException {
         MbElement elm = locatePayload(msg);
         return elm != null;
@@ -109,7 +110,7 @@ public class TdsPayload extends Payload {
 
     /**
      * Locates the payload in a message
-     * 
+     *
      * @param msg The message containing the payload
      * @return
      * @throws MbException
@@ -119,11 +120,11 @@ public class TdsPayload extends Payload {
 
         return elm;
     }
-   
+
     /**
      * Class constructor
-     * 
-     * @param elm The message element
+     *
+     * @param elm      The message element
      * @param readOnly Specifies Whether the payload is read only or not
      * @throws MbException
      */
@@ -135,7 +136,7 @@ public class TdsPayload extends Payload {
     /**
      * Create a record with the specfied name as the last
      * child in the message
-     * 
+     *
      * @param name The name of the record to create
      * @return The created record
      * @throws MbException
@@ -149,9 +150,9 @@ public class TdsPayload extends Payload {
     }
 
     /**
-     * Get all records with the specified name in the order they are 
+     * Get all records with the specified name in the order they are
      * located in the message.
-     * 
+     *
      * @param name The name of the records to retrieve
      * @return The list of records
      * @throws MbException
@@ -167,33 +168,33 @@ public class TdsPayload extends Payload {
 
     /**
      * Gets the record of the specified index
-     * 
+     *
      * @param index Position of the wanted record
      * @return The record
      * @throws MbException
      */
     public TdsRecord getRecord(int index) throws MbException {
-    	List records = getAllRecords();
-    	try {
-    		return new TdsRecord((MbElement) records.get(index), isReadOnly());
-    	} catch (ArrayIndexOutOfBoundsException e) {
-    		throw new NiceMbException("Record of specified number does not exist");
-    	}
+        List records = getAllRecords();
+        try {
+            return new TdsRecord((MbElement) records.get(index), isReadOnly());
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new NiceMbException("Record of specified number does not exist");
+        }
     }
-    
+
     /**
      * Returns the first record
-     * 
+     *
      * @return The first record
      * @throws MbException
      */
     public TdsRecord getRecord() throws MbException {
-    	return getRecord(0);
+        return getRecord(0);
     }
-    
+
     /**
      * Get all records in the order they are located in the message
-     * 
+     *
      * @return List of all records
      * @throws MbException
      */

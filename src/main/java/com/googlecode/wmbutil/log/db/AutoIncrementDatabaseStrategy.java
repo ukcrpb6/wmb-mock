@@ -1,10 +1,6 @@
 package com.googlecode.wmbutil.log.db;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class AutoIncrementDatabaseStrategy extends DatabaseStrategy {
 
@@ -12,7 +8,7 @@ public class AutoIncrementDatabaseStrategy extends DatabaseStrategy {
 
     private String INSERT_BUSINESS_SQL = "INSERT INTO TRANS_LOG_BUSINESS (log_id, business_id) values(?, ?)";
 
-    
+
     public PreparedStatement prepareInsertStatement(Connection conn) throws SQLException {
         return conn.prepareStatement(INSERT_SQL);
     }
@@ -31,6 +27,6 @@ public class AutoIncrementDatabaseStrategy extends DatabaseStrategy {
     public PreparedStatement prepareInsertBusinessStatement(Connection conn) throws SQLException {
         return conn.prepareStatement(INSERT_BUSINESS_SQL);
     }
-    
-            
+
+
 }

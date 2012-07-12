@@ -13,23 +13,20 @@
  * See the License for the specific language governing permissions and 
  * limitations under the License.
  */
-
 package com.googlecode.wmbutil;
 
 import com.ibm.broker.plugin.MbUserException;
 
 public class NiceMbException extends MbUserException {
 
-	private static final long serialVersionUID = -5760540385903728797L;
+    private static final long serialVersionUID = -5760540385903728797L;
 
-	public NiceMbException(Object source, String msg) {
-		super(source.getClass().getName(), "", "", "", msg, new Object[0]);
-	}
+    public NiceMbException(Object source, String msg) {
+        super(source.getClass().getName(), "", "", "", msg, new Object[0]);
+    }
 
-	public NiceMbException(String msg) {
-		
-		super("", "", "", "", msg, new Object[0]);
-	}
-
+    public NiceMbException(String msg) {
+        super("", "", "", "", msg, new Object[0]);
+    }
 
 }

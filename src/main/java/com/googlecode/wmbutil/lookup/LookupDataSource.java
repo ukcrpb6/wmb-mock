@@ -20,10 +20,10 @@ import java.util.Map;
 
 public interface LookupDataSource {
 
-	// TODO returns null if cache is not known, should throw?
-	LookupRows loadComponentData(String componentName)
-			throws LookupCacheException;
+    // TODO returns null if cache is not known, should throw?
+    LookupRows loadComponentData(String componentName)
+            throws LookupCacheException;
 
-	void updateComponentData(String componentName, Map values)
-			throws CacheRefreshException;
+    void updateComponentData(String componentName, Map values)
+            throws CacheRefreshException;
 }

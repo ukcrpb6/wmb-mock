@@ -342,7 +342,7 @@ public class MqmdHeader extends Header {
     public String getGroupIdAsHex() throws MbException {
         return asHex(getGroupId());
     }
-    
+
     public void setGroupId(byte[] groupId) throws MbException {
         setByteArray(PROPERTY_GROUP_ID, groupId, 24);
     }

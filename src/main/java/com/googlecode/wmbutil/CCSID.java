@@ -16,7 +16,13 @@
 
 package com.googlecode.wmbutil;
 
-import java.util.HashMap;
+import com.google.common.base.Objects;
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
+
+import java.nio.charset.Charset;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.Map;
 
 /**
@@ -24,36 +30,63 @@ import java.util.Map;
  * providing constants for common CCSIDs and methods
  * for converting to Java charsets
  */
-public class CCSID {
+public enum CCSID {
 
-	public static final int UTF16_BIG_ENDIAN = 1200;
-	public static final int UTF16_LITTLE_ENDIAN = 1202;
-	public static final int UTF8 = 1208;
-	public static final int ISO_88591 = 819;
-	public static final int ISO_LATIN1 = ISO_88591;
-	public static final int ASCII = 437;
-	public static final int EBCDIC_SWE_FIN = 278;
-	
-	private static final Map CHARSETS = new HashMap();
-	static {
-		CHARSETS.put(new Integer(UTF8), "UTF-8");
-		CHARSETS.put(new Integer(ASCII), "ASCII");
-	}
-	
-	/**
-	 * Converts a CCSID into the name used for the encoding
-	 * in Java. Note that this method might return charset 
-	 * names which are not supported on the particular platform.
-	 * @param ccsid The CCSID to find the name for
-	 * @return The Java name for the encoding.
-	 */
-	public static String ccsidToCharset(int ccsid) {
-		String cs = (String) CHARSETS.get(new Integer(ccsid));
-		
-		if (cs != null) {
-			return cs;
-		} else {
-			return "Cp" + ccsid;
-		}
-	}
+    UTF16_BIG_ENDIAN(1200), UTF16_LITTLE_ENDIAN(1202),
+    UTF8(1208, "UTF-8"),
+    ISO_8859_1(819), ISO_LATIN_1(819),
+    ASCII(437, "ASCII"),
+    EBCDIC_SWE_FIN(278);
+
+    private final int value;
+    private final Optional<String> charset;
+    private Charset charsetInstance;
+
+    private static Map<Integer, CCSID> cache = Maps.newHashMap();
+
+    static {
+        // Enum constants are initialised before static members - otherwise we'd populate in the constructor
+        for (CCSID ccsid : values()) {
+            cache.put(ccsid.value, ccsid);
+        }
+    }
+
+    CCSID(int value) {
+        this.value = value;
+        this.charset = Optional.absent();
+    }
+
+    CCSID(int value, String charset) {
+        this.value = value;
+        this.charset = Optional.fromNullable(Preconditions.checkNotNull(charset));
+    }
+
+    public static CCSID valueOf(int value) {
+        return cache.get(value);
+    }
+
+    /**
+     * Converts a CCSID into the name used for the encoding
+     * in Java. Note that this method might return charset
+     * names which are not supported on the particular platform.
+     *
+     * @return The Java name for the encoding.
+     */
+    public String toCharsetString() {
+        return charset.isPresent() ? charset.get() : "Cp" + value;
+    }
+
+    public Charset toCharset() throws UnsupportedCharsetException {
+        if (charsetInstance == null) {
+            charsetInstance = Charset.forName(toCharsetString());
+        }
+        return charsetInstance;
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("value", value)
+                .add("charset", toCharsetString()).toString();
+    }
 }

@@ -16,168 +16,163 @@
 
 package com.googlecode.wmbutil.lookup;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import com.googlecode.wmbutil.jdbc.DataSourceLocator;
+
+import javax.sql.DataSource;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
-import com.googlecode.wmbutil.jdbc.DataSourceLocator;
-
 public class JdbcLookupDataSource implements LookupDataSource {
 
-	private DataSource ds;
+    private DataSource ds;
 
-	public JdbcLookupDataSource(DataSource ds) {
-		this.ds = ds;
-	}
+    public JdbcLookupDataSource(DataSource ds) {
+        this.ds = ds;
+    }
 
-	/**
-	 * Default constructor. Will use the DataSourceLocator with the data source
-	 * name "lookup".
-	 */
-	public JdbcLookupDataSource() {
-		DataSourceLocator dsLocator = DataSourceLocator.getInstance();
-		this.ds = dsLocator.lookup("lookup");
-	}
+    /**
+     * Default constructor. Will use the DataSourceLocator with the data source
+     * name "lookup".
+     */
+    public JdbcLookupDataSource() {
+        DataSourceLocator dsLocator = DataSourceLocator.getInstance();
+        this.ds = dsLocator.lookup("lookup");
+    }
 
-	public LookupRows loadComponentData(String componentName)
-			throws CacheRefreshException {
-		Connection conn = null;
-		ResultSet rs = null;
-		Statement stmt = null;
+    public LookupRows loadComponentData(String componentName)
+            throws CacheRefreshException {
+        Connection conn = null;
+        ResultSet rs = null;
+        Statement stmt = null;
 
-		long ttl = 0;
-		long ttd = 0;
+        long ttl = 0;
+        long ttd = 0;
 
-		boolean ttSet = false;
+        boolean ttSet = false;
 
-		try {
-			conn = ds.getConnection();
-			stmt = conn.createStatement();
-			rs = stmt
-					.executeQuery("SELECT lookup.name, lookup.value, component.ttl, component.ttd "
-							+ "FROM lookup, component "
-							+ "WHERE component.id = lookup.component_id AND component.name='"
-							+ componentName + "'");
+        try {
+            conn = ds.getConnection();
+            stmt = conn.createStatement();
+            rs = stmt
+                    .executeQuery("SELECT lookup.name, lookup.value, component.ttl, component.ttd "
+                            + "FROM lookup, component "
+                            + "WHERE component.id = lookup.component_id AND component.name='"
+                            + componentName + "'");
 
-			Map data = new HashMap();
-			while (rs.next()) {
-				String key = rs.getString("name");
-				String value = rs.getString("value");
+            Map data = new HashMap();
+            while (rs.next()) {
+                String key = rs.getString("name");
+                String value = rs.getString("value");
 
-				if (!ttSet) {
-					ttl = rs.getLong("ttl");
-					ttd = rs.getLong("ttd");
-					ttSet = true;
-				}
+                if (!ttSet) {
+                    ttl = rs.getLong("ttl");
+                    ttd = rs.getLong("ttd");
+                    ttSet = true;
+                }
 
-				data.put(key, value);
-			}
+                data.put(key, value);
+            }
 
-			System.out.println("JC");
-			return new LookupRows(componentName, ttl, ttd, data);
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new CacheRefreshException("Failed to read from database", e);
-		} finally {
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (stmt != null) {
-					stmt.close();
-				}
-				if (conn != null) {
-					conn.close();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new CacheRefreshException("Failed writing to database", e);
-			}
-		}
-	}
+            System.out.println("JC");
+            return new LookupRows(componentName, ttl, ttd, data);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new CacheRefreshException("Failed to read from database", e);
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw new CacheRefreshException("Failed writing to database", e);
+            }
+        }
+    }
 
-	public void updateComponentData(String componentName, Map values)
-			throws CacheRefreshException {
-		Connection conn = null;
-		ResultSet rs = null;
-		Statement stmt = null;
-		PreparedStatement pstmt = null;
-		try {
-			conn = ds.getConnection();
-			conn.setAutoCommit(false);
-			conn.setReadOnly(false);
-			stmt = conn.createStatement();
+    public void updateComponentData(String componentName, Map values)
+            throws CacheRefreshException {
+        Connection conn = null;
+        ResultSet rs = null;
+        Statement stmt = null;
+        PreparedStatement pstmt = null;
+        try {
+            conn = ds.getConnection();
+            conn.setAutoCommit(false);
+            conn.setReadOnly(false);
+            stmt = conn.createStatement();
 
-			// Get component id
-			String sqlGetComponentId = "select * from component where name='"
-					+ componentName + "'";
-			rs = stmt.executeQuery(sqlGetComponentId);
-			Integer componentId = null;
-			while (rs.next()) {
-				componentId = new Integer(rs.getInt("id"));
-			}
-			if (componentId == null) {
-				throw new CacheRefreshException(
-						"Could not fins component with name:" + componentName);
-			}
+            // Get component id
+            String sqlGetComponentId = "select * from component where name='"
+                    + componentName + "'";
+            rs = stmt.executeQuery(sqlGetComponentId);
+            Integer componentId = null;
+            while (rs.next()) {
+                componentId = new Integer(rs.getInt("id"));
+            }
+            if (componentId == null) {
+                throw new CacheRefreshException(
+                        "Could not fins component with name:" + componentName);
+            }
 
-			// Delete existing data
-			String sqlDelete = "delete from lookup where component_id="
-					+ componentId;
-			// String sqlDelete = "delete from lookup where component.id="
-			// + "(select component_id from component where name='"
-			// + componentName + "')";
-			stmt.execute(sqlDelete);
+            // Delete existing data
+            String sqlDelete = "delete from lookup where component_id="
+                    + componentId;
+            // String sqlDelete = "delete from lookup where component.id="
+            // + "(select component_id from component where name='"
+            // + componentName + "')";
+            stmt.execute(sqlDelete);
 
-			// Insert new data
-			String sqlInsert = "INSERT INTO lookup (component_id, name, value, ttl, ttd) values (?, ?, ?, 0, 0)";
-			pstmt = conn.prepareStatement(sqlInsert);
-			Iterator iter = values.keySet().iterator();
-			while (iter.hasNext()) {
-				String key = (String) iter.next();
-				String value = (String) values.get(key);
-				pstmt.setInt(1, componentId.intValue());
-				pstmt.setString(2, key);
-				pstmt.setString(3, value);
-				pstmt.execute();
-			}
-			conn.commit();
-		} catch (SQLException e) {
-			try {
-				conn.rollback();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-				throw new CacheRefreshException("Failed writing to database",
-						e1);
-			}
-			e.printStackTrace();
-			throw new CacheRefreshException("Failed writing to database", e);
-		} finally {
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (stmt != null) {
-					stmt.close();
-				}
-				if (pstmt != null) {
-					pstmt.close();
-				}
-				if (conn != null) {
-					conn.close();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new CacheRefreshException("Failed writing to database", e);
-			}
-		}
-	}
+            // Insert new data
+            String sqlInsert = "INSERT INTO lookup (component_id, name, value, ttl, ttd) values (?, ?, ?, 0, 0)";
+            pstmt = conn.prepareStatement(sqlInsert);
+            Iterator iter = values.keySet().iterator();
+            while (iter.hasNext()) {
+                String key = (String) iter.next();
+                String value = (String) values.get(key);
+                pstmt.setInt(1, componentId.intValue());
+                pstmt.setString(2, key);
+                pstmt.setString(3, value);
+                pstmt.execute();
+            }
+            conn.commit();
+        } catch (SQLException e) {
+            try {
+                conn.rollback();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+                throw new CacheRefreshException("Failed writing to database",
+                        e1);
+            }
+            e.printStackTrace();
+            throw new CacheRefreshException("Failed writing to database", e);
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw new CacheRefreshException("Failed writing to database", e);
+            }
+        }
+    }
 
 }

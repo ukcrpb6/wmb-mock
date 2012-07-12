@@ -20,35 +20,35 @@ import java.util.Map;
 
 public class LookupRows {
 
-	private String componentName;
-	private long ttl;
-	private long ttd;
-	
-	private Map rows;
+    private String componentName;
+    private long ttl;
+    private long ttd;
 
-	public LookupRows(String componentName, long ttl, long ttd, Map rows) {
-		super();
-		this.componentName = componentName;
-		this.ttl = ttl;
-		this.ttd = ttd;
-		this.rows = rows;
-	}
+    private Map rows;
 
-	public String getComponentName() {
-		return componentName;
-	}
+    public LookupRows(String componentName, long ttl, long ttd, Map rows) {
+        super();
+        this.componentName = componentName;
+        this.ttl = ttl;
+        this.ttd = ttd;
+        this.rows = rows;
+    }
 
-	public long getTTL() {
-		return ttl;
-	}
+    public String getComponentName() {
+        return componentName;
+    }
 
-	public long getTTD() {
-		return ttd;
-	}
+    public long getTTL() {
+        return ttl;
+    }
 
-	public Map getRows() {
-		return rows;
-	}
-	
-	
+    public long getTTD() {
+        return ttd;
+    }
+
+    public Map getRows() {
+        return rows;
+    }
+
+
 }

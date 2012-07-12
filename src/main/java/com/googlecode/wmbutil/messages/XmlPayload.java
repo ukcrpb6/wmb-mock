@@ -19,15 +19,10 @@ package com.googlecode.wmbutil.messages;
 import com.googlecode.wmbutil.NiceMbException;
 import com.googlecode.wmbutil.util.ElementUtil;
 import com.googlecode.wmbutil.util.XmlUtil;
-import com.ibm.broker.plugin.MbElement;
-import com.ibm.broker.plugin.MbException;
-import com.ibm.broker.plugin.MbMessage;
-import com.ibm.broker.plugin.MbXMLNS;
-import com.ibm.broker.plugin.MbXMLNSC;
+import com.ibm.broker.plugin.*;
 
 /**
  * Helper class for working with XML messages.
- * 
  */
 public class XmlPayload extends Payload {
 
@@ -37,8 +32,8 @@ public class XmlPayload extends Payload {
 
     /**
      * Wraps a payload
-     * 
-     * @param msg The message containing the XML payload
+     *
+     * @param msg      The message containing the XML payload
      * @param readOnly Specifies whether the payload will be wrapped as read only or not.
      * @return XML payload found in the message
      * @throws MbException
@@ -55,7 +50,7 @@ public class XmlPayload extends Payload {
 
     /**
      * Creates an XMLNS payload as the last child, even if one already exists
-     * 
+     *
      * @param msg The message where to create an XML payload
      * @return A newly created XML payload
      * @throws MbException
@@ -63,11 +58,11 @@ public class XmlPayload extends Payload {
     public static XmlPayload create(MbMessage msg) throws MbException {
         return create(msg, DEFAULT_PARSER);
     }
-    
+
     /**
      * Creates a payload as the last child, even if one already exists
-     * 
-     * @param msg The message where to create an XML payload
+     *
+     * @param msg    The message where to create an XML payload
      * @param parser Specifies the payload parser
      * @return A newly created XML payload
      * @throws MbException
@@ -79,7 +74,7 @@ public class XmlPayload extends Payload {
 
     /**
      * Wraps or creates a payload as the last child, even if one already exists
-     * 
+     *
      * @param msg The message where to look for/create an XML payload
      * @return An XML payload, existent or newly created
      * @throws MbException
@@ -90,12 +85,12 @@ public class XmlPayload extends Payload {
 
     /**
      * Wraps or creates a payload as the last child, even if one already exists
-     * 
-     * @param msg The message where to look for/create an XML payload
+     *
+     * @param msg    The message where to look for/create an XML payload
      * @param parser Specifies the parser when creating a new payload
      * @return An XML payload, existent or newly created
      * @throws MbException
-     */    
+     */
     public static XmlPayload wrapOrCreate(MbMessage msg, String parser) throws MbException {
         if (has(msg)) {
             return wrap(msg, false);
@@ -106,7 +101,7 @@ public class XmlPayload extends Payload {
 
     /**
      * Removes (detaches) the first XML payload
-     * 
+     *
      * @param msg The message containing the XML payload
      * @return The detached payload
      * @throws MbException
@@ -121,10 +116,10 @@ public class XmlPayload extends Payload {
             throw new NiceMbException("Failed to find XML payload");
         }
     }
-    
+
     /**
      * Checks if a message contains an XML payload
-     * 
+     *
      * @param msg The message to check
      * @return True if there's an XML payload in the message
      * @throws MbException
@@ -136,9 +131,9 @@ public class XmlPayload extends Payload {
 
     /**
      * Locates the XML body in a message
-     * 
+     *
      * @param msg The message to check
-     * @return The XML body element of the message 
+     * @return The XML body element of the message
      * @throws MbException
      */
     private static MbElement locateXmlBody(MbMessage msg) throws MbException {
@@ -159,9 +154,9 @@ public class XmlPayload extends Payload {
 
     /**
      * Class constructor
-     * 
-     * @param elm The message element
-     * @param readOnly Specifies whether the payload is readonly 
+     *
+     * @param elm      The message element
+     * @param readOnly Specifies whether the payload is readonly
      * @throws MbException
      */
     private XmlPayload(MbElement elm, boolean readOnly) throws MbException {
@@ -186,8 +181,8 @@ public class XmlPayload extends Payload {
 
     /**
      * Returns the root element
-     * 
-     * @return The root element 
+     *
+     * @return The root element
      * @throws MbException
      */
     public XmlElement getRootElement() {
@@ -196,9 +191,9 @@ public class XmlPayload extends Payload {
 
     /**
      * Creates a root element (without a namespace)
-     * 
-     * @param name The root element name 
-     * @return The root element 
+     *
+     * @param name The root element name
+     * @return The root element
      * @throws MbException
      */
     public XmlElement createRootElement(String name) throws MbException {
@@ -207,12 +202,12 @@ public class XmlPayload extends Payload {
 
     /**
      * Creates a root element (with a namespace)
-     * 
-     * @param ns Element name space
-     * @param name The root element name 
-     * @return The root element 
+     *
+     * @param ns   Element name space
+     * @param name The root element name
+     * @return The root element
      * @throws MbException
-     */    
+     */
     public XmlElement createRootElement(String ns, String name) throws MbException {
         checkReadOnly();
 
@@ -235,9 +230,9 @@ public class XmlPayload extends Payload {
 
     /**
      * Declares a namespace in the root element
-     * 
-     * @param prefix What prefix to use 
-     * @param ns The namespace string 
+     *
+     * @param prefix What prefix to use
+     * @param ns     The namespace string
      * @throws MbException
      */
     public void declareNamespace(String prefix, String ns) throws MbException {
@@ -249,42 +244,42 @@ public class XmlPayload extends Payload {
                     .setNamespace("xmlns");
         }
     }
-    
+
     /**
      * Creates an XML declaration in the payload even if one exists
-     * 
-     * @param version XML version
-     * @param encoding XML encoding
+     *
+     * @param version    XML version
+     * @param encoding   XML encoding
      * @param standalone Specifies whether standalone should be set to yes or no
-     * @throws MbException 
+     * @throws MbException
      */
     public void createXmlDeclaration(String version, String encoding, boolean standalone) throws MbException {
-    	checkReadOnly();
-    	
-    	MbElement elm = getMbElement();
-    	
-    	if (ElementUtil.isXMLNSC(elm)) {
-    		MbElement xmlDecl = elm.createElementAsFirstChild(MbXMLNSC.XML_DECLARATION);
-        	xmlDecl.setName("XmlDeclaration");
-       		xmlDecl.createElementAsLastChild(MbXMLNSC.ATTRIBUTE, "Version", version); 
-       		xmlDecl.createElementAsLastChild(MbXMLNSC.ATTRIBUTE, "Encoding", encoding); 
-       		if (standalone) {
-       			xmlDecl.createElementAsLastChild(MbXMLNSC.ATTRIBUTE, "Standalone", "yes");
-       		} else {
-       			xmlDecl.createElementAsLastChild(MbXMLNSC.ATTRIBUTE, "Standalone", "no");
-       		}
-    	} else if (ElementUtil.isXML(elm) || ElementUtil.isXMLNS(elm)) {
-    		MbElement xmlDecl = elm.createElementAsFirstChild(MbXMLNS.XML_DECL);
-        	xmlDecl.setName("XmlDeclaration");
-       		xmlDecl.createElementAsLastChild(MbXMLNS.VERSION, "version", version);
-       		xmlDecl.createElementAsLastChild(MbXMLNS.ENCODING, "encoding", encoding); 
-       		if (standalone) {
-       			xmlDecl.createElementAsLastChild(MbXMLNS.STANDALONE, "Standalone", "yes");
-       		} else {
-       			xmlDecl.createElementAsLastChild(MbXMLNS.STANDALONE, "Standalone", "no");
-       		}
-    	} else {
-    		throw new NiceMbException("Failed to create XML declaration for parser " + XmlUtil.getFolderElementType(elm));
-    	}
+        checkReadOnly();
+
+        MbElement elm = getMbElement();
+
+        if (ElementUtil.isXMLNSC(elm)) {
+            MbElement xmlDecl = elm.createElementAsFirstChild(MbXMLNSC.XML_DECLARATION);
+            xmlDecl.setName("XmlDeclaration");
+            xmlDecl.createElementAsLastChild(MbXMLNSC.ATTRIBUTE, "Version", version);
+            xmlDecl.createElementAsLastChild(MbXMLNSC.ATTRIBUTE, "Encoding", encoding);
+            if (standalone) {
+                xmlDecl.createElementAsLastChild(MbXMLNSC.ATTRIBUTE, "Standalone", "yes");
+            } else {
+                xmlDecl.createElementAsLastChild(MbXMLNSC.ATTRIBUTE, "Standalone", "no");
+            }
+        } else if (ElementUtil.isXML(elm) || ElementUtil.isXMLNS(elm)) {
+            MbElement xmlDecl = elm.createElementAsFirstChild(MbXMLNS.XML_DECL);
+            xmlDecl.setName("XmlDeclaration");
+            xmlDecl.createElementAsLastChild(MbXMLNS.VERSION, "version", version);
+            xmlDecl.createElementAsLastChild(MbXMLNS.ENCODING, "encoding", encoding);
+            if (standalone) {
+                xmlDecl.createElementAsLastChild(MbXMLNS.STANDALONE, "Standalone", "yes");
+            } else {
+                xmlDecl.createElementAsLastChild(MbXMLNS.STANDALONE, "Standalone", "no");
+            }
+        } else {
+            throw new NiceMbException("Failed to create XML declaration for parser " + XmlUtil.getFolderElementType(elm));
+        }
     }
 }

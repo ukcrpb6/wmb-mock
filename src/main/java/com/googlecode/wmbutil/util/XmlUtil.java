@@ -16,32 +16,26 @@
 
 package com.googlecode.wmbutil.util;
 
-import com.ibm.broker.plugin.MbElement;
-import com.ibm.broker.plugin.MbException;
-import com.ibm.broker.plugin.MbXMLNS;
-import com.ibm.broker.plugin.MbXMLNSC;
+import com.ibm.broker.plugin.*;
 
 public class XmlUtil {
 
     public static boolean isElement(MbElement elmInTree) throws MbException {
-        String parseName = elmInTree.getParserClassName().toUpperCase();
-        int type = elmInTree.getSpecificType();
-        if (parseName.equals(MbXMLNSC.PARSER_NAME)) {
+        final int type = elmInTree.getSpecificType();
+        if (ElementUtil.isXMLNSC(elmInTree)) {
             return type == MbXMLNSC.FOLDER || type == MbXMLNSC.FIELD;
-        } else if (parseName.equals("MRM")) {
+        } else if (ElementUtil.isMRM(elmInTree)) {
             return type == MbElement.TYPE_NAME;
         } else {
             return type == MbXMLNS.ELEMENT;
         }
-        
+
     }
-    
-    public static int getFolderElementType(MbElement elmInTree)
-            throws MbException {
-        String parseName = elmInTree.getParserClassName().toUpperCase();
-        if (parseName.equals(MbXMLNSC.PARSER_NAME)) {
+
+    public static int getFolderElementType(MbElement elmInTree) throws MbException {
+        if (ElementUtil.isXMLNSC(elmInTree)) {
             return MbXMLNSC.FOLDER;
-        } else if (parseName.equals("MRM")) {
+        } else if (ElementUtil.isMRM(elmInTree)) {
             return MbElement.TYPE_NAME;
         } else {
             return MbXMLNS.ELEMENT;
@@ -49,13 +43,13 @@ public class XmlUtil {
     }
 
     public static int getAttributeType(MbElement elmInTree) throws MbException {
-        String parseName = elmInTree.getParserClassName().toUpperCase();
-        if (parseName.equals(MbXMLNSC.PARSER_NAME)) {
+        if (ElementUtil.isXMLNSC(elmInTree)) {
             return MbXMLNSC.ATTRIBUTE;
-        } else if (parseName.equals("MRM")) {
+        } else if (ElementUtil.isMRM(elmInTree)) {
             return MbElement.TYPE_NAME_VALUE;
         } else {
             return MbXMLNS.ATTRIBUTE;
         }
     }
+
 }

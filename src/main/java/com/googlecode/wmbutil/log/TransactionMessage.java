@@ -12,12 +12,12 @@ public class TransactionMessage {
     private String messageId;
     private String[] businessIds;
     private MbMessageAssembly messageAssembly;
-    
-    
-    public TransactionMessage(String brokerName, String nodeName, String flowName, 
-            String message, String messageId,
-            String[] businessIds, 
-            MbMessageAssembly messageAssembly) {
+
+
+    public TransactionMessage(String brokerName, String nodeName, String flowName,
+                              String message, String messageId,
+                              String[] businessIds,
+                              MbMessageAssembly messageAssembly) {
         this.brokerName = brokerName;
         this.nodeName = nodeName;
         this.flowName = flowName;
@@ -38,16 +38,19 @@ public class TransactionMessage {
     public String getFlowName() {
         return flowName;
     }
-    
+
     public String getMessage() {
         return message;
     }
+
     public String getMessageId() {
         return messageId;
     }
+
     public String[] getBusinessIds() {
         return businessIds;
     }
+
     public MbMessageAssembly getMessageAssembly() {
         return messageAssembly;
     }
@@ -55,11 +58,11 @@ public class TransactionMessage {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append(message);
-        
+
         sb.append(" [MessageFlow: ");
         sb.append(flowName);
         sb.append("]");
-        
+
         if (messageId != null) {
             sb.append(" [MessageId: ");
             sb.append(messageId);
@@ -75,8 +78,8 @@ public class TransactionMessage {
             }
             sb.append("]");
         }
-        
-        return sb.toString(); 
+
+        return sb.toString();
     }
-    
+
 }

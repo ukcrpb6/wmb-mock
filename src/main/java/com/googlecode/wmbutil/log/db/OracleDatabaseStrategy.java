@@ -1,10 +1,6 @@
 package com.googlecode.wmbutil.log.db;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 /**
  * Note that due to a bug in the Oracle JDBC drivers, this code only
@@ -17,11 +13,11 @@ import java.sql.Statement;
 public class OracleDatabaseStrategy extends DatabaseStrategy {
 
     protected String INSERT_SQL = "INSERT INTO TRANS_LOG (id, broker, message_flow, component, log_level, message, message_id, exception,  update_time) values(TRANS_LOG_SEQ.nextval, ?, ?, ?, ?, ?, ?, ?, ?)";
-    
+
     private String INSERT_BUSINESS_SQL = "INSERT INTO TRANS_LOG_BUSINESS (id, log_id, business_id) values(TRANS_LOG_SEQ.nextval, ?, ?)";
-    
+
     public PreparedStatement prepareInsertStatement(Connection conn) throws SQLException {
-        return conn.prepareStatement(INSERT_SQL, new String[]{"id"}); 
+        return conn.prepareStatement(INSERT_SQL, new String[]{"id"});
     }
 
     public int getGeneratedKey(Statement stmt) throws SQLException {
@@ -34,8 +30,9 @@ public class OracleDatabaseStrategy extends DatabaseStrategy {
             DbUtil.closeQuitely(rs);
         }
     }
+
     public PreparedStatement prepareInsertBusinessStatement(Connection conn) throws SQLException {
-        return conn.prepareStatement(INSERT_BUSINESS_SQL); 
+        return conn.prepareStatement(INSERT_BUSINESS_SQL);
     }
-            
+
 }
