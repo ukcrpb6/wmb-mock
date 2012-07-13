@@ -28,8 +28,8 @@ import java.util.GregorianCalendar;
 
 public class TdsRecord extends MbElementWrapper {
 
-    public TdsRecord(MbElement wrappedElm, boolean readOnly) throws MbException {
-        super(wrappedElm, readOnly);
+    public TdsRecord(MbElement wrappedElm) throws MbException {
+        super(wrappedElm);
     }
 
     public Object getField(String name) throws MbException {
@@ -43,8 +43,6 @@ public class TdsRecord extends MbElementWrapper {
     }
 
     public void setField(String name, Object value) throws MbException {
-        checkReadOnly();
-
         MbElement elm = getMbElement().getFirstElementByPath(name);
         if (elm == null) {
             getMbElement().createElementAsLastChild(

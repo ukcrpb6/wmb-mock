@@ -28,10 +28,9 @@ public abstract class Payload extends MbElementWrapper {
      * Constructor defining the payload with the specific element.
      *
      * @param elm      The message element.
-     * @param readOnly Whether or not the message is read only or not.
      * @throws MbException
      */
-    public Payload(MbElement elm, boolean readOnly) throws MbException {
-        super(elm, readOnly);
+    public Payload(MbElement elm) throws MbException {
+        super(elm);
     }
 }

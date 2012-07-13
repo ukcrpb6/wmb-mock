@@ -36,22 +36,21 @@ public class BlobPayload extends Payload {
      * Wraps a payload
      *
      * @param msg      The message containing the BLOB payload
-     * @param readOnly Specifies whether the payload will be wrapped as read only or not.
      * @return The BLOB payload found in the message
      * @throws MbException
      */
-    public static BlobPayload wrap(MbMessage msg, boolean readOnly) throws MbException {
+    public static BlobPayload wrap(MbMessage msg) throws MbException {
         MbElement elm = locateBlob(msg);
 
         if (elm == null) {
             throw new NiceMbException("Failed to find BLOB payload");
         }
 
-        return new BlobPayload(elm, readOnly);
+        return new BlobPayload(elm);
     }
 
     /**
-     * Creates a payload as the last child, even if one already exists
+     * Creates a payload as the last child, even if one already headerExistsIn
      *
      * @param msg The message where to create a BLOB payload
      * @return A newly created BLOB payload
@@ -62,11 +61,11 @@ public class BlobPayload extends Payload {
 
         MbElement blobElm = elm.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "BLOB", null);
 
-        return new BlobPayload(blobElm, false);
+        return new BlobPayload(blobElm);
     }
 
     /**
-     * Wraps or creates a payload as the last child, even if one already exists
+     * Wraps or creates a payload as the last child, even if one already headerExistsIn
      *
      * @param msg The message where to look for/create an XML payload
      * @return An BLOB payload, existent or newly created
@@ -74,7 +73,7 @@ public class BlobPayload extends Payload {
      */
     public static BlobPayload wrapOrCreate(MbMessage msg) throws MbException {
         if (has(msg)) {
-            return wrap(msg, false);
+            return wrap(msg);
         } else {
             return create(msg);
         }
@@ -93,7 +92,7 @@ public class BlobPayload extends Payload {
 
         if (elm != null) {
             elm.detach();
-            return new BlobPayload(elm, true);
+            return new BlobPayload(elm); // TODO: Make Immutable Variant
         } else {
             throw new NiceMbException("Failed to find BLOB payload");
         }
@@ -126,11 +125,10 @@ public class BlobPayload extends Payload {
      * Class constructor
      *
      * @param elm      The message element
-     * @param readOnly Specifies whether the payload is readonly
      * @throws MbException
      */
-    private BlobPayload(MbElement elm, boolean readOnly) throws MbException {
-        super(elm, readOnly);
+    private BlobPayload(MbElement elm) throws MbException {
+        super(elm);
     }
 
     /**

@@ -20,28 +20,16 @@ import com.googlecode.wmbutil.NiceMbException;
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 
-public class MbElementWrapper {
+public abstract class MbElementWrapper {
 
     private MbElement wrappedElm;
-    private boolean readOnly;
 
-    public MbElementWrapper(MbElement elm, boolean readOnly) throws MbException {
+    public MbElementWrapper(MbElement elm) throws MbException {
         this.wrappedElm = elm;
-        this.readOnly = readOnly;
     }
 
     protected MbElement getMbElement() {
         return wrappedElm;
-    }
-
-    protected boolean isReadOnly() {
-        return readOnly;
-    }
-
-    protected void checkReadOnly() throws MbException {
-        if (isReadOnly()) {
-            throw new NiceMbException(this, "Message is read-only, can not be changed");
-        }
     }
 
     private Object getValue(String field) throws MbException {
@@ -54,8 +42,6 @@ public class MbElementWrapper {
     }
 
     private void setValue(String field, Object value) throws MbException {
-        checkReadOnly();
-
         MbElement elm = getMbElement().getFirstElementByPath(field);
         if (elm == null) {
             elm = getMbElement().createElementAsLastChild(MbElement.TYPE_NAME_VALUE, field, null);

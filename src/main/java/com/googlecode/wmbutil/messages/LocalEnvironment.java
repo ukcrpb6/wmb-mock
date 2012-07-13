@@ -16,6 +16,7 @@
 
 package com.googlecode.wmbutil.messages;
 
+import com.google.common.base.Optional;
 import com.googlecode.wmbutil.NiceMbException;
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
@@ -34,23 +35,20 @@ public class LocalEnvironment extends Header {
      * same {@link MbMessage} as the one containing your data
      *
      * @param msg      The message to wrap
-     * @param readOnly Indicates whether the message is read-only (input
-     *                 message) or not.
      * @return The wrapped message
      * @throws MbException
      */
-    public static LocalEnvironment wrap(MbMessage msg, boolean readOnly) throws MbException {
-        MbElement elm = msg.getRootElement();
-
-        if (elm == null) {
-            throw new NiceMbException("Failed to find root element");
-        }
-
-        return new LocalEnvironment(elm, readOnly);
+    public static Optional<LocalEnvironment> wrap(MbMessage msg) throws MbException {
+        return checkExists(msg) ?
+                Optional.<LocalEnvironment>absent() : Optional.of(new LocalEnvironment(msg.getRootElement()));
     }
 
-    private LocalEnvironment(MbElement elm, boolean readOnly) throws MbException {
-        super(elm, readOnly);
+    private static boolean checkExists(MbMessage message) throws MbException {
+        return message.getRootElement() != null;
+    }
+
+    private LocalEnvironment(MbElement elm) throws MbException {
+        super(elm);
     }
 
     /**

@@ -1,74 +1,35 @@
-/*
- * Copyright 2007 (C) Callista Enterprise.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
- *
- *	http://www.apache.org/licenses/LICENSE-2.0 
- *
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
- * limitations under the License.
- */
-
 package com.googlecode.wmbutil.messages;
 
-import com.google.common.base.Preconditions;
-import com.googlecode.wmbutil.NiceMbException;
-import com.ibm.broker.javacompute.Base64;
-import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 
-import java.io.UnsupportedEncodingException;
+/**
+ * @author Bob Browning <bob.browning@pressassociation.com>
+ */
+public interface HttpHeader {
+    String get(String name) throws MbException;
 
-import static com.google.common.net.HttpHeaders.*;
-
-public class HttpHeader extends Header {
-
-    private final MbHttpHeaderType type;
-
-    HttpHeader(MbElement elm, MbHttpHeaderType type, boolean readOnly) throws MbException {
-        super(elm, readOnly);
-        this.type = type;
-    }
-
-    public String get(String name) throws MbException {
-        return getStringValue(name);
-    }
-
-    public void set(String name, String value) throws MbException {
-        setStringValue(name, value);
-    }
+    void set(String name, String value) throws MbException;
 
     /**
      * Returns the {@code "Accept"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final String getAccept() throws MbException {
-        return getStringValue(ACCEPT);
-    }
+    String getAccept() throws MbException;
 
     /**
      * Sets the {@code "Accept"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final void setAccept(String accept) throws MbException {
-        setStringValue(ACCEPT, accept);
-    }
+    void setAccept(String accept) throws MbException;
 
     /**
      * Returns the {@code "Accept-Encoding"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final String getAcceptEncoding() throws MbException {
-        return getStringValue(ACCEPT_ENCODING);
-    }
+    String getAcceptEncoding() throws MbException;
 
     /**
      * Sets the {@code "Accept-Encoding"} header or {@code null} for none.
@@ -79,63 +40,49 @@ public class HttpHeader extends Header {
      *
      * @since 1.5
      */
-    public final void setAcceptEncoding(String acceptEncoding) throws MbException {
-        setStringValue(ACCEPT_ENCODING, acceptEncoding);
-    }
+    void setAcceptEncoding(String acceptEncoding) throws MbException;
 
     /**
      * Returns the {@code "Authorization"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final String getAuthorization() throws MbException {
-        return getStringValue(AUTHORIZATION);
-    }
+    String getAuthorization() throws MbException;
 
     /**
      * Sets the {@code "Authorization"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final void setAuthorization(String authorization) throws MbException {
-        setStringValue(AUTHORIZATION, authorization);
-    }
+    void setAuthorization(String authorization) throws MbException;
 
     /**
      * Returns the {@code "Cache-Control"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final String getCacheControl() throws MbException {
-        return getStringValue(CACHE_CONTROL);
-    }
+    String getCacheControl() throws MbException;
 
     /**
      * Sets the {@code "Cache-Control"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final void setCacheControl(String cacheControl) throws MbException {
-        setStringValue(CACHE_CONTROL, cacheControl);
-    }
+    void setCacheControl(String cacheControl) throws MbException;
 
     /**
      * Returns the {@code "Content-Encoding"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final String getContentEncoding() throws MbException {
-        return getStringValue(CONTENT_ENCODING);
-    }
+    String getContentEncoding() throws MbException;
 
     /**
      * Sets the {@code "Content-Encoding"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final void setContentEncoding(String contentEncoding) throws MbException {
-        setStringValue(CONTENT_ENCODING, contentEncoding);
-    }
+    void setContentEncoding(String contentEncoding) throws MbException;
 
     /**
      * Returns the {@code "Content-Length"} header or {@code null} for none.
@@ -147,9 +94,7 @@ public class HttpHeader extends Header {
      *
      * @since 1.5
      */
-    public final Long getContentLength() throws MbException {
-        return getLongValue(CONTENT_LENGTH);
-    }
+    Long getContentLength() throws MbException;
 
     /**
      * Sets the {@code "Content-Length"} header or {@code null} for none.
@@ -161,63 +106,49 @@ public class HttpHeader extends Header {
      *
      * @since 1.5
      */
-    public final void setContentLength(Long contentLength) throws MbException {
-        setLongValue(CONTENT_LENGTH, contentLength);
-    }
+    void setContentLength(Long contentLength) throws MbException;
 
     /**
      * Returns the {@code "Content-MD5"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final String getContentMD5() throws MbException {
-        return getStringValue(CONTENT_MD5);
-    }
+    String getContentMD5() throws MbException;
 
     /**
      * Sets the {@code "Content-MD5"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final void setContentMD5(String contentMD5) throws MbException {
-        setStringValue(CONTENT_MD5, contentMD5);
-    }
+    void setContentMD5(String contentMD5) throws MbException;
 
     /**
      * Returns the {@code "Content-Range"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final String getContentRange() throws MbException {
-        return getStringValue(CONTENT_RANGE);
-    }
+    String getContentRange() throws MbException;
 
     /**
      * Sets the {@code "Content-Range"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final void setContentRange(String contentRange) throws MbException {
-        setStringValue(CONTENT_RANGE, contentRange);
-    }
+    void setContentRange(String contentRange) throws MbException;
 
     /**
      * Returns the {@code "Content-Type"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final String getContentType() throws MbException {
-        return getStringValue(CONTENT_TYPE);
-    }
+    String getContentType() throws MbException;
 
     /**
      * Sets the {@code "Content-Type"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final void setContentType(String contentType) throws MbException {
-        setStringValue(CONTENT_TYPE, contentType);
-    }
+    void setContentType(String contentType) throws MbException;
 
     /**
      * Returns the {@code "Cookie"} header or {@code null} for none.
@@ -225,270 +156,210 @@ public class HttpHeader extends Header {
      *
      * @since 1.6
      */
-    public final String getCookie() throws MbException {
-        return getStringValue(COOKIE);
-    }
+    String getCookie() throws MbException;
 
     /**
      * Sets the {@code "Cookie"} header or {@code null} for none.
      *
      * @since 1.6
      */
-    public final void setCookie(String cookie) throws MbException {
-        setStringValue(COOKIE, cookie);
-    }
+    void setCookie(String cookie) throws MbException;
 
     /**
      * Returns the {@code "Date"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final String getDate() throws MbException {
-        return getStringValue(DATE);
-    }
+    String getDate() throws MbException;
 
     /**
      * Sets the {@code "Date"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final void setDate(String date) throws MbException {
-        setStringValue(DATE, date);
-    }
+    void setDate(String date) throws MbException;
 
     /**
      * Returns the {@code "ETag"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final String getETag() throws MbException {
-        return getStringValue(ETAG);
-    }
+    String getETag() throws MbException;
 
     /**
      * Sets the {@code "ETag"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final void setETag(String etag) throws MbException {
-        setStringValue(ETAG, etag);
-    }
+    void setETag(String etag) throws MbException;
 
     /**
      * Returns the {@code "Expires"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final String getExpires() throws MbException {
-        return getStringValue(EXPIRES);
-    }
+    String getExpires() throws MbException;
 
     /**
      * Sets the {@code "Expires"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final void setExpires(String expires) throws MbException {
-        setStringValue(EXPIRES, expires);
-    }
+    void setExpires(String expires) throws MbException;
 
     /**
      * Returns the {@code "If-Modified-Since"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final String getIfModifiedSince() throws MbException {
-        return getStringValue(IF_MODIFIED_SINCE);
-    }
+    String getIfModifiedSince() throws MbException;
 
     /**
      * Sets the {@code "If-Modified-Since"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final void setIfModifiedSince(String ifModifiedSince) throws MbException {
-        setStringValue(IF_MODIFIED_SINCE, ifModifiedSince);
-    }
+    void setIfModifiedSince(String ifModifiedSince) throws MbException;
 
     /**
      * Returns the {@code "If-Match"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final String getIfMatch() throws MbException {
-        return getStringValue(IF_MATCH);
-    }
+    String getIfMatch() throws MbException;
 
     /**
      * Sets the {@code "If-Match"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final void setIfMatch(String ifMatch) throws MbException {
-        setStringValue(IF_MATCH, ifMatch);
-    }
+    void setIfMatch(String ifMatch) throws MbException;
 
     /**
      * Returns the {@code "If-None-Match"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final String getIfNoneMatch() throws MbException {
-        return getStringValue(IF_NONE_MATCH);
-    }
+    String getIfNoneMatch() throws MbException;
 
     /**
      * Sets the {@code "If-None-Match"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final void setIfNoneMatch(String ifNoneMatch) throws MbException {
-        setStringValue(IF_NONE_MATCH, ifNoneMatch);
-    }
+    void setIfNoneMatch(String ifNoneMatch) throws MbException;
 
     /**
      * Returns the {@code "If-Unmodified-Since"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final String getIfUnmodifiedSince() throws MbException {
-        return getStringValue(IF_UNMODIFIED_SINCE);
-    }
+    String getIfUnmodifiedSince() throws MbException;
 
     /**
      * Sets the {@code "If-Unmodified-Since"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final void setIfUnmodifiedSince(String ifUnmodifiedSince) throws MbException {
-        setStringValue(IF_UNMODIFIED_SINCE, ifUnmodifiedSince);
-    }
+    void setIfUnmodifiedSince(String ifUnmodifiedSince) throws MbException;
 
     /**
      * Returns the {@code "Last-Modified"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final String getLastModified() throws MbException {
-        return getStringValue(LAST_MODIFIED);
-    }
+    String getLastModified() throws MbException;
 
     /**
      * Sets the {@code "Last-Modified"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final void setLastModified(String lastModified) throws MbException {
-        setStringValue(LAST_MODIFIED, lastModified);
-    }
+    void setLastModified(String lastModified) throws MbException;
 
     /**
      * Returns the {@code "Location"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final String getLocation() throws MbException {
-        return getStringValue(LOCATION);
-    }
+    String getLocation() throws MbException;
 
     /**
      * Sets the {@code "Location"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final void setLocation(String location) throws MbException {
-        setStringValue(LOCATION, location);
-    }
+    void setLocation(String location) throws MbException;
 
     /**
      * Returns the {@code "MIME-Version"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final String getMimeVersion() throws MbException {
-        return getStringValue("MIME-Version");
-    }
+    String getMimeVersion() throws MbException;
 
     /**
      * Sets the {@code "MIME-Version"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final void setMimeVersion(String mimeVersion) throws MbException {
-        setStringValue("MIME-Version", mimeVersion);
-    }
+    void setMimeVersion(String mimeVersion) throws MbException;
 
     /**
      * Returns the {@code "Range"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final String getRange() throws MbException {
-        return getStringValue(RANGE);
-    }
+    String getRange() throws MbException;
 
     /**
      * Sets the {@code "Range"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final void setRange(String range) throws MbException {
-        setStringValue(RANGE, range);
-    }
+    void setRange(String range) throws MbException;
 
     /**
      * Returns the {@code "Retry-After"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final String getRetryAfter() throws MbException {
-        return getStringValue(RETRY_AFTER);
-    }
+    String getRetryAfter() throws MbException;
 
     /**
      * Sets the {@code "Retry-After"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final void setRetryAfter(String retryAfter) throws MbException {
-        setStringValue(RETRY_AFTER, retryAfter);
-    }
+    void setRetryAfter(String retryAfter) throws MbException;
 
     /**
      * Returns the {@code "User-Agent"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final String getUserAgent() throws MbException {
-        return getStringValue(USER_AGENT);
-    }
+    String getUserAgent() throws MbException;
 
     /**
      * Sets the {@code "User-Agent"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final void setUserAgent(String userAgent) throws MbException {
-        setStringValue(USER_AGENT, userAgent);
-    }
+    void setUserAgent(String userAgent) throws MbException;
 
     /**
      * Returns the {@code "WWW-Authenticate"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final String getAuthenticate() throws MbException {
-        return getStringValue(WWW_AUTHENTICATE);
-    }
+    String getAuthenticate() throws MbException;
 
     /**
      * Sets the {@code "WWW-Authenticate"} header or {@code null} for none.
      *
      * @since 1.5
      */
-    public final void setAuthenticate(String authenticate) throws MbException {
-        setStringValue(WWW_AUTHENTICATE, authenticate);
-    }
+    void setAuthenticate(String authenticate) throws MbException;
 
     /**
      * Sets the {@code authorization} header as specified in <a
@@ -496,20 +367,7 @@ public class HttpHeader extends Header {
      *
      * @since 1.2
      */
-    public final void setBasicAuthentication(String username, String password) throws MbException {
-        String userPass =
-                Preconditions.checkNotNull(username) + ":" + Preconditions.checkNotNull(password);
-        String encoded;
-        try {
-            encoded = Base64.encode(userPass.getBytes("UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            throw new NiceMbException(e.getMessage());
-        }
-        setStringValue(AUTHORIZATION, "Basic " + encoded);
-    }
+    void setBasicAuthentication(String username, String password) throws MbException;
 
-    public MbHttpHeaderType getType() {
-        return type;
-    }
+    MbHeaderType getType();
 }
-

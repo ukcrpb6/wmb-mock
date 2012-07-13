@@ -49,27 +49,25 @@ public class SoapPayload extends Payload {
      * Automatically locates the XML tree.
      *
      * @param msg      The message to wrap.
-     * @param readOnly Indicates whether the message is read-only (input message)
-     *                 or not.
      * @return The helper class
      * @throws MbException
      */
-    public static SoapPayload wrap(MbMessage msg, boolean readOnly) throws MbException {
-        return wrap(msg, readOnly, null);
+    public static SoapPayload wrap(MbMessage msg) throws MbException {
+        return wrap(msg, null);
     }
 
-    public static SoapPayload wrap(MbMessage msg, boolean readOnly, String soapNamespace) throws MbException {
+    public static SoapPayload wrap(MbMessage msg, String soapNamespace) throws MbException {
         MbElement elm = locateXmlBody(msg);
 
         if (elm == null) {
             throw new NiceMbException("Failed to find SOAP payload");
         }
 
-        return new SoapPayload(elm, false, readOnly, soapNamespace);
+        return new SoapPayload(elm, false, soapNamespace);
     }
 
     /**
-     * Creates a payload as the last child, even if one already exists
+     * Creates a payload as the last child, even if one already headerExistsIn
      *
      * @param msg The message on which the payload should be created
      * @return The helper class
@@ -84,7 +82,7 @@ public class SoapPayload extends Payload {
     }
 
     /**
-     * Creates a payload as the last child, even if one already exists
+     * Creates a payload as the last child, even if one already headerExistsIn
      *
      * @param msg           The message on which the payload should be created
      * @param parser        The name of the parser to use, for example XMSNS or MRM
@@ -94,11 +92,11 @@ public class SoapPayload extends Payload {
      */
     public static SoapPayload create(MbMessage msg, String parser, String soapNamespace) throws MbException {
         MbElement elm = msg.getRootElement().createElementAsLastChild(parser);
-        return new SoapPayload(elm, true, false, soapNamespace);
+        return new SoapPayload(elm, true, soapNamespace);
     }
 
     /**
-     * Wraps if payload already exists, of creates payload otherwise.
+     * Wraps if payload already headerExistsIn, of creates payload otherwise.
      *
      * @param msg The message on which to wrap the payload
      * @return The helper class
@@ -109,7 +107,7 @@ public class SoapPayload extends Payload {
     }
 
     /**
-     * Wraps if payload already exists, of creates payload otherwise.
+     * Wraps if payload already headerExistsIn, of creates payload otherwise.
      *
      * @param msg    The message on which to wrap the payload
      * @param parser The name of the parser to use, for exampel XMSNS or MRM.
@@ -118,7 +116,7 @@ public class SoapPayload extends Payload {
      */
     public static SoapPayload wrapOrCreate(MbMessage msg, String parser) throws MbException {
         if (has(msg)) {
-            return wrap(msg, false);
+            return wrap(msg);
         } else {
             return create(msg, parser);
         }
@@ -137,7 +135,7 @@ public class SoapPayload extends Payload {
 
         if (elm != null) {
             elm.detach();
-            return new SoapPayload(elm, false, true, null);
+            return new SoapPayload(elm, false, null);
         } else {
             throw new NiceMbException("Failed to find SOAP payload");
         }
@@ -147,7 +145,7 @@ public class SoapPayload extends Payload {
      * Checks if the message has a payload of this type
      *
      * @param msg The message to check
-     * @return true if the payload exists, false otherwise.
+     * @return true if the payload headerExistsIn, false otherwise.
      * @throws MbException
      */
     public static boolean has(MbMessage msg) throws MbException {
@@ -185,8 +183,8 @@ public class SoapPayload extends Payload {
         return false;
     }
 
-    private SoapPayload(MbElement elm, boolean create, boolean readOnly, String soapNamespace) throws MbException {
-        super(elm, readOnly);
+    private SoapPayload(MbElement elm, boolean create, String soapNamespace) throws MbException {
+        super(elm);
 
         String[] searchForNamespaces;
         if (soapNamespace == null) {
@@ -198,14 +196,14 @@ public class SoapPayload extends Payload {
 
         if (!create) {
             if (ElementUtil.isMRM(getMbElement())) {
-                envElm = new XmlElement(getMbElement(), isReadOnly());
+                envElm = new XmlElement(getMbElement());
             } else {
                 MbElement child = getMbElement().getFirstChild();
 
                 while (child != null) {
                     // find first and only element
                     if (child.getType() == XmlUtil.getFolderElementType(child)) {
-                        envElm = new XmlElement(child, isReadOnly());
+                        envElm = new XmlElement(child);
 
                         if (!envElm.getName().equals("Envelope")) {
                             throw new NiceMbException("SOAP root element must have the local name Envelope");
@@ -237,20 +235,18 @@ public class SoapPayload extends Payload {
         } else {
             if (ElementUtil.isMRM(getMbElement())) {
                 // skip first level
-                envElm = new XmlElement(elm, readOnly);
+                envElm = new XmlElement(elm);
             } else {
                 MbElement tmpElm = elm.createElementAsLastChild(XmlUtil.getFolderElementType(elm), "Envelope", null);
                 tmpElm.setNamespace(soapNamespace);
-                envElm = new XmlElement(tmpElm, readOnly);
+                envElm = new XmlElement(tmpElm);
             }
 
             bodyElm = envElm.createLastChild(soapNamespace, "Body");
         }
 
-        if (!isReadOnly()) {
-            // declare SOAP namespace
-            declareNamespace("soap", soapNamespace);
-        }
+        // declare SOAP namespace
+        declareNamespace("soap", soapNamespace);
 
     }
 
@@ -284,10 +280,7 @@ public class SoapPayload extends Payload {
      * @throws MbException
      */
     public XmlElement createDocumentElement(String ns, String name) throws MbException {
-        checkReadOnly();
-
         docElm = bodyElm.createLastChild(ns, name);
-
         return docElm;
     }
 
@@ -299,8 +292,6 @@ public class SoapPayload extends Payload {
      * @throws MbException
      */
     public void declareNamespace(String prefix, String ns) throws MbException {
-        checkReadOnly();
-
         if (ElementUtil.isXML(envElm.getMbElement()) ||
                 ElementUtil.isXMLNS(envElm.getMbElement()) ||
                 ElementUtil.isXMLNSC(envElm.getMbElement())) {

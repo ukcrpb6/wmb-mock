@@ -29,11 +29,10 @@ import java.util.*;
 public class XmlElement extends MbElementWrapper {
     /**
      * @param wrappedElm The XML element
-     * @param readOnly   Specifies whether the element is read only or not.
      * @throws MbException
      */
-    public XmlElement(MbElement wrappedElm, boolean readOnly) throws MbException {
-        super(wrappedElm, readOnly);
+    public XmlElement(MbElement wrappedElm) throws MbException {
+        super(wrappedElm);
     }
 
     /**
@@ -60,7 +59,7 @@ public class XmlElement extends MbElementWrapper {
      * Checks if the element has an attribute of the specified name
      *
      * @param name Attribute name
-     * @return True if the attribute exists
+     * @return True if the attribute headerExistsIn
      * @throws MbException
      */
     public boolean hasAttribute(String name) throws MbException {
@@ -72,7 +71,7 @@ public class XmlElement extends MbElementWrapper {
      *
      * @param ns   Attribute namespace
      * @param name Attribute name
-     * @return True if the attribute exists
+     * @return True if the attribute headerExistsIn
      * @throws MbException
      */
     public boolean hasAttribute(String ns, String name) throws MbException {
@@ -276,7 +275,7 @@ public class XmlElement extends MbElementWrapper {
             elm.setNamespace(ns);
         }
 
-        return new XmlElement(elm, isReadOnly());
+        return new XmlElement(elm);
     }
 
     /**
@@ -308,7 +307,7 @@ public class XmlElement extends MbElementWrapper {
         List childList = (List) getMbElement().evaluateXPath(xpath);
         List returnList = new ArrayList();
         for (int i = 0; i < childList.size(); i++) {
-            returnList.add(new XmlElement((MbElement) childList.get(i), isReadOnly()));
+            returnList.add(new XmlElement((MbElement) childList.get(i)));
         }
 
         return returnList;
@@ -357,7 +356,7 @@ public class XmlElement extends MbElementWrapper {
         List childList = (List) getMbElement().evaluateXPath(xpath);
 
         if (childList.size() > 0) {
-            return new XmlElement((MbElement) childList.get(0), isReadOnly());
+            return new XmlElement((MbElement) childList.get(0));
         } else {
             return null;
         }

@@ -93,7 +93,7 @@ public class EmailPayload extends Payload {
     }
 
     /**
-     * Creates an EmailPayload as the last child, even if one already exists
+     * Creates an EmailPayload as the last child, even if one already headerExistsIn
      *
      * @param msg The message where to create an Email payload
      * @return A newly created Email payload
@@ -101,18 +101,17 @@ public class EmailPayload extends Payload {
      */
     public static EmailPayload create(MbMessage msg) throws MbException {
         MbElement elm = msg.getRootElement();
-        return new EmailPayload(elm, false);
+        return new EmailPayload(elm);
     }
 
     /**
      * Class constructor
      *
      * @param elm      Root element of message
-     * @param readOnly Specifies whether the payload is read only or not
      * @throws MbException
      */
-    private EmailPayload(MbElement elm, boolean readOnly) throws MbException {
-        super(elm, readOnly);
+    private EmailPayload(MbElement elm) throws MbException {
+        super(elm);
         headerElm = getMbElement().createElementAsLastChild("EmailOutputHeader");
         bodyElm = getMbElement().createElementAsLastChild(MbBLOB.PARSER_NAME);
         this.messageEncoding = Charset.defaultCharset().name();

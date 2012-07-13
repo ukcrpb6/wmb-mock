@@ -36,23 +36,21 @@ public class TdsPayload extends Payload {
      * Automatically locates the MRM tree.
      *
      * @param msg      The message to wrap.
-     * @param readOnly Indicates whether the message is read-only (input message)
-     *                 or not.
      * @return The helper class
      * @throws MbException
      */
-    public static TdsPayload wrap(MbMessage msg, boolean readOnly) throws MbException {
+    public static TdsPayload wrap(MbMessage msg) throws MbException {
         MbElement elm = locatePayload(msg);
 
         if (elm == null) {
             throw new NiceMbException("Failed to find CSV payload");
         }
 
-        return new TdsPayload(elm, readOnly);
+        return new TdsPayload(elm);
     }
 
     /**
-     * Creates a payload as the last child, even if one already exists
+     * Creates a payload as the last child, even if one already headerExistsIn
      *
      * @param msg The message on which the payload should be created
      * @return The helper class
@@ -60,11 +58,11 @@ public class TdsPayload extends Payload {
      */
     public static TdsPayload create(MbMessage msg) throws MbException {
         MbElement elm = msg.getRootElement().createElementAsLastChild(MbMRM.PARSER_NAME);
-        return new TdsPayload(elm, false);
+        return new TdsPayload(elm);
     }
 
     /**
-     * Wraps if payload already exists, of creates payload otherwise.
+     * Wraps if payload already headerExistsIn, of creates payload otherwise.
      *
      * @param msg The message on which to wrap the payload
      * @return The helper class
@@ -72,7 +70,7 @@ public class TdsPayload extends Payload {
      */
     public static TdsPayload wrapOrCreate(MbMessage msg) throws MbException {
         if (has(msg)) {
-            return wrap(msg, false);
+            return wrap(msg);
         } else {
             return create(msg);
         }
@@ -90,7 +88,7 @@ public class TdsPayload extends Payload {
 
         if (elm != null) {
             elm.detach();
-            return new TdsPayload(elm, true);
+            return new TdsPayload(elm); // TODO: Create Immutable variant
         } else {
             throw new NiceMbException("Failed to find XML payload");
         }
@@ -100,7 +98,7 @@ public class TdsPayload extends Payload {
      * Checks if the message has a payload of this type
      *
      * @param msg The message to check
-     * @return true if the payload exists, false otherwise.
+     * @return true if the payload headerExistsIn, false otherwise.
      * @throws MbException
      */
     public static boolean has(MbMessage msg) throws MbException {
@@ -125,11 +123,10 @@ public class TdsPayload extends Payload {
      * Class constructor
      *
      * @param elm      The message element
-     * @param readOnly Specifies Whether the payload is read only or not
      * @throws MbException
      */
-    private TdsPayload(MbElement elm, boolean readOnly) throws MbException {
-        super(elm, readOnly);
+    private TdsPayload(MbElement elm) throws MbException {
+        super(elm);
 
     }
 
@@ -142,11 +139,7 @@ public class TdsPayload extends Payload {
      * @throws MbException
      */
     public TdsRecord createRecord(String name) throws MbException {
-        checkReadOnly();
-
-        MbElement elm = getMbElement().createElementAsLastChild(MbElement.TYPE_NAME, name, null);
-
-        return new TdsRecord(elm, isReadOnly());
+        return new TdsRecord(getMbElement().createElementAsLastChild(MbElement.TYPE_NAME, name, null));
     }
 
     /**
@@ -161,7 +154,7 @@ public class TdsPayload extends Payload {
         List elms = (List) getMbElement().evaluateXPath(name);
         List records = new ArrayList();
         for (int i = 0; i < elms.size(); i++) {
-            records.add(new TdsRecord((MbElement) elms.get(i), isReadOnly()));
+            records.add(new TdsRecord((MbElement) elms.get(i)));
         }
         return records;
     }
@@ -176,7 +169,7 @@ public class TdsPayload extends Payload {
     public TdsRecord getRecord(int index) throws MbException {
         List records = getAllRecords();
         try {
-            return new TdsRecord((MbElement) records.get(index), isReadOnly());
+            return new TdsRecord((MbElement) records.get(index));
         } catch (ArrayIndexOutOfBoundsException e) {
             throw new NiceMbException("Record of specified number does not exist");
         }
@@ -202,7 +195,7 @@ public class TdsPayload extends Payload {
         List elms = (List) getMbElement().evaluateXPath("*");
         List records = new ArrayList();
         for (int i = 0; i < elms.size(); i++) {
-            records.add(new TdsRecord((MbElement) elms.get(i), isReadOnly()));
+            records.add(new TdsRecord((MbElement) elms.get(i)));
         }
         return records;
     }

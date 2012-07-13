@@ -34,22 +34,21 @@ public class XmlPayload extends Payload {
      * Wraps a payload
      *
      * @param msg      The message containing the XML payload
-     * @param readOnly Specifies whether the payload will be wrapped as read only or not.
      * @return XML payload found in the message
      * @throws MbException
      */
-    public static XmlPayload wrap(MbMessage msg, boolean readOnly) throws MbException {
+    public static XmlPayload wrap(MbMessage msg) throws MbException {
         MbElement elm = locateXmlBody(msg);
 
         if (elm == null) {
             throw new NiceMbException("Failed to find XML payload");
         }
 
-        return new XmlPayload(elm, readOnly);
+        return new XmlPayload(elm);
     }
 
     /**
-     * Creates an XMLNS payload as the last child, even if one already exists
+     * Creates an XMLNS payload as the last child, even if one already headerExistsIn
      *
      * @param msg The message where to create an XML payload
      * @return A newly created XML payload
@@ -60,7 +59,7 @@ public class XmlPayload extends Payload {
     }
 
     /**
-     * Creates a payload as the last child, even if one already exists
+     * Creates a payload as the last child, even if one already headerExistsIn
      *
      * @param msg    The message where to create an XML payload
      * @param parser Specifies the payload parser
@@ -69,11 +68,11 @@ public class XmlPayload extends Payload {
      */
     public static XmlPayload create(MbMessage msg, String parser) throws MbException {
         MbElement elm = msg.getRootElement().createElementAsLastChild(parser);
-        return new XmlPayload(elm, false);
+        return new XmlPayload(elm);
     }
 
     /**
-     * Wraps or creates a payload as the last child, even if one already exists
+     * Wraps or creates a payload as the last child, even if one already headerExistsIn
      *
      * @param msg The message where to look for/create an XML payload
      * @return An XML payload, existent or newly created
@@ -84,7 +83,7 @@ public class XmlPayload extends Payload {
     }
 
     /**
-     * Wraps or creates a payload as the last child, even if one already exists
+     * Wraps or creates a payload as the last child, even if one already headerExistsIn
      *
      * @param msg    The message where to look for/create an XML payload
      * @param parser Specifies the parser when creating a new payload
@@ -93,7 +92,7 @@ public class XmlPayload extends Payload {
      */
     public static XmlPayload wrapOrCreate(MbMessage msg, String parser) throws MbException {
         if (has(msg)) {
-            return wrap(msg, false);
+            return wrap(msg);
         } else {
             return create(msg, parser);
         }
@@ -111,7 +110,7 @@ public class XmlPayload extends Payload {
 
         if (elm != null) {
             elm.detach();
-            return new XmlPayload(elm, true);
+            return new XmlPayload(elm); // TODO: Make Immutable Variant
         } else {
             throw new NiceMbException("Failed to find XML payload");
         }
@@ -156,21 +155,20 @@ public class XmlPayload extends Payload {
      * Class constructor
      *
      * @param elm      The message element
-     * @param readOnly Specifies whether the payload is readonly
      * @throws MbException
      */
-    private XmlPayload(MbElement elm, boolean readOnly) throws MbException {
-        super(elm, readOnly);
+    private XmlPayload(MbElement elm) throws MbException {
+        super(elm);
 
         if (ElementUtil.isMRM(getMbElement())) {
-            docElm = new XmlElement(getMbElement(), isReadOnly());
+            docElm = new XmlElement(getMbElement());
         } else {
             MbElement child = getMbElement().getFirstChild();
 
             while (child != null) {
                 // find first and only element
                 if (XmlUtil.isElement(child)) {
-                    docElm = new XmlElement(child, isReadOnly());
+                    docElm = new XmlElement(child);
                     break;
                 }
 
@@ -209,8 +207,6 @@ public class XmlPayload extends Payload {
      * @throws MbException
      */
     public XmlElement createRootElement(String ns, String name) throws MbException {
-        checkReadOnly();
-
         MbElement elm;
         if (ElementUtil.isMRM(getMbElement())) {
             // for MRM, don't generate a root element
@@ -223,7 +219,7 @@ public class XmlPayload extends Payload {
                 elm.setNamespace(ns);
             }
         }
-        docElm = new XmlElement(elm, isReadOnly());
+        docElm = new XmlElement(elm);
 
         return docElm;
     }
@@ -236,8 +232,6 @@ public class XmlPayload extends Payload {
      * @throws MbException
      */
     public void declareNamespace(String prefix, String ns) throws MbException {
-        checkReadOnly();
-
         if (ElementUtil.isXML(docElm.getMbElement()) || ElementUtil.isXMLNS(docElm.getMbElement())
                 || ElementUtil.isXMLNSC(docElm.getMbElement())) {
             docElm.getMbElement().createElementAsFirstChild(MbXMLNS.NAMESPACE_DECL, prefix, ns)
@@ -246,7 +240,7 @@ public class XmlPayload extends Payload {
     }
 
     /**
-     * Creates an XML declaration in the payload even if one exists
+     * Creates an XML declaration in the payload even if one headerExistsIn
      *
      * @param version    XML version
      * @param encoding   XML encoding
@@ -254,8 +248,6 @@ public class XmlPayload extends Payload {
      * @throws MbException
      */
     public void createXmlDeclaration(String version, String encoding, boolean standalone) throws MbException {
-        checkReadOnly();
-
         MbElement elm = getMbElement();
 
         if (ElementUtil.isXMLNSC(elm)) {
