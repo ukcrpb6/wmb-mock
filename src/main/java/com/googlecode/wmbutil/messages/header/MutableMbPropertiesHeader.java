@@ -14,54 +14,54 @@
  * limitations under the License.
  */
 
-package com.googlecode.wmbutil.messages;
+package com.googlecode.wmbutil.messages.header;
 
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 
-public class MutableMbPropertiesHeader extends Header implements MbPropertiesHeader {
+public class MutableMbPropertiesHeader extends AbstractMbHeader implements MbPropertiesHeader {
 
     MutableMbPropertiesHeader(MbElement elm) throws MbException {
-        super(elm);
+        super(elm, MbHeaderType.PROPERTIES);
     }
 
     @Override
     public String getMessageFormat() throws MbException {
-        return getStringValue(Properties.FORMAT);
+        return getValue(Properties.FORMAT);
     }
 
     @Override
     public void setMessageFormat(String messageFormat) throws MbException {
-        setStringValue(Properties.FORMAT, messageFormat);
+        setValue(Properties.FORMAT, messageFormat);
     }
 
     @Override
     public String getMessageSet() throws MbException {
-        return getStringValue(Properties.MSG_SET);
+        return getValue(Properties.MSG_SET);
     }
 
     @Override
     public void setMessageSet(String messageSet) throws MbException {
-        setStringValue(Properties.MSG_SET, messageSet);
+        setValue(Properties.MSG_SET, messageSet);
     }
 
     @Override
     public String getMessageType() throws MbException {
-        return getStringValue(Properties.MSG_TYPE);
+        return getValue(Properties.MSG_TYPE);
     }
 
     @Override
     public void setMessageType(String messageType) throws MbException {
-        setStringValue(Properties.MSG_TYPE, messageType);
+        setValue(Properties.MSG_TYPE, messageType);
     }
 
     @Override
     public String getTopic() throws MbException {
-        return getStringValue(Properties.TOPIC);
+        return getValue(Properties.TOPIC);
     }
 
     @Override
     public void setTopic(String topic) throws MbException {
-        setStringValue(Properties.TOPIC, topic);
+        setValue(Properties.TOPIC, topic);
     }
 }

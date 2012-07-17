@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package com.googlecode.wmbutil.messages;
+package com.googlecode.wmbutil.messages.payload;
 
 import com.googlecode.wmbutil.CCSID;
 import com.googlecode.wmbutil.NiceMbException;
+import com.ibm.broker.plugin.MbBLOB;
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 import com.ibm.broker.plugin.MbMessage;
@@ -29,8 +30,6 @@ import java.io.UnsupportedEncodingException;
  * Helper class for working with BLOB messages.
  */
 public class BlobPayload extends Payload {
-
-    private static final String DEFAULT_PARSER = "NONE";
 
     /**
      * Wraps a payload
@@ -57,7 +56,7 @@ public class BlobPayload extends Payload {
      * @throws MbException
      */
     public static BlobPayload create(MbMessage msg) throws MbException {
-        MbElement elm = msg.getRootElement().createElementAsLastChild(DEFAULT_PARSER);
+        MbElement elm = msg.getRootElement().createElementAsLastChild(MbBLOB.PARSER_NAME);
 
         MbElement blobElm = elm.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "BLOB", null);
 

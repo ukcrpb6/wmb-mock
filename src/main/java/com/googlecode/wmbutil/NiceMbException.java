@@ -29,4 +29,8 @@ public class NiceMbException extends MbUserException {
         super("", "", "", "", msg, new Object[0]);
     }
 
+    public NiceMbException(String msg, Object... parameters) {
+        super("", "", "", "", String.format(msg, parameters), new Object[0]);
+    }
+
 }

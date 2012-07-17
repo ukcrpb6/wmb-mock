@@ -1,4 +1,4 @@
-package com.googlecode.wmbutil.messages;
+package com.googlecode.wmbutil.messages.header;
 
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
@@ -6,15 +6,10 @@ import com.ibm.broker.plugin.MbException;
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
-public class ImmutableHttpHeader extends MutableHttpHeader {
+public class ImmutableMbHttpHeader extends MutableMbHttpHeader {
 
-    public ImmutableHttpHeader(MbElement elm, MbHeaderType type) throws MbException {
+    public ImmutableMbHttpHeader(MbElement elm, MbHeaderType type) throws MbException {
         super(elm, type);
-    }
-
-    @Override
-    public void set(String name, String value) throws MbException {
-        throw new UnsupportedOperationException();
     }
 
     @Override

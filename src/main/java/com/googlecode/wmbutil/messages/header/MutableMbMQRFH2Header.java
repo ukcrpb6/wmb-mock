@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.googlecode.wmbutil.messages;
+package com.googlecode.wmbutil.messages.header;
 
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 
-public class MutableMbMQRFH2Header extends Header implements MbMQRFH2Header {
+public class MutableMbMQRFH2Header extends AbstractMbHeader implements MbMQRFH2Header {
 
     public class Properties {
         public static final String ENCODING = "Encoding";
@@ -30,7 +30,7 @@ public class MutableMbMQRFH2Header extends Header implements MbMQRFH2Header {
     }
 
     MutableMbMQRFH2Header(MbElement elm) throws MbException {
-        super(elm);
+        super(elm, MbHeaderType.MQRFH2);
     }
 
     private Object getProperty(String area, String name) throws MbException {
@@ -77,51 +77,51 @@ public class MutableMbMQRFH2Header extends Header implements MbMQRFH2Header {
 
     @Override
     public int getCodedCharSetId() throws MbException {
-        return getIntValue(Properties.CODEDCHARSETID);
+        return (Integer) getValue(Properties.CODEDCHARSETID);
     }
 
     @Override
     public void setCodedCharSetId(int codedCharSetId) throws MbException {
-        setIntValue(Properties.CODEDCHARSETID, codedCharSetId);
+        setValue(Properties.CODEDCHARSETID, codedCharSetId);
     }
 
     @Override
     public int getEncoding() throws MbException {
-        return getIntValue(Properties.ENCODING);
+        return (Integer) getValue(Properties.ENCODING);
     }
 
     @Override
     public void setEncoding(int encoding) throws MbException {
-        setIntValue(Properties.ENCODING, encoding);
+        setValue(Properties.ENCODING, encoding);
     }
 
     @Override
     public int getFlags() throws MbException {
-        return getIntValue(Properties.FLAGS);
+        return (Integer) getValue(Properties.FLAGS);
     }
 
     @Override
     public void setFlags(int flags) throws MbException {
-        setIntValue(Properties.FLAGS, flags);
+        setValue(Properties.FLAGS, flags);
     }
 
     @Override
     public String getFormat() throws MbException {
-        return getStringValue(Properties.FORMAT);
+        return getValue(Properties.FORMAT);
     }
 
     @Override
     public void setFormat(String format) throws MbException {
-        setStringValue(Properties.FORMAT, format, 8);
+        setFixedStringValue(Properties.FORMAT, format, 8);
     }
 
     @Override
     public int getNameValueCCSID() throws MbException {
-        return getIntValue(Properties.NAME_VALUE_CODEDCHARSETID);
+        return (Integer) getValue(Properties.NAME_VALUE_CODEDCHARSETID);
     }
 
     @Override
     public void setNameValueCCSID(int nameValueCCSID) throws MbException {
-        setIntValue(Properties.NAME_VALUE_CODEDCHARSETID, nameValueCCSID);
+        setValue(Properties.NAME_VALUE_CODEDCHARSETID, nameValueCCSID);
     }
 }

@@ -1,11 +1,11 @@
-package com.googlecode.wmbutil.messages;
+package com.googlecode.wmbutil.messages.header;
 
 import com.ibm.broker.plugin.MbException;
 
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
-public interface MbPropertiesHeader {
+public interface MbPropertiesHeader extends MbHeader {
     String getMessageFormat() throws MbException;
 
     void setMessageFormat(String messageFormat) throws MbException;

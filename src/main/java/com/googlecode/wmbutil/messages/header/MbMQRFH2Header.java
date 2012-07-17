@@ -1,11 +1,11 @@
-package com.googlecode.wmbutil.messages;
+package com.googlecode.wmbutil.messages.header;
 
 import com.ibm.broker.plugin.MbException;
 
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
-public interface MbMQRFH2Header {
+public interface MbMQRFH2Header extends MbHeader {
     String getStringProperty(String area, String name) throws MbException;
 
     void setStringProperty(String area, String name, String value) throws MbException;

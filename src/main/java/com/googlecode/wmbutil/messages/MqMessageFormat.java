@@ -13,7 +13,7 @@ public class MqMessageFormat {
 
     public static final String MQSTR = makeFormat("MQSTR");
 
-    public static final String RFH2 = makeFormat("MQHRF2");
+    public static final String MQRFH2 = makeFormat("MQHRF2");
 
     /**
      * Creates a format string that is valid for the MQMD header.

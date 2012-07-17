@@ -16,22 +16,33 @@
 
 package com.googlecode.wmbutil.messages;
 
+import com.google.common.base.*;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.googlecode.wmbutil.util.ElementUtil;
+import com.googlecode.wmbutil.util.TypeSafetyHelper;
 import com.googlecode.wmbutil.util.XmlUtil;
 import com.ibm.broker.plugin.*;
 
+import javax.annotation.Nullable;
 import java.text.DateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Helper class for working with XML elements.
  */
+@SuppressWarnings("unused")
 public class XmlElement extends MbElementWrapper {
     /**
      * @param wrappedElm The XML element
-     * @throws MbException
      */
-    public XmlElement(MbElement wrappedElm) throws MbException {
+    public XmlElement(MbElement wrappedElm) {
         super(wrappedElm);
     }
 
@@ -63,7 +74,11 @@ public class XmlElement extends MbElementWrapper {
      * @throws MbException
      */
     public boolean hasAttribute(String name) throws MbException {
-        return hasAttribute(null, name);
+        return hasAttribute(Optional.<String>absent(), name);
+    }
+
+    public boolean hasAttribute(String ns, String name) throws MbException {
+        return hasAttribute(Optional.of(ns), name);
     }
 
     /**
@@ -74,8 +89,12 @@ public class XmlElement extends MbElementWrapper {
      * @return True if the attribute headerExistsIn
      * @throws MbException
      */
-    public boolean hasAttribute(String ns, String name) throws MbException {
-        return getAttributeElement(ns, name) != null;
+    public boolean hasAttribute(Optional<String> ns, String name) throws MbException {
+        return getAttributeElement(checkNotNull(ns), checkNotNull(name)) != null;
+    }
+
+    private Optional<MbElement> getAttributeElement(String name) throws MbException {
+        return getAttributeElement(Optional.<String>absent(), name);
     }
 
     /**
@@ -88,58 +107,91 @@ public class XmlElement extends MbElementWrapper {
      * @return An attribute element
      * @throws MbException
      */
-    private MbElement getAttributeElement(String ns, String name) throws MbException {
-        List elms = getAttributeElements(ns, name);
+    private Optional<MbElement> getAttributeElement(String ns, String name) throws MbException {
+        return getAttributeElement(Optional.of(ns), name);
+    }
 
-        if (elms.size() > 0) {
-            return (MbElement) elms.get(0);
-        } else {
-            return null;
-        }
+    private Optional<MbElement> getAttributeElement(Optional<String> ns, String name) throws MbException {
+        return Iterables.tryFind(getAttributeElements(ns, attributeName(ns, name)), Predicates.alwaysTrue());
+    }
+
+    private List<MbElement> getAttributeElements() throws MbException {
+        return getAttributeElements(Optional.<String>absent(), Predicates.<MbElement>alwaysTrue());
+    }
+
+    private List<MbElement> getAttributeElements(String ns) throws MbException {
+        return getAttributeElements(Optional.of(ns));
+    }
+
+    private List<MbElement> getAttributeElements(Optional<String> ns) throws MbException {
+        return getAttributeElements(ns, Predicates.<MbElement>alwaysTrue());
+    }
+
+    private List<MbElement> getAttributeElements(Predicate<MbElement> predicate) throws MbException {
+        return getAttributeElements(Optional.<String>absent(), predicate);
+    }
+
+    private List<MbElement> getAttributeElements(String ns, Predicate<MbElement> predicate) throws MbException {
+        return getAttributeElements(Optional.of(ns), predicate);
     }
 
     /**
      * Gets all attributes. Attribute name and/or namespace can also be specified to
      * filter wanted attributes
      *
-     * @param ns   Attribute(s) namespace
-     * @param name Attribute(s) name
+     * @param ns        Attribute(s) namespace
+     * @param predicate Predicate to filter matches
      * @return All found attribute elements
      * @throws MbException
      */
-    private List getAttributeElements(String ns, String name) throws MbException {
+    private List<MbElement> getAttributeElements(Optional<String> ns, Predicate<MbElement> predicate) throws MbException {
+        checkNotNull(ns);
+        checkNotNull(predicate);
+
         MbXPath xpath = new MbXPath("@*", getMbElement());
 
-        if (ns != null) {
-            xpath.setDefaultNamespace(ns);
+        if (ns.isPresent()) {
+            xpath.setDefaultNamespace(ns.get());
         }
 
-        List matches = (List) getMbElement().evaluateXPath(xpath);
-        List filtered = new ArrayList();
+        return ImmutableList.copyOf(
+                Iterables.filter(
+                        TypeSafetyHelper.typeSafeList((List<?>) getMbElement().evaluateXPath(xpath), MbElement.class),
+                        Predicates.and(Predicates.notNull(), predicate)));
+    }
 
-        // WMB prepends a @ on undefined MRM attributes
-        String atName = "@" + name;
+    private static Predicate<MbElement> attributeName(final String name) {
+        return attributeName(Optional.<String>absent(), name);
+    }
 
-        for (int i = 0; i < matches.size(); i++) {
-            MbElement elm = (MbElement) matches.get(i);
-            if (name != null) {
+    private static Predicate<MbElement> attributeName(final String ns, final String name) {
+        return attributeName(Optional.of(ns), name);
+    }
 
-                if (name.equals(elm.getName()) || atName.equals(elm.getName())) {
-                    if (ns == null || ns.equals(elm.getNamespace())) {
-                        filtered.add(elm);
-                        // there can be only one attribute with a specific name
-                        break;
-                    }
-                }
+    private static Predicate<MbElement> attributeName(final Optional<String> ns, final String name) {
+        checkNotNull(name);
+        checkNotNull(ns);
+        return new Predicate<MbElement>() {
+            // WMB prepends a @ on undefined MRM attributes
+            final String atName = "@" + name;
 
-            } else {
-                filtered.add(elm);
+            private boolean matchLocalName(MbElement input) throws MbException {
+                return name.equals(input.getName()) || atName.equals(input.getName());
             }
 
-        }
+            private boolean matchNamespace(MbElement input) throws MbException {
+                return ns.get().equals(input.getNamespace());
+            }
 
-        return filtered;
-
+            @Override
+            public boolean apply(MbElement input) {
+                try {
+                    return matchLocalName(input) && (!ns.isPresent() || matchNamespace(input));
+                } catch (MbException e) {
+                    return false;
+                }
+            }
+        };
     }
 
     /**
@@ -149,8 +201,8 @@ public class XmlElement extends MbElementWrapper {
      * @return The attribute, if found
      * @throws MbException
      */
-    public String getAttribute(String name) throws MbException {
-        return getAttribute(null, name);
+    public Optional<String> getAttribute(String name) throws MbException {
+        return getAttribute(Optional.<String>absent(), name);
     }
 
     /**
@@ -161,19 +213,10 @@ public class XmlElement extends MbElementWrapper {
      * @return The attribute, if found
      * @throws MbException
      */
-    public String getAttribute(String ns, String name) throws MbException {
-        MbElement attr = getAttributeElement(ns, name);
-
-        if (attr != null) {
-            Object value = attr.getValue();
-            if (value != null) {
-                return value.toString();
-            } else {
-                return null;
-            }
-        } else {
-            return null;
-        }
+    public Optional<String> getAttribute(Optional<String> ns, String name) throws MbException {
+        Optional<MbElement> attr = getAttributeElement(checkNotNull(ns), checkNotNull(name));
+        return attr.isPresent() ?
+                Optional.fromNullable(attr.get().getValueAsString()) : Optional.<String>absent();
     }
 
     /**
@@ -185,7 +228,11 @@ public class XmlElement extends MbElementWrapper {
      * @throws MbException
      */
     public void setAttribute(String name, String value) throws MbException {
-        setAttribute(null, name, value);
+        setAttribute(Optional.<String>absent(), name, value);
+    }
+
+    public void setAttribute(String ns, String name, String value) throws MbException {
+        setAttribute(Optional.of(ns), name, value);
     }
 
     /**
@@ -196,18 +243,17 @@ public class XmlElement extends MbElementWrapper {
      * @param value Attribute value
      * @throws MbException
      */
-    public void setAttribute(String ns, String name, String value) throws MbException {
-        MbElement attr = getAttributeElement(ns, name);
-
-        if (attr == null) {
-            attr = getMbElement().createElementAsFirstChild(
-                    XmlUtil.getAttributeType(getMbElement()), name, value);
-
-            if (ns != null) {
-                attr.setNamespace(ns);
+    public void setAttribute(Optional<String> ns, String name, String value) throws MbException {
+        checkNotNull(value);
+        Optional<MbElement> attr = getAttributeElement(checkNotNull(ns), checkNotNull(name));
+        if (attr.isPresent()) {
+            MbElement element = getMbElement()
+                    .createElementAsFirstChild(XmlUtil.getAttributeType(getMbElement()), name, value);
+            if (ns.isPresent()) {
+                element.setNamespace(ns.get());
             }
         } else {
-            attr.setValue(value);
+            attr.get().setValue(value);
         }
     }
 
@@ -218,7 +264,7 @@ public class XmlElement extends MbElementWrapper {
      * @throws MbException
      */
     public String[] getAttributeNames() throws MbException {
-        return getAttributeNames(null);
+        return getAttributeNames(Optional.<String>absent());
     }
 
     /**
@@ -228,23 +274,23 @@ public class XmlElement extends MbElementWrapper {
      * @return The names of all attributes
      * @throws MbException
      */
-    public String[] getAttributeNames(String ns) throws MbException {
-        List matches = getAttributeElements(null, null);
-
-        String[] names = new String[matches.size()];
-
-        for (int i = 0; i < names.length; i++) {
-            String name = ((MbElement) matches.get(i)).getName();
-
-            if (name.charAt(0) == '@') {
-                // remove leading @, WMB prepends it in the MRM domain. Why oh god why.
-                name = name.substring(1);
-            }
-
-            names[i] = name;
-        }
-
-        return names;
+    public String[] getAttributeNames(Optional<String> ns) throws MbException {
+        return Iterables.toArray(
+                Lists.transform(getAttributeElements(checkNotNull(ns)), new Function<MbElement, String>() {
+                    @Override
+                    public String apply(MbElement input) {
+                        String name;
+                        try {
+                            name = input.getName();
+                        } catch (MbException e) {
+                            throw Throwables.propagate(e);
+                        }
+                        if (name.charAt(0) == '@') {
+                            name = name.substring(1);
+                        }
+                        return name;
+                    }
+                }), String.class);
     }
 
     /**
@@ -255,7 +301,11 @@ public class XmlElement extends MbElementWrapper {
      * @throws MbException
      */
     public XmlElement createLastChild(String name) throws MbException {
-        return createLastChild(null, name);
+        return createLastChild(Optional.<String>absent(), name);
+    }
+
+    public XmlElement createLastChild(String ns, String name) throws MbException {
+        return createLastChild(Optional.of(ns), name);
     }
 
     /**
@@ -266,15 +316,12 @@ public class XmlElement extends MbElementWrapper {
      * @return The newly created element
      * @throws MbException
      */
-    public XmlElement createLastChild(String ns, String name) throws MbException {
-        MbElement parent = getMbElement();
-        MbElement elm = parent.createElementAsLastChild(XmlUtil.getFolderElementType(parent), name,
-                null);
-
-        if (ns != null) {
-            elm.setNamespace(ns);
+    public XmlElement createLastChild(Optional<String> ns, String name) throws MbException {
+        MbElement elm = getMbElement().createElementAsLastChild(
+                XmlUtil.getFolderElementType(getMbElement()), checkNotNull(name), null);
+        if (ns.isPresent()) {
+            elm.setNamespace(ns.get());
         }
-
         return new XmlElement(elm);
     }
 
@@ -285,8 +332,12 @@ public class XmlElement extends MbElementWrapper {
      * @return All found elements, if any
      * @throws MbException
      */
-    public List getChildrenByName(String name) throws MbException {
-        return getChildrenByName(null, name);
+    public List<XmlElement> getChildrenByName(String name) throws MbException {
+        return getChildrenByName(Optional.<String>absent(), name);
+    }
+
+    public List<XmlElement> getChildrenByName(String ns, String name) throws MbException {
+        return getChildrenByName(Optional.of(ns), name);
     }
 
     /**
@@ -297,20 +348,23 @@ public class XmlElement extends MbElementWrapper {
      * @return All found elements
      * @throws MbException
      */
-    public List getChildrenByName(String ns, String name) throws MbException {
-        MbXPath xpath = new MbXPath(name, getMbElement());
+    public List<XmlElement> getChildrenByName(Optional<String> ns, String name) throws MbException {
+        MbXPath xpath = new MbXPath(checkNotNull(name), getMbElement());
 
-        if (ns != null) {
-            xpath.setDefaultNamespace(ns);
+        if (ns.isPresent()) {
+            xpath.setDefaultNamespace(ns.get());
         }
 
-        List childList = (List) getMbElement().evaluateXPath(xpath);
-        List returnList = new ArrayList();
-        for (int i = 0; i < childList.size(); i++) {
-            returnList.add(new XmlElement((MbElement) childList.get(i)));
-        }
+        List<MbElement> children =
+                TypeSafetyHelper.typeSafeList((List<?>) getMbElement().evaluateXPath(xpath), MbElement.class);
 
-        return returnList;
+        // TODO: Possible Immutable Exception -- Check usage of tSL
+        return Lists.transform(children, new Function<MbElement, XmlElement>() {
+            @Override
+            public XmlElement apply(@Nullable MbElement input) {
+                return new XmlElement(input);
+            }
+        });
     }
 
     /**
@@ -320,7 +374,7 @@ public class XmlElement extends MbElementWrapper {
      * @throws MbException
      */
     public XmlElement getFirstChild() throws MbException {
-        return getFirstChildByName(null, null);
+        return new XmlElement(getMbElement().getFirstChild());
     }
 
     /**
@@ -331,7 +385,11 @@ public class XmlElement extends MbElementWrapper {
      * @throws MbException
      */
     public XmlElement getFirstChildByName(String name) throws MbException {
-        return getFirstChildByName(null, name);
+        return getFirstChildByName(Optional.<String>absent(), Optional.of(name));
+    }
+
+    public XmlElement getFirstChildByName(String ns, String name) throws MbException {
+        return getFirstChildByName(Optional.of(ns), Optional.of(name));
     }
 
     /**
@@ -342,140 +400,17 @@ public class XmlElement extends MbElementWrapper {
      * @return The first child element
      * @throws MbException
      */
-    public XmlElement getFirstChildByName(String ns, String name) throws MbException {
-        if (name == null) {
-            name = "*";
+    public XmlElement getFirstChildByName(Optional<String> ns, Optional<String> name) throws MbException {
+        MbXPath xpath = new MbXPath(name.or("*") + "[1]", getMbElement());
+
+        if (ns.isPresent()) {
+            xpath.setDefaultNamespace(ns.get());
         }
 
-        MbXPath xpath = new MbXPath(name + "[1]", getMbElement());
+        List<MbElement> childList = TypeSafetyHelper.typeSafeList
+                ((List<?>) getMbElement().evaluateXPath(xpath), MbElement.class);
 
-        if (ns != null) {
-            xpath.setDefaultNamespace(ns);
-        }
-
-        List childList = (List) getMbElement().evaluateXPath(xpath);
-
-        if (childList.size() > 0) {
-            return new XmlElement((MbElement) childList.get(0));
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Gets the value
-     *
-     * @return Element value
-     * @throws MbException
-     */
-    private Object getValue() throws MbException {
-        return getMbElement().getValue();
-    }
-
-    /**
-     * Gets the value as a string
-     *
-     * @return Element value as a string
-     * @throws MbException
-     */
-    public String getStringValue() throws MbException {
-        Object value = getValue();
-
-        if (value != null) {
-            return value.toString();
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Gets the value as an integer
-     *
-     * @return Element value as an integer
-     * @throws MbException
-     */
-    public int getIntValue() throws MbException {
-        Object value = getValue();
-
-        if (value == null) {
-            return 0;
-        } else if (value instanceof Integer) {
-            return ((Integer) value).intValue();
-        } else {
-            return Integer.parseInt(value.toString());
-        }
-    }
-
-    /**
-     * Gets the value as a long
-     *
-     * @return Element value as a long
-     * @throws MbException
-     */
-    public long getLongValue() throws MbException {
-        Object value = getValue();
-
-        if (value == null) {
-            return 0;
-        } else if (value instanceof Long) {
-            return ((Long) value).longValue();
-        } else {
-            return Long.parseLong(value.toString());
-        }
-    }
-
-    /**
-     * Gets the value as a float
-     *
-     * @return Element value as a float
-     * @throws MbException
-     */
-    public float getFloatValue() throws MbException {
-        Object value = getValue();
-
-        if (value == null) {
-            return 0;
-        } else if (value instanceof Float) {
-            return ((Float) value).floatValue();
-        } else {
-            return Float.parseFloat(value.toString());
-        }
-    }
-
-    /**
-     * Gets the value as a double
-     *
-     * @return Element value as a double
-     * @throws MbException
-     */
-    public double getDoubleValue() throws MbException {
-        Object value = getValue();
-
-        if (value == null) {
-            return 0;
-        } else if (value instanceof Double) {
-            return ((Double) value).doubleValue();
-        } else {
-            return Double.parseDouble(value.toString());
-        }
-    }
-
-    /**
-     * Gets the value as a boolean
-     *
-     * @return Element value as a boolean
-     * @throws MbException
-     */
-    public boolean getBooleanValue() throws MbException {
-        Object value = getValue();
-
-        if (value == null) {
-            return false;
-        } else if (value instanceof Boolean) {
-            return ((Boolean) value).booleanValue();
-        } else {
-            return Boolean.parseBoolean(value.toString());
-        }
+        return childList.isEmpty() ? null : new XmlElement(childList.get(0));
     }
 
     /**
@@ -485,93 +420,36 @@ public class XmlElement extends MbElementWrapper {
      * @throws MbException
      */
     public Date getDateValue() throws MbException {
-        Object value = getValue();
-
+        final Object value = getValue().orNull();
         if (value == null) {
             return null;
         } else if (value instanceof MbTimestamp) {
-            return ((MbTimestamp) getValue()).getTime();
+            return ((MbTimestamp) value).getTime();
         } else if (value instanceof MbDate) {
-            return ((MbDate) getValue()).getTime();
+            return ((MbDate) value).getTime();
         } else if (value instanceof MbTime) {
-            return ((MbTime) getValue()).getTime();
+            return ((MbTime) value).getTime();
         } else {
             throw new ClassCastException("Type can not be cast to a date type: " + value.getClass());
         }
     }
 
-    /**
-     * Sets the value
-     *
-     * @param value Element value
-     * @throws MbException
-     */
-    private void setValue(Object value) throws MbException {
+    @Override
+    public <T> void setValue(String field, T value) throws MbException {
         if (ElementUtil.isMRM(getMbElement())) {
-            getMbElement().setValue(value);
+            super.setValue(field, value);
         } else {
-            getMbElement().setValue(value.toString());
+            super.setValue(field, value.toString());
         }
     }
 
-    /**
-     * Sets the value of a string
-     *
-     * @param value Element value string
-     * @throws MbException
-     */
-    public void setStringValue(String value) throws MbException {
-        setValue(value);
-    }
-
-    /**
-     * Sets the value of an integer
-     *
-     * @param value Integer element value
-     * @throws MbException
-     */
-    public void setIntValue(int value) throws MbException {
-        setValue(new Integer(value));
-    }
-
-    /**
-     * Sets the value of a long
-     *
-     * @param value Long Element value
-     * @throws MbException
-     */
-    public void setLongValue(long value) throws MbException {
-        setValue(new Long(value));
-    }
-
-    /**
-     * Sets the value of a float
-     *
-     * @param value Float element value
-     * @throws MbException
-     */
-    public void setFloatValue(float value) throws MbException {
-        setValue(new Float(value));
-    }
-
-    /**
-     * Sets the value of a double
-     *
-     * @param value Double element value
-     * @throws MbException
-     */
-    public void setDoubleValue(double value) throws MbException {
-        setValue(new Double(value));
-    }
-
-    /**
-     * Sets the value of a boolean
-     *
-     * @param value Boolean element value
-     * @throws MbException
-     */
-    public void setBooleanValue(boolean value) throws MbException {
-        setValue(new Boolean(value));
+    @Override
+    public void setValue(Object value) throws MbException {
+        if (ElementUtil.isMRM(getMbElement())) {
+            super.setValue(value);
+        } else {
+            super.setValue(value.toString());
+        }
     }
 
     /**
@@ -594,9 +472,9 @@ public class XmlElement extends MbElementWrapper {
     public void setTimeValue(Date value) throws MbException {
         Calendar cal = new GregorianCalendar();
         cal.setTime(value);
-        MbTime mbTime = new MbTime(cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal
-                .get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
-        setValue(mbTime);
+        setValue(new MbTime(
+                cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE),
+                cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND)));
     }
 
     /**
@@ -619,9 +497,7 @@ public class XmlElement extends MbElementWrapper {
     public void setDateValue(Date value) throws MbException {
         Calendar cal = new GregorianCalendar();
         cal.setTime(value);
-        MbDate mbDate = new MbDate(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal
-                .get(Calendar.DAY_OF_MONTH));
-        setValue(mbDate);
+        setValue(new MbDate(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)));
     }
 
     /**
@@ -644,9 +520,9 @@ public class XmlElement extends MbElementWrapper {
     public void setTimestampValue(Date value) throws MbException {
         Calendar cal = new GregorianCalendar();
         cal.setTime(value);
-        MbTimestamp mbTimestamp = new MbTimestamp(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH),
-                cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE),
-                cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
-        setValue(mbTimestamp);
+        setValue(new MbTimestamp(
+                cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH),
+                cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND),
+                cal.get(Calendar.MILLISECOND)));
     }
 }

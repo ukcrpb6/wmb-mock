@@ -18,6 +18,7 @@ package com.googlecode.wmbutil.messages;
 
 import com.google.common.base.Optional;
 import com.googlecode.wmbutil.NiceMbException;
+import com.googlecode.wmbutil.messages.header.AbstractMbHeader;
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 import com.ibm.broker.plugin.MbMessage;
@@ -28,7 +29,7 @@ import java.util.List;
  * Wrapper class for the local environment. Makes it easier to work with some
  * common attributes like destinations lists and routing labels.
  */
-public class LocalEnvironment extends Header {
+public class LocalEnvironment extends MbElementWrapper {
 
     /**
      * Wrap an existing local environment message, note that this is not the

@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package com.googlecode.wmbutil.messages;
+package com.googlecode.wmbutil.messages.payload;
 
 import com.googlecode.wmbutil.NiceMbException;
+import com.googlecode.wmbutil.messages.XmlElement;
 import com.googlecode.wmbutil.util.ElementUtil;
 import com.googlecode.wmbutil.util.XmlUtil;
 import com.ibm.broker.plugin.MbElement;

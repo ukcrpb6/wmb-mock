@@ -1,18 +1,24 @@
-package com.googlecode.wmbutil.messages;
+package com.googlecode.wmbutil.messages.header;
 
 import com.google.common.base.Objects;
+import com.ibm.broker.plugin.MbMQMD;
+import com.ibm.broker.plugin.MbRFH2C;
 
 /**
+ * Fixed set of Message Broker header types.
+ * <p/>
+ * Note: might be better as an enum type
+ *
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
-public class MbHeaderType {
+public final class MbHeaderType {
 
     public static final MbHeaderType PROPERTIES = new MbHeaderType("PropertiesParser", "Properties");
 
-    public static final MbHeaderType MQMD = new MbHeaderType("MQMD");
+    public static final MbHeaderType MQMD = new MbHeaderType(MbMQMD.PARSER_NAME);
 
     public static final MbHeaderType MQRFH2 = new MbHeaderType("MQRFH2");
-    public static final MbHeaderType MQRFH2C = new MbHeaderType("MQRFH2C");
+    public static final MbHeaderType MQRFH2C = new MbHeaderType(MbRFH2C.PARSER_NAME);
 
     // HTTP Headers
     public static final MbHeaderType HTTP_INPUT = new MbHeaderType("WSINPHDR", "HTTPInputHeader");

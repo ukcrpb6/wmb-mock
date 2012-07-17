@@ -1,4 +1,4 @@
-package com.googlecode.wmbutil.messages;
+package com.googlecode.wmbutil.messages.header;
 
 import com.google.common.base.Optional;
 import com.googlecode.wmbutil.NiceMbException;
@@ -11,7 +11,7 @@ import java.util.NoSuchElementException;
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
-public abstract class AbstractHeaderFactory<T extends Header> {
+public abstract class AbstractHeaderFactory<T extends AbstractMbHeader> {
 
     /**
      * Get the header type for the current factory.
@@ -62,6 +62,7 @@ public abstract class AbstractHeaderFactory<T extends Header> {
     }
 
     public T getOrCreate(final MbMessage msg) throws MbException {
+        System.out.println("Damn");
         Optional<T> wrapped = tryGet(msg);
         return (wrapped.isPresent()) ? wrapped.get() : create(msg);
     }

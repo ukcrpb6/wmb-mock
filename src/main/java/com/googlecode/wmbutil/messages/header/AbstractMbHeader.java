@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package com.googlecode.wmbutil.messages;
+package com.googlecode.wmbutil.messages.header;
 
+import com.googlecode.wmbutil.messages.MbElementWrapper;
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 
 /**
  * Abstract base class for the Header helpers.
  */
-public abstract class Header extends MbElementWrapper {
+public abstract class AbstractMbHeader extends MbElementWrapper implements MbHeader {
+
+    private final MbHeaderType type;
 
     /**
      * Constructor defining the header with the specific element.
@@ -30,7 +33,14 @@ public abstract class Header extends MbElementWrapper {
      * @param elm      The message element
      * @throws MbException
      */
-    public Header(MbElement elm) throws MbException {
+    public AbstractMbHeader(MbElement elm, MbHeaderType type) throws MbException {
         super(elm);
+        this.type = type;
     }
+
+    @Override
+    public MbHeaderType getType() {
+        return type;
+    }
+
 }

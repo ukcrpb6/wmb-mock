@@ -16,7 +16,10 @@
 
 package com.googlecode.wmbutil.messages;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import com.googlecode.wmbutil.NiceMbException;
+import com.googlecode.wmbutil.util.ElementUtil;
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 
@@ -24,24 +27,46 @@ public abstract class MbElementWrapper {
 
     private MbElement wrappedElm;
 
-    public MbElementWrapper(MbElement elm) throws MbException {
+    public MbElementWrapper(MbElement elm) {
         this.wrappedElm = elm;
     }
 
-    protected MbElement getMbElement() {
+    public MbElement getMbElement() {
         return wrappedElm;
     }
 
-    private Object getValue(String field) throws MbException {
+    public <T> T getValue(String field) throws MbException {
         MbElement elm = getMbElement().getFirstElementByPath(field);
         if (elm != null) {
-            return elm.getValue();
+            //noinspection unchecked
+            return (T) elm.getValue();
         } else {
-            throw new NiceMbException("Property not found in MQMD: " + field);
+            throw new NiceMbException("Property not found " + field);
         }
     }
 
-    private void setValue(String field, Object value) throws MbException {
+    /**
+     * Gets the value
+     *
+     * @return T representation of object value
+     * @throws MbException
+     */
+    public <T> Optional<T> getValue() throws MbException {
+        //noinspection unchecked
+        return Optional.fromNullable((T) getMbElement().getValue());
+    }
+
+    /**
+     * Sets the value
+     *
+     * @param value Element value
+     * @throws MbException
+     */
+    public <T> void setValue(T value) throws MbException {
+        getMbElement().setValue(value);
+    }
+
+    public <T> void setValue(String field, T value) throws MbException {
         MbElement elm = getMbElement().getFirstElementByPath(field);
         if (elm == null) {
             elm = getMbElement().createElementAsLastChild(MbElement.TYPE_NAME_VALUE, field, null);
@@ -49,59 +74,24 @@ public abstract class MbElementWrapper {
         elm.setValue(value);
     }
 
-    protected long getLongValue(String field) throws MbException {
-        return (Long) getValue(field);
-    }
-
-    protected void setLongValue(String field, long value) throws MbException {
-        setValue(field, value);
-    }
-
-    protected int getIntValue(String field) throws MbException {
-        return (Integer) getValue(field);
-    }
-
-    protected void setIntValue(String field, int value) throws MbException {
-        setValue(field, value);
-    }
-
-    protected String getStringValue(String field) throws MbException {
-        return (String) getValue(field);
-    }
-
-    protected void setStringValue(String field, String value, int length) throws MbException {
+    protected void setFixedStringValue(String field, String value, int length) throws MbException {
         if (value.length() > length) {
-            throw new NiceMbException("Value for field '" + field + "' to long, max length is " + length);
+            throw new NiceMbException("Value for field '%s' to long, max length is %d", field, length);
         } else {
-            StringBuilder sb = new StringBuilder(length);
-            sb.append(value);
-
-            for (int i = value.length(); i < length; i++) {
-                sb.append(' ');
-            }
-            setValue(field, sb.toString());
+            setValue(field, Strings.padEnd(value, length, ' '));
         }
     }
 
-    protected void setStringValue(String field, String value) throws MbException {
-        setValue(field, value);
-    }
-
-    protected byte[] getByteArrayValue(String field) throws MbException {
-        return (byte[]) getValue(field);
-    }
-
-    protected void setByteArray(String field, byte[] value, int length) throws MbException {
+    protected void setFixedByteArrayValue(String field, byte[] value, int length) throws MbException {
         byte[] b;
         if (value.length > length) {
-            throw new NiceMbException("Value for field '" + field + "' to long, max length is " + length);
+            throw new NiceMbException("Value for field '%s' to long, max length is %d", field, length);
         } else if (value.length < length) {
             b = new byte[length];
             System.arraycopy(value, 0, b, 0, value.length);
         } else {
             b = value;
         }
-
         setValue(field, b);
     }
 }

@@ -1,4 +1,4 @@
-package com.googlecode.wmbutil.messages;
+package com.googlecode.wmbutil.messages.header;
 
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;

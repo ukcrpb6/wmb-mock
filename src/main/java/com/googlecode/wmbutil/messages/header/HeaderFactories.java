@@ -1,7 +1,8 @@
-package com.googlecode.wmbutil.messages;
+package com.googlecode.wmbutil.messages.header;
 
 import com.google.common.base.Optional;
 import com.googlecode.wmbutil.WmqFormat;
+import com.googlecode.wmbutil.messages.MqMessageFormat;
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 import com.ibm.broker.plugin.MbMessage;
@@ -11,35 +12,35 @@ import com.ibm.broker.plugin.MbMessage;
  */
 public class HeaderFactories {
 
-    private static AbstractHeaderFactory<MutableHttpHeader> getHttpHeaderFactory(final MbHeaderType type) {
-        return new AbstractHeaderFactory<MutableHttpHeader>() {
+    private static AbstractHeaderFactory<MutableMbHttpHeader> getHttpHeaderFactory(final MbHeaderType type) {
+        return new AbstractHeaderFactory<MutableMbHttpHeader>() {
             @Override
             protected MbHeaderType getHeaderType() {
                 return type;
             }
 
             @Override
-            protected MutableHttpHeader getHeader(MbElement element) throws MbException {
-                return new MutableHttpHeader(element, getHeaderType());
+            protected MutableMbHttpHeader getHeader(MbElement element) throws MbException {
+                return new MutableMbHttpHeader(element, getHeaderType());
             }
 
             @Override
-            protected ImmutableHttpHeader getImmutableHeader(MbElement element) throws MbException {
-                return new ImmutableHttpHeader(element, getHeaderType());
+            protected ImmutableMbHttpHeader getImmutableHeader(MbElement element) throws MbException {
+                return new ImmutableMbHttpHeader(element, getHeaderType());
             }
         };
     }
 
-    public static final AbstractHeaderFactory<MutableHttpHeader> HTTP_INPUT_HEADER_FACTORY =
+    public static final AbstractHeaderFactory<MutableMbHttpHeader> HTTP_INPUT_HEADER_FACTORY =
             getHttpHeaderFactory(MbHeaderType.HTTP_INPUT);
 
-    public static final AbstractHeaderFactory<MutableHttpHeader> HTTP_REQUEST_HEADER_FACTORY =
+    public static final AbstractHeaderFactory<MutableMbHttpHeader> HTTP_REQUEST_HEADER_FACTORY =
             getHttpHeaderFactory(MbHeaderType.HTTP_REQUEST);
 
-    public static final AbstractHeaderFactory<MutableHttpHeader> HTTP_RESPONSE_HEADER_FACTORY =
+    public static final AbstractHeaderFactory<MutableMbHttpHeader> HTTP_RESPONSE_HEADER_FACTORY =
             getHttpHeaderFactory(MbHeaderType.HTTP_RESPONSE);
 
-    public static final AbstractHeaderFactory<MutableHttpHeader> HTTP_REPLY_HEADER_FACTORY =
+    public static final AbstractHeaderFactory<MutableMbHttpHeader> HTTP_REPLY_HEADER_FACTORY =
             getHttpHeaderFactory(MbHeaderType.HTTP_REPLY);
 
     public static final AbstractHeaderFactory<MutableMbMQMDHeader> MQMD_HEADER_FACTORY =

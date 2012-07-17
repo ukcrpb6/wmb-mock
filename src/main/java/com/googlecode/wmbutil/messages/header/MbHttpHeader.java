@@ -1,14 +1,11 @@
-package com.googlecode.wmbutil.messages;
+package com.googlecode.wmbutil.messages.header;
 
 import com.ibm.broker.plugin.MbException;
 
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
-public interface HttpHeader {
-    String get(String name) throws MbException;
-
-    void set(String name, String value) throws MbException;
+public interface MbHttpHeader extends MbHeader {
 
     /**
      * Returns the {@code "Accept"} header or {@code null} for none.
@@ -369,5 +366,4 @@ public interface HttpHeader {
      */
     void setBasicAuthentication(String username, String password) throws MbException;
 
-    MbHeaderType getType();
 }
