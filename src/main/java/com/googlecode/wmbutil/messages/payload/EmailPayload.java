@@ -77,7 +77,7 @@ public class EmailPayload extends Payload {
         try {
             bodyElm.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "BLOB", msg.getBytes(messageEncoding));
         } catch (UnsupportedEncodingException e) {
-            throw new NiceMbException("Unsupported encoding used for email message!");
+            throw NiceMbException.propagate(e);
         }
     }
 

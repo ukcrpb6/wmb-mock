@@ -162,7 +162,7 @@ public class BlobPayload extends Payload {
         try {
             return new String(getData(), encoding);
         } catch (UnsupportedEncodingException e) {
-            throw new NiceMbException("Encoding not supported " + encoding);
+            throw NiceMbException.propagate(e);
         }
     }
 
@@ -178,7 +178,7 @@ public class BlobPayload extends Payload {
         try {
             setData(s.getBytes(encoding));
         } catch (UnsupportedEncodingException e) {
-            throw new NiceMbException("Encoding not supported " + encoding);
+            throw NiceMbException.propagate(e);
         }
     }
 

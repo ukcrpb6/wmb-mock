@@ -158,8 +158,7 @@ public class TdsRecord extends MbElementWrapper {
             try {
                 return df.parse(dateStr);
             } catch (ParseException e) {
-                throw new NiceMbException("Failed to parse date \"" + dateStr
-                        + "\" with format \"" + datePattern + "\"");
+                throw NiceMbException.propagate(e);
             }
         } else {
             return null;

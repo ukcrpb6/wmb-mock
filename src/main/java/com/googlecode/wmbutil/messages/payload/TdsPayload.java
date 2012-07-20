@@ -150,11 +150,11 @@ public class TdsPayload extends Payload {
      * @return The list of records
      * @throws MbException
      */
-    public List getRecords(String name) throws MbException {
+    public List<TdsRecord> getRecords(String name) throws MbException {
         List elms = (List) getMbElement().evaluateXPath(name);
-        List records = new ArrayList();
-        for (int i = 0; i < elms.size(); i++) {
-            records.add(new TdsRecord((MbElement) elms.get(i)));
+        List<TdsRecord> records = new ArrayList<TdsRecord>();
+        for (Object elm : elms) {
+            records.add(new TdsRecord((MbElement) elm));
         }
         return records;
     }
@@ -171,7 +171,7 @@ public class TdsPayload extends Payload {
         try {
             return new TdsRecord((MbElement) records.get(index));
         } catch (ArrayIndexOutOfBoundsException e) {
-            throw new NiceMbException("Record of specified number does not exist");
+            throw NiceMbException.propagate(e);
         }
     }
 
@@ -194,8 +194,8 @@ public class TdsPayload extends Payload {
     public List getAllRecords() throws MbException {
         List elms = (List) getMbElement().evaluateXPath("*");
         List records = new ArrayList();
-        for (int i = 0; i < elms.size(); i++) {
-            records.add(new TdsRecord((MbElement) elms.get(i)));
+        for (Object elm : elms) {
+            records.add(new TdsRecord((MbElement) elm));
         }
         return records;
     }

@@ -34,18 +34,20 @@ public class XmlPayload extends Payload {
     /**
      * Wraps a payload
      *
-     * @param msg      The message containing the XML payload
+     * @param msg The message containing the XML payload
      * @return XML payload found in the message
      * @throws MbException
      */
     public static XmlPayload wrap(MbMessage msg) throws MbException {
-        MbElement elm = locateXmlBody(msg);
+        return new XmlPayload(checkBodyExists(msg));
+    }
 
-        if (elm == null) {
+    private static MbElement checkBodyExists(MbMessage msg) throws MbException {
+        MbElement o = locateXmlBody(msg);
+        if (o == null) {
             throw new NiceMbException("Failed to find XML payload");
         }
-
-        return new XmlPayload(elm);
+        return o;
     }
 
     /**
@@ -107,14 +109,9 @@ public class XmlPayload extends Payload {
      * @throws MbException
      */
     public static XmlPayload remove(MbMessage msg) throws MbException {
-        MbElement elm = locateXmlBody(msg);
-
-        if (elm != null) {
-            elm.detach();
-            return new XmlPayload(elm); // TODO: Make Immutable Variant
-        } else {
-            throw new NiceMbException("Failed to find XML payload");
-        }
+        MbElement elm = checkBodyExists(msg);
+        elm.detach();
+        return new XmlPayload(elm);
     }
 
     /**
@@ -155,7 +152,7 @@ public class XmlPayload extends Payload {
     /**
      * Class constructor
      *
-     * @param elm      The message element
+     * @param elm The message element
      * @throws MbException
      */
     private XmlPayload(MbElement elm) throws MbException {
