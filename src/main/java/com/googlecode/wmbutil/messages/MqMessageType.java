@@ -4,7 +4,7 @@ package com.googlecode.wmbutil.messages;
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
 @SuppressWarnings("UnusedDeclaration")
-public class MqMessageType {
+public interface MqMessageType {
 
     public static final int MQMT_APPL_FIRST = 65536;
     public static final int MQMT_APPL_LAST = 999999999;
