@@ -15,7 +15,12 @@
  */
 package com.googlecode.wmbutil;
 
+import com.google.common.base.Preconditions;
+import com.ibm.broker.plugin.MbJavaException;
+import com.ibm.broker.plugin.MbMessageAssembly;
 import com.ibm.broker.plugin.MbUserException;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class NiceMbException extends MbUserException {
 
@@ -31,6 +36,20 @@ public class NiceMbException extends MbUserException {
 
     public NiceMbException(String msg, Object... parameters) {
         super("", "", "", "", String.format(msg, parameters), new Object[0]);
+    }
+
+    private NiceMbException(StackTraceElement element, String msg) {
+        super(element.getClassName(), element.getMethodName(), "", "", msg, new Object[0]);
+    }
+
+    public static NiceMbException propagate(Throwable t) {
+        //noinspection ThrowableResultOfMethodCallIgnored
+        if(checkNotNull(t).getStackTrace() != null && t.getStackTrace().length > 0) {
+            StackTraceElement st = t.getStackTrace()[0];
+            return new NiceMbException(st, t.getMessage());
+        }
+
+        return new NiceMbException(t.getMessage());
     }
 
 }
