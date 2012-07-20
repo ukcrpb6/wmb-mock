@@ -5,6 +5,9 @@ import com.google.common.collect.Iterables;
 
 import java.util.List;
 
+/**
+ * @author Bob Browning <bob.browning@pressassociation.com>
+ */
 public class TypeSafetyHelper {
     public static <T> List<T> typeSafeList(List<?> untypedList, final Class<T> clazz) {
         return ImmutableList.copyOf(typeSafeIterable(untypedList, clazz));

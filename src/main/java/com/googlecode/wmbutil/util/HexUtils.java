@@ -3,11 +3,7 @@ package com.googlecode.wmbutil.util;
 import java.io.UnsupportedEncodingException;
 
 /**
- * Created with IntelliJ IDEA.
- * User: bobb
- * Date: 16/07/2012
- * Time: 19:56
- * To change this template use File | Settings | File Templates.
+ * @author Bob Browning <bob.browning@pressassociation.com>
  */
 public class HexUtils {
     public static final byte[] HEX_CHAR_TABLE = {
