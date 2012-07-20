@@ -1,28 +1,18 @@
-/*
- * Copyright 2007 (C) Callista Enterprise.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
- *
- *	http://www.apache.org/licenses/LICENSE-2.0 
- *
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
- * limitations under the License.
- */
-
 package com.googlecode.wmbutil.messages;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.googlecode.wmbutil.NiceMbException;
 import com.googlecode.wmbutil.util.ElementUtil;
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 
+import static com.google.common.base.Preconditions.checkState;
+
+/**
+ * @author Bob Browning <bob.browning@pressassociation.com>
+ */
 public abstract class MbElementWrapper {
 
     private MbElement wrappedElm;
@@ -33,6 +23,10 @@ public abstract class MbElementWrapper {
 
     public MbElement getMbElement() {
         return wrappedElm;
+    }
+
+    public boolean isReadOnly() {
+        return getMbElement().isReadOnly();
     }
 
     public <T> T getValue(String field) throws MbException {
@@ -63,10 +57,14 @@ public abstract class MbElementWrapper {
      * @throws MbException
      */
     public <T> void setValue(T value) throws MbException {
+        checkState(!isReadOnly(), "MbElement is immutable");
+        // Set value on MbElement
         getMbElement().setValue(value);
     }
 
     public <T> void setValue(String field, T value) throws MbException {
+        checkState(!isReadOnly(), "MbElement is immutable");
+        // Set value on MbElement
         MbElement elm = getMbElement().getFirstElementByPath(field);
         if (elm == null) {
             elm = getMbElement().createElementAsLastChild(MbElement.TYPE_NAME_VALUE, field, null);
@@ -74,7 +72,17 @@ public abstract class MbElementWrapper {
         elm.setValue(value);
     }
 
+    /**
+     * Sets a fixed length padded value on the specified field
+     *
+     * @param field The field to be set
+     * @param value The value to be set
+     * @param length The fixed length of the String value
+     * @throws MbException Invalid length for fixed length string
+     */
     protected void setFixedStringValue(String field, String value, int length) throws MbException {
+        checkState(!isReadOnly(), "MbElement is immutable");
+        // Set value on MbElement
         if (value.length() > length) {
             throw new NiceMbException("Value for field '%s' to long, max length is %d", field, length);
         } else {
@@ -83,6 +91,8 @@ public abstract class MbElementWrapper {
     }
 
     protected void setFixedByteArrayValue(String field, byte[] value, int length) throws MbException {
+        checkState(!isReadOnly());
+        // Set value on MbElement
         byte[] b;
         if (value.length > length) {
             throw new NiceMbException("Value for field '%s' to long, max length is %d", field, length);

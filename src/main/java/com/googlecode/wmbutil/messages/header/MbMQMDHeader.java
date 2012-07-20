@@ -6,6 +6,33 @@ import com.ibm.broker.plugin.MbException;
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
 public interface MbMQMDHeader extends MbHeader {
+
+    public static final String VERSION = "Version";
+    public static final String REPORT = "Report";
+    public static final String MSGTYPE = "MsgType";
+    public static final String EXPIRY = "Expiry";
+    public static final String FEEDBACK = "Feedback";
+    public static final String ENCODING = "Encoding";
+    public static final String CODEDCHARSETID = "CodedCharSetId";
+    public static final String FORMAT = "Format";
+    public static final String PRIORITY = "Priority";
+    public static final String PERSISTENCE = "Persistence";
+    public static final String MSGID = "MsgId";
+    public static final String CORRELID = "CorrelId";
+    public static final String BACKOUT_COUNT = "BackoutCount";
+    public static final String REPLYTO_Q = "ReplyToQ";
+    public static final String REPLYTO_QMGR = "ReplyToQMgr";
+    public static final String USER_IDENTIFIER = "UserIdentifer";
+    public static final String APPL_IDENTITY_DATA = "ApplIdentityData";
+    public static final String PUT_APPL_TYPE = "PutApplType";
+    public static final String GROUP_ID = "GroupId";
+    public static final String MSG_SEQ_NUMBER = "MsgSeqNumber";
+    public static final String OFFSET = "Offset";
+    public static final String MSGFLAGS = "MsgFlags";
+    public static final String PUT_DATE = "PutDate";
+    public static final String PUT_TIME = "PutTime";
+    public static final String APPL_ORIGIN_DATA = "ApplOriginData";
+
     void setVersion(int version) throws MbException;
 
     int getReport() throws MbException;
@@ -113,35 +140,4 @@ public interface MbMQMDHeader extends MbHeader {
     int getMsgFlags() throws MbException;
 
     void setMsgFlags(int msgFlags) throws MbException;
-
-    /**
-     * @author Bob Browning <bob.browning@pressassociation.com>
-     */
-    public static class Properties {
-        public static final String VERSION = "Version";
-        public static final String REPORT = "Report";
-        public static final String MSGTYPE = "MsgType";
-        public static final String EXPIRY = "Expiry";
-        public static final String FEEDBACK = "Feedback";
-        public static final String ENCODING = "Encoding";
-        public static final String CODEDCHARSETID = "CodedCharSetId";
-        public static final String FORMAT = "Format";
-        public static final String PRIORITY = "Priority";
-        public static final String PERSISTENCE = "Persistence";
-        public static final String MSGID = "MsgId";
-        public static final String CORRELID = "CorrelId";
-        public static final String BACKOUT_COUNT = "BackoutCount";
-        public static final String REPLYTO_Q = "ReplyToQ";
-        public static final String REPLYTO_QMGR = "ReplyToQMgr";
-        public static final String USER_IDENTIFIER = "UserIdentifer";
-        public static final String APPL_IDENTITY_DATA = "ApplIdentityData";
-        public static final String PUT_APPL_TYPE = "PutApplType";
-        public static final String GROUP_ID = "GroupId";
-        public static final String MSG_SEQ_NUMBER = "MsgSeqNumber";
-        public static final String OFFSET = "Offset";
-        public static final String MSGFLAGS = "MsgFlags";
-        public static final String PUT_DATE = "PutDate";
-        public static final String PUT_TIME = "PutTime";
-        public static final String APPL_ORIGIN_DATA = "ApplOriginData";
-    }
 }

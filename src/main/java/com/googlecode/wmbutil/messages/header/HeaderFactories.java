@@ -1,8 +1,9 @@
 package com.googlecode.wmbutil.messages.header;
 
 import com.google.common.base.Optional;
-import com.googlecode.wmbutil.WmqFormat;
-import com.googlecode.wmbutil.messages.MqMessageFormat;
+import com.googlecode.wmbutil.CCSID;
+import com.googlecode.wmbutil.messages.MqFormat;
+import com.googlecode.wmbutil.messages.MqMessageType;
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 import com.ibm.broker.plugin.MbMessage;
@@ -12,63 +13,53 @@ import com.ibm.broker.plugin.MbMessage;
  */
 public class HeaderFactories {
 
-    private static AbstractHeaderFactory<MutableMbHttpHeader> getHttpHeaderFactory(final MbHeaderType type) {
-        return new AbstractHeaderFactory<MutableMbHttpHeader>() {
+    private static AbstractHeaderFactory<MbHttpHeader> getHttpHeaderFactory(final MbHeaderType type) {
+        return new AbstractHeaderFactory<MbHttpHeader>() {
             @Override
             protected MbHeaderType getHeaderType() {
                 return type;
             }
 
             @Override
-            protected MutableMbHttpHeader getHeader(MbElement element) throws MbException {
-                return new MutableMbHttpHeader(element, getHeaderType());
-            }
-
-            @Override
-            protected ImmutableMbHttpHeader getImmutableHeader(MbElement element) throws MbException {
-                return new ImmutableMbHttpHeader(element, getHeaderType());
+            protected MbHttpHeader getHeader(MbElement element) throws MbException {
+                return new MbHttpHeaderImpl(element, getHeaderType());
             }
         };
     }
 
-    public static final AbstractHeaderFactory<MutableMbHttpHeader> HTTP_INPUT_HEADER_FACTORY =
+    public static final AbstractHeaderFactory<MbHttpHeader> HTTP_INPUT_HEADER_FACTORY =
             getHttpHeaderFactory(MbHeaderType.HTTP_INPUT);
 
-    public static final AbstractHeaderFactory<MutableMbHttpHeader> HTTP_REQUEST_HEADER_FACTORY =
+    public static final AbstractHeaderFactory<MbHttpHeader> HTTP_REQUEST_HEADER_FACTORY =
             getHttpHeaderFactory(MbHeaderType.HTTP_REQUEST);
 
-    public static final AbstractHeaderFactory<MutableMbHttpHeader> HTTP_RESPONSE_HEADER_FACTORY =
+    public static final AbstractHeaderFactory<MbHttpHeader> HTTP_RESPONSE_HEADER_FACTORY =
             getHttpHeaderFactory(MbHeaderType.HTTP_RESPONSE);
 
-    public static final AbstractHeaderFactory<MutableMbHttpHeader> HTTP_REPLY_HEADER_FACTORY =
+    public static final AbstractHeaderFactory<MbHttpHeader> HTTP_REPLY_HEADER_FACTORY =
             getHttpHeaderFactory(MbHeaderType.HTTP_REPLY);
 
-    public static final AbstractHeaderFactory<MutableMbMQMDHeader> MQMD_HEADER_FACTORY =
-            new AbstractHeaderFactory<MutableMbMQMDHeader>() {
+    public static final AbstractHeaderFactory<MbMQMDHeader> MQMD_HEADER_FACTORY =
+            new AbstractHeaderFactory<MbMQMDHeader>() {
                 @Override
                 protected MbHeaderType getHeaderType() {
                     return MbHeaderType.MQMD;
                 }
 
                 @Override
-                protected MutableMbMQMDHeader getHeader(MbElement element) throws MbException {
-                    return new MutableMbMQMDHeader(element);
+                protected MbMQMDHeaderImpl getHeader(MbElement element) throws MbException {
+                    return new MbMQMDHeaderImpl(element);
                 }
 
                 @Override
-                protected ImmutableMbMQMDHeader getImmutableHeader(MbElement element) throws MbException {
-                    return new ImmutableMbMQMDHeader(element);
-                }
-
-                @Override
-                protected MutableMbMQMDHeader createHeader(MbMessage message) throws MbException {
-                    final MutableMbMQMDHeader mqmd = super.createHeader(message);
+                protected MbMQMDHeader createHeader(MbMessage message) throws MbException {
+                    final MbMQMDHeader mqmd = super.createHeader(message);
                     mqmd.setVersion(2);
                     mqmd.setReport(0);
-                    mqmd.setFormat(MqMessageFormat.MQSTR);
+                    mqmd.setFormat(MqFormat.MQFMT_STRING);
                     mqmd.setEncoding(546);
-                    mqmd.setCodedCharSetId(437);
-                    mqmd.setMsgType(8);
+                    mqmd.setCodedCharSetId(CCSID.ASCII.getId());
+                    mqmd.setMsgType(MqMessageType.MQMT_DATAGRAM);
                     mqmd.setExpiry(-1);
                     mqmd.setFeedback(0);
                     mqmd.setPriority(0);
@@ -81,51 +72,41 @@ public class HeaderFactories {
                 }
             };
 
-    public static final AbstractHeaderFactory<MutableMbPropertiesHeader> PROPERTIES_HEADER_FACTORY =
-            new AbstractHeaderFactory<MutableMbPropertiesHeader>() {
+    public static final AbstractHeaderFactory<MbPropertiesHeader> PROPERTIES_HEADER_FACTORY =
+            new AbstractHeaderFactory<MbPropertiesHeader>() {
                 @Override
                 protected MbHeaderType getHeaderType() {
                     return MbHeaderType.PROPERTIES;
                 }
 
                 @Override
-                protected MutableMbPropertiesHeader getHeader(MbElement element) throws MbException {
-                    return new MutableMbPropertiesHeader(element);
-                }
-
-                @Override
-                protected ImmutableMbPropertiesHeader getImmutableHeader(MbElement element) throws MbException {
-                    return new ImmutableMbPropertiesHeader(element);
+                protected MbPropertiesHeader getHeader(MbElement element) throws MbException {
+                    return new MbPropertiesHeaderImpl(element);
                 }
             };
 
-    public static final AbstractHeaderFactory<MutableMbMQRFH2Header> MQRFH2_HEADER_FACTORY =
-            new AbstractHeaderFactory<MutableMbMQRFH2Header>() {
+    public static final AbstractHeaderFactory<MbMQRFH2Header> MQRFH2_HEADER_FACTORY =
+            new AbstractHeaderFactory<MbMQRFH2Header>() {
                 @Override
                 protected MbHeaderType getHeaderType() {
                     return MbHeaderType.MQRFH2;
                 }
 
                 @Override
-                protected MutableMbMQRFH2Header getHeader(MbElement element) throws MbException {
-                    return new MutableMbMQRFH2Header(element);
+                protected MbMQRFH2Header getHeader(MbElement element) throws MbException {
+                    return new MbMQRFH2HeaderImpl(element);
                 }
 
                 @Override
-                protected ImmutableMbMQRFH2Header getImmutableHeader(MbElement element) throws MbException {
-                    return new ImmutableMbMQRFH2Header(element);
-                }
-
-                @Override
-                protected MutableMbMQRFH2Header createHeader(MbMessage message) throws MbException {
+                protected MbMQRFH2Header createHeader(MbMessage message) throws MbException {
                     final MbElement createdElement;
 
-                    Optional<MutableMbMQMDHeader> mqmd = MQMD_HEADER_FACTORY.tryGet(message);
+                    Optional<MbMQMDHeader> mqmd = MQMD_HEADER_FACTORY.tryGet(message);
                     if (mqmd.isPresent()) {
-                        mqmd.get().setFormat(WmqFormat.MQ_RFH2);
+                        mqmd.get().setFormat(MqFormat.MQFMT_RF_HEADER_2);
                         createdElement = mqmd.get().getMbElement().createElementAfter(getHeaderType().getParserName());
                     } else {
-                        Optional<MutableMbPropertiesHeader> properties = PROPERTIES_HEADER_FACTORY.tryGet(message);
+                        Optional<MbPropertiesHeader> properties = PROPERTIES_HEADER_FACTORY.tryGet(message);
                         if (properties.isPresent()) {
                             createdElement = properties.get().getMbElement().createElementAfter(getHeaderType().getParserName());
                         } else {

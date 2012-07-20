@@ -1,35 +1,16 @@
-/*
- * Copyright 2007 (C) Callista Enterprise.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
- *
- *	http://www.apache.org/licenses/LICENSE-2.0 
- *
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
- * limitations under the License.
- */
-
 package com.googlecode.wmbutil.messages.header;
 
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 
-public class MutableMbMQRFH2Header extends AbstractMbHeader implements MbMQRFH2Header {
+import static com.google.common.base.Preconditions.checkState;
 
-    public class Properties {
-        public static final String ENCODING = "Encoding";
-        public static final String CODEDCHARSETID = "CodedCharSetId";
-        public static final String FORMAT = "Format";
-        public static final String FLAGS = "Flags";
-        public static final String NAME_VALUE_CODEDCHARSETID = "NameValueCCSID";
-    }
+/**
+ * @author Bob Browning <bob.browning@pressassociation.com>
+ */
+public class MbMQRFH2HeaderImpl extends AbstractMbHeader implements MbMQRFH2Header {
 
-    MutableMbMQRFH2Header(MbElement elm) throws MbException {
+    MbMQRFH2HeaderImpl(MbElement elm) throws MbException {
         super(elm, MbHeaderType.MQRFH2);
     }
 
@@ -39,6 +20,8 @@ public class MutableMbMQRFH2Header extends AbstractMbHeader implements MbMQRFH2H
     }
 
     private void setProperty(String area, String name, Object value) throws MbException {
+        checkState(!isReadOnly(), "MbElement is immutable");
+
         MbElement areaElm = getMbElement().getFirstElementByPath(area);
         if (areaElm == null) {
             areaElm = getMbElement().createElementAsLastChild(MbElement.TYPE_NAME);
@@ -77,51 +60,51 @@ public class MutableMbMQRFH2Header extends AbstractMbHeader implements MbMQRFH2H
 
     @Override
     public int getCodedCharSetId() throws MbException {
-        return (Integer) getValue(Properties.CODEDCHARSETID);
+        return (Integer) getValue(CODEDCHARSETID);
     }
 
     @Override
     public void setCodedCharSetId(int codedCharSetId) throws MbException {
-        setValue(Properties.CODEDCHARSETID, codedCharSetId);
+        setValue(CODEDCHARSETID, codedCharSetId);
     }
 
     @Override
     public int getEncoding() throws MbException {
-        return (Integer) getValue(Properties.ENCODING);
+        return (Integer) getValue(ENCODING);
     }
 
     @Override
     public void setEncoding(int encoding) throws MbException {
-        setValue(Properties.ENCODING, encoding);
+        setValue(ENCODING, encoding);
     }
 
     @Override
     public int getFlags() throws MbException {
-        return (Integer) getValue(Properties.FLAGS);
+        return (Integer) getValue(FLAGS);
     }
 
     @Override
     public void setFlags(int flags) throws MbException {
-        setValue(Properties.FLAGS, flags);
+        setValue(FLAGS, flags);
     }
 
     @Override
     public String getFormat() throws MbException {
-        return getValue(Properties.FORMAT);
+        return getValue(FORMAT);
     }
 
     @Override
     public void setFormat(String format) throws MbException {
-        setFixedStringValue(Properties.FORMAT, format, 8);
+        setFixedStringValue(FORMAT, format, 8);
     }
 
     @Override
     public int getNameValueCCSID() throws MbException {
-        return (Integer) getValue(Properties.NAME_VALUE_CODEDCHARSETID);
+        return (Integer) getValue(NAME_VALUE_CODEDCHARSETID);
     }
 
     @Override
     public void setNameValueCCSID(int nameValueCCSID) throws MbException {
-        setValue(Properties.NAME_VALUE_CODEDCHARSETID, nameValueCCSID);
+        setValue(NAME_VALUE_CODEDCHARSETID, nameValueCCSID);
     }
 }

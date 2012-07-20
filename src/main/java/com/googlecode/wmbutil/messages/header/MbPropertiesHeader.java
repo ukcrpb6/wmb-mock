@@ -6,6 +6,12 @@ import com.ibm.broker.plugin.MbException;
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
 public interface MbPropertiesHeader extends MbHeader {
+
+    public static final String MSG_SET = "MessageSet";
+    public static final String MSG_TYPE = "MessageType";
+    public static final String FORMAT = "MessageFormat";
+    public static final String TOPIC = "Topic";
+
     String getMessageFormat() throws MbException;
 
     void setMessageFormat(String messageFormat) throws MbException;
@@ -21,11 +27,4 @@ public interface MbPropertiesHeader extends MbHeader {
     String getTopic() throws MbException;
 
     void setTopic(String topic) throws MbException;
-
-    public static final class Properties {
-        public static final String MSG_SET = "MessageSet";
-        public static final String MSG_TYPE = "MessageType";
-        public static final String FORMAT = "MessageFormat";
-        public static final String TOPIC = "Topic";
-    }
 }

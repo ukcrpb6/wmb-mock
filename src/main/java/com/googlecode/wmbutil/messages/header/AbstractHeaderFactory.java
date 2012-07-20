@@ -11,7 +11,7 @@ import java.util.NoSuchElementException;
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
-public abstract class AbstractHeaderFactory<T extends AbstractMbHeader> {
+public abstract class AbstractHeaderFactory<T extends MbHeader> {
 
     /**
      * Get the header type for the current factory.
@@ -31,7 +31,7 @@ public abstract class AbstractHeaderFactory<T extends AbstractMbHeader> {
         return getHeader(getHeaderElement(message));
     }
 
-    protected abstract T getImmutableHeader(MbElement element) throws MbException;
+//    protected abstract T getImmutableHeader(MbElement element) throws MbException;
 
     protected abstract T getHeader(MbElement element) throws MbException;
 
@@ -71,7 +71,7 @@ public abstract class AbstractHeaderFactory<T extends AbstractMbHeader> {
         MbElement elm = getHeaderElement(msg);
         if (elm != null) {
             elm.detach();
-            return Optional.of(getImmutableHeader(elm));
+            return Optional.of(getHeader(elm)); // WAS Immutable
         }
         return Optional.absent();
     }

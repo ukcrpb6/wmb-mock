@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.googlecode.wmbutil.messages;
+package com.googlecode.wmbutil.messages.configuration;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
