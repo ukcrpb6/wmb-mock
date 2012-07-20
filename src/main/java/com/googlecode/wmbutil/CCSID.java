@@ -26,9 +26,10 @@ import java.nio.charset.UnsupportedCharsetException;
 import java.util.Map;
 
 /**
- * Simplifies using the IBM CCSID values for charsets by
- * providing constants for common CCSIDs and methods
- * for converting to Java charsets
+ * Simplifies using the IBM CCSID values for charsets by providing constants for common CCSIDs and methods
+ * for converting to Java charsets.
+ *
+ * @author Bob Browning <bob.browning@pressassociation.com>
  */
 public enum CCSID {
 
@@ -63,6 +64,10 @@ public enum CCSID {
 
     public static CCSID valueOf(int value) {
         return cache.get(value);
+    }
+
+    public int getId() {
+        return value;
     }
 
     /**
