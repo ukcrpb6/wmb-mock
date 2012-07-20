@@ -29,12 +29,10 @@ public abstract class AbstractTransactionLog implements TransactionLog {
 
     public void debug(String message, String messageId, String businessId, MbMessageAssembly assembly) {
         transLog(Level.DEBUG, message, messageId, new String[]{businessId}, assembly);
-
     }
 
     public void error(String message, String messageId, String businessId, MbMessageAssembly assembly) {
         transLog(Level.ERROR, message, messageId, new String[]{businessId}, assembly);
-
     }
 
     public void info(String message, String messageId, String businessId, MbMessageAssembly assembly) {
@@ -45,27 +43,20 @@ public abstract class AbstractTransactionLog implements TransactionLog {
         transLog(Level.WARN, message, messageId, new String[]{businessId}, assembly);
     }
 
-    public void debug(String message, String messageId, String[] businessIds, MbMessageAssembly assembly,
-                      Throwable t) {
+    public void debug(String message, String messageId, String[] businessIds, MbMessageAssembly assembly, Throwable t) {
         transLog(Level.DEBUG, message, messageId, businessIds, assembly, t);
-
     }
 
-    public void error(String message, String messageId, String[] businessIds, MbMessageAssembly assembly,
-                      Throwable t) {
+    public void error(String message, String messageId, String[] businessIds, MbMessageAssembly assembly, Throwable t) {
         transLog(Level.ERROR, message, messageId, businessIds, assembly, t);
-
     }
 
-    public void info(String message, String messageId, String[] businessIds, MbMessageAssembly assembly,
-                     Throwable t) {
+    public void info(String message, String messageId, String[] businessIds, MbMessageAssembly assembly, Throwable t) {
         transLog(Level.INFO, message, messageId, businessIds, assembly, t);
-
     }
 
-    public void warn(String message, String messageId, String[] businessIds, MbMessageAssembly assembly,
-                     Throwable t) {
+    public void warn(String message, String messageId, String[] businessIds, MbMessageAssembly assembly, Throwable t) {
         transLog(Level.WARN, message, messageId, businessIds, assembly, t);
-
     }
+
 }

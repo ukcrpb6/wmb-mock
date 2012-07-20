@@ -13,7 +13,6 @@ public class TransactionMessage {
     private String[] businessIds;
     private MbMessageAssembly messageAssembly;
 
-
     public TransactionMessage(String brokerName, String nodeName, String flowName,
                               String message, String messageId,
                               String[] businessIds,
@@ -56,7 +55,7 @@ public class TransactionMessage {
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(message);
 
         sb.append(" [MessageFlow: ");

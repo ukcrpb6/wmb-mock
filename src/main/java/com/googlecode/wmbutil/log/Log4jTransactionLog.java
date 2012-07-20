@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and 
  * limitations under the License.
  */
-
 package com.googlecode.wmbutil.log;
 
 import com.ibm.broker.plugin.MbMessageAssembly;
@@ -40,13 +39,12 @@ public class Log4jTransactionLog extends AbstractTransactionLog {
         return s.replace(" ", "");
     }
 
-    protected void transLog(Level level, String message, String messageId,
-                            String[] businessIds, MbMessageAssembly assembly, Throwable t) {
+    protected void transLog(Level level, String message, String messageId, String[] businessIds,
+                            MbMessageAssembly assembly, Throwable t) {
         if (log.isEnabledFor(level)) {
-            TransactionMessage msg = new TransactionMessage(brokerName, nodeName, flowName, message, messageId,
-                    businessIds, assembly);
-
-            log.log(level, msg, t);
+            log.log(level,
+                    new TransactionMessage(
+                            brokerName, nodeName, flowName, message, messageId, businessIds, assembly), t);
         }
     }
 }
