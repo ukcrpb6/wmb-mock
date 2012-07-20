@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>com.googlecode.wmbutil</groupId>
     <artifactId>wmb-util</artifactId>
-    <name>WebSphere Message Broker utilities</name>
     <version>0.3.5-SNAPSHOT</version>
+
+    <name>WebSphere Message Broker utilities</name>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
     <scm>
-        <connection>
-            scm:svn:http://wmb-util.googlecode.com/svn/wmb-util/trunk
-        </connection>
-        <developerConnection>
-            scm:svn:https://wmb-util.googlecode.com/svn/wmb-util/trunk
-        </developerConnection>
-        <url>http://wmb-util.googlecode.com/svn/wmb-util/trunk</url>
+        <connection>scm:git:git://github.com/ukcrpb6/wmb-util</connection>
+        <developerConnection>scm:git:git://github.com/ukcrpb6/wmb-util</developerConnection>
+        <url>http://www.github.com/ukcrpb6/wmb-util</url>
     </scm>
+
     <build>
         <plugins>
             <plugin>
@@ -89,6 +90,7 @@
         </profile>
     </profiles>
     <dependencies>
+        <!-- Message Broker -->
         <dependency>
             <groupId>com.ibm.broker</groupId>
             <artifactId>javacompute</artifactId>
@@ -101,26 +103,57 @@
             <version>7.0.0.3</version>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.14</version>
         </dependency>
+
+        <!-- SLF4J -->
         <dependency>
-            <groupId>commons-dbcp</groupId>
-            <artifactId>commons-dbcp</artifactId>
-            <version>1.2.2</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.5.3</version>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-nop</artifactId>
+            <version>1.5.2</version>
+        </dependency>
+
+        <!-- Guava -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>12.0</version>
         </dependency>
+
+        <!-- Hibernate -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>4.1.4.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-ehcache</artifactId>
+            <version>4.1.4.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.9</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Unit tests -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>3.8.2</version>
+            <version>4.9</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
+
 </project>
