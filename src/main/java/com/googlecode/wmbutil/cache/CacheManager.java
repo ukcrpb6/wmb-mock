@@ -1,5 +1,7 @@
 package com.googlecode.wmbutil.cache;
 
+import com.googlecode.wmbutil.cache.dao.CacheEntry;
+
 import java.math.BigInteger;
 import java.util.List;
 

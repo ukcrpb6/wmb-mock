@@ -1,8 +1,7 @@
-package com.googlecode.wmbutil.cache;
+package com.googlecode.wmbutil.dao;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 
 import java.io.Serializable;
 import java.util.List;
@@ -46,7 +45,7 @@ public class GenericDAOImpl<T, ID extends Serializable> implements GenericDAO<T,
 
     @Override
     public List<T> findAll(Class<T> clazz) {
-        return (List<T>) getSession().createQuery("from " + clazz.getName());
+        return (List<T>) getSession().createQuery("from " + clazz.getName()).list();
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.googlecode.wmbutil;
 
 import com.googlecode.wmbutil.cache.*;
+import com.googlecode.wmbutil.cache.dao.CacheEntry;
+import com.googlecode.wmbutil.dao.HibernateUtil;
 import junit.framework.Assert;
 import org.junit.Test;
 
@@ -12,7 +14,7 @@ public class CacheTest {
 
     @Test
     public void testCache() throws Exception {
-        HibernateUtil hibernateUtil = new HibernateUtil();
+        HibernateUtil hibernateUtil = new HibernateUtil(getClass().getResource("/hibernate.cfg.xml"));
         HibernateCacheManager cacheManager = new HibernateCacheManager(hibernateUtil);
         Assert.assertFalse(cacheManager.getCache(CACHE_A).get(ENTRY_1_KEY).isPresent());
 

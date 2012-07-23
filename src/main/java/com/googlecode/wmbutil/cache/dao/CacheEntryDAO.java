@@ -1,4 +1,6 @@
-package com.googlecode.wmbutil.cache;
+package com.googlecode.wmbutil.cache.dao;
+
+import com.googlecode.wmbutil.dao.GenericDAO;
 
 import java.math.BigInteger;
 

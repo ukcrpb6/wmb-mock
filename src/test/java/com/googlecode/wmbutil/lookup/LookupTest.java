@@ -16,12 +16,7 @@
 
 package com.googlecode.wmbutil.lookup;
 
-import java.io.File;
-import java.io.IOException;
-
-import junit.framework.TestCase;
-
-public class LookupTest extends TestCase {
+public class LookupTest {
 //
 //
 //    public void test() throws LookupCacheException, IOException {

@@ -1,4 +1,4 @@
-package com.googlecode.wmbutil.cache;
+package com.googlecode.wmbutil.dao;
 
 import org.hibernate.Query;
 

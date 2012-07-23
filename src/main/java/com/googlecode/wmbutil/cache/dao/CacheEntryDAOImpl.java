@@ -1,5 +1,7 @@
-package com.googlecode.wmbutil.cache;
+package com.googlecode.wmbutil.cache.dao;
 
+import com.googlecode.wmbutil.dao.GenericDAOImpl;
+import com.googlecode.wmbutil.dao.HibernateUtil;
 import org.hibernate.Query;
 
 import java.math.BigInteger;

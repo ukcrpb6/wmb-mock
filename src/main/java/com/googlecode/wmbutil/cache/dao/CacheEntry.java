@@ -1,9 +1,10 @@
-package com.googlecode.wmbutil.cache;
+package com.googlecode.wmbutil.cache.dao;
 
 import com.google.common.base.Objects;
 import org.hibernate.annotations.OptimisticLocking;
 
 import javax.persistence.*;
+import java.math.BigInteger;
 
 @Entity
 @Table
@@ -12,7 +13,7 @@ public class CacheEntry {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private BigInteger id;
 
     @Column
     private String cacheName;
@@ -39,11 +40,11 @@ public class CacheEntry {
         this.cacheName = cacheName;
     }
 
-    public int getId() {
+    public BigInteger getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(BigInteger id) {
         this.id = id;
     }
 

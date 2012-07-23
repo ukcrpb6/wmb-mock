@@ -1,6 +1,10 @@
 package com.googlecode.wmbutil.cache;
 
 import com.google.common.collect.ImmutableList;
+import com.googlecode.wmbutil.cache.dao.CacheEntry;
+import com.googlecode.wmbutil.cache.dao.CacheEntryDAO;
+import com.googlecode.wmbutil.cache.dao.CacheEntryDAOImpl;
+import com.googlecode.wmbutil.dao.HibernateUtil;
 import org.hibernate.HibernateException;
 import org.hibernate.NonUniqueResultException;
 

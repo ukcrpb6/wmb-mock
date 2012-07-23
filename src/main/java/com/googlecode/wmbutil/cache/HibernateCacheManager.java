@@ -6,10 +6,13 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Maps;
+import com.googlecode.wmbutil.cache.dao.CacheEntry;
+import com.googlecode.wmbutil.dao.HibernateUtil;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+// Note it would probably be more efficient to just use a layer 2 object cache
 public class HibernateCacheManager {
 
     private final Map<String, LoadingCache<String, Optional<String>>> caches = Maps.newConcurrentMap();

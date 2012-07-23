@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="connection.driver_class">org.h2.Driver</property>
+        <property name="connection.url">jdbc:h2:mem:cachedb</property>
+        <property name="connection.username">sa</property>
+        <property name="connection.password"/>
+        <property name="connection.default_schema">PUBLIC</property>
+        <property name="connection.dialect">org.hibernate.dialect.H2Dialect</property>
+        <property name="connection.pool_size">2</property>
+
+        <!-- Enable Hibernate's automatic session context management -->
+        <property name="current_session_context_class">thread</property>
+
+        <!-- TEST -->
+        <property name="hbm2ddl.auto">create-drop</property>
+        <property name="show_sql">true</property>
+
+        <!-- Entity Mappings -->
+        <mapping class="com.googlecode.wmbutil.cache.dao.CacheEntry" />
+    </session-factory>
+</hibernate-configuration>
