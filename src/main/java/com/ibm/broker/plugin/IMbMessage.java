@@ -9,7 +9,5 @@ public interface IMbMessage extends MbXPathSupport {
 
     void finalizeMessage(int arg0) throws MbException;
 
-    IMbElement getRootElement() throws MbException;
-
-    MbMessage getMbMessage();
+    MbElement getRootElement() throws MbException;
 }

@@ -1,5 +1,6 @@
-package com.googlecode.wmbutil.dao;
+package com.googlecode.wmbutil.dao.hibernate;
 
+import com.googlecode.wmbutil.dao.GenericDAO;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
