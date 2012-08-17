@@ -7,6 +7,8 @@ import com.ibm.broker.plugin.IMbElement;
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 import com.ibm.broker.plugin.MbXPath;
+import org.jaxen.XPath;
+import org.jaxen.saxpath.SAXPathException;
 
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
@@ -327,11 +329,26 @@ public class MockMbElement implements IMbElement {
     }
 
     @Override public Object evaluateXPath(MbXPath arg0) throws MbException {
+        if (arg0 instanceof MbJUnitRunner.GetXPathExpression) {
+            MockMbNavigator navigator = new MockMbNavigator();
+            try {
+                XPath xpath = navigator.parseXPath(((MbJUnitRunner.GetXPathExpression) arg0).getXPathExpression());
+                return xpath.selectNodes(this);
+            } catch (SAXPathException e) {
+                throw NiceMbException.propagate(e);
+            }
+        }
         throw new UnsupportedOperationException();
     }
 
     @Override public Object evaluateXPath(String arg0) throws MbException {
-        throw new UnsupportedOperationException();
+        MockMbNavigator navigator = new MockMbNavigator();
+        try {
+            XPath xpath = navigator.parseXPath(arg0);
+            return xpath.selectNodes(this);
+        } catch (SAXPathException e) {
+            throw NiceMbException.propagate(e);
+        }
     }
 
     public void setMbElement(MbElement mbElement) {
