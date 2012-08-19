@@ -2,8 +2,7 @@ package com.pressassociation.bus.junit;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
-import com.googlecode.wmbutil.MbMockFactory;
-import com.ibm.broker.plugin.*;
+import com.ibm.broker.plugin.MbXPath;
 import javassist.*;
 import org.junit.runners.model.InitializationError;
 
@@ -20,22 +19,23 @@ public class MbJUnit4ClassRunner extends PreMockJUnit4ClassRunner {
     @Override
     protected Map<String, CtTransformer> getAdditionalClassesToAlter(Class<?> unitTestClass) {
         ImmutableMap.Builder<String, CtTransformer> builder = ImmutableMap.builder();
-        builder.put(MbMessage.class.getName(), CtTransformers.nativeToDelegateTransformer("java.lang.String"));
-        builder.put(MbElement.class.getName(), CtTransformers.nativeToDelegateTransformer("java.lang.String"));
+//        builder.put(MbMessage.class.getName(), CtTransformers.nativeToDelegateTransformer("java.lang.String"));
+//        builder.put(MbElement.class.getName(), CtTransformers.nativeToDelegateTransformer("java.lang.String"));
 //        builder.put(MbElement.class.getName(), CtTransformers.nativeToDelegateTransformer());
-        builder.put(MbMockFactory.class.getName(), CtTransformers.noopTransformer());
-//        builder.put(MockMbElement.class.getName(), CtTransformers.noopTransformer());
+//        builder.put(MbMockFactory.class.getName(), CtTransformers.noopTransformer());
+//        builder.put(PseudoNativeMbElement.class.getName(), CtTransformers.noopTransformer());
 //        builder.put(MockMbMessage.class.getName(), CtTransformers.noopTransformer());
-        builder.put(MbXPathSupport.class.getName(), CtTransformers.noopTransformer());
-        builder.put(IMbElement.class.getName(), CtTransformers.noopTransformer());
-        builder.put(IMbMessage.class.getName(), CtTransformers.noopTransformer());
+//        builder.put(MbXPathSupport.class.getName(), CtTransformers.noopTransformer());
+//        builder.put(IMbElement.class.getName(), CtTransformers.noopTransformer());
+//        builder.put(IMbMessage.class.getName(), CtTransformers.noopTransformer());
         builder.put(MbXPath.class.getName(), getMbXPathTransformer());
         return builder.build();
     }
 
     private CtTransformer getMbXPathTransformer() {
         return new CtTransformer() {
-            @Override public void transform(CtClass klass) {
+            @Override
+            public void transform(CtClass klass) {
                 try {
                     CtClass stringCtClass = klass.getClassPool().get(String.class.getName());
                     klass.addInterface(klass.getClassPool().get(MbXPathValue.class.getName()));

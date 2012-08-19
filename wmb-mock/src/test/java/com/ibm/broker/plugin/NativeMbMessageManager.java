@@ -3,7 +3,7 @@ package com.ibm.broker.plugin;
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
-public interface NativeMbMessage {
+public interface NativeMbMessageManager {
     
     long _createMessage(long handle) throws MbException;
 

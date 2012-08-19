@@ -1,20 +1,17 @@
 package com.pressassociation.bus.junit;
 
 import com.google.common.collect.Maps;
-import javassist.CannotCompileException;
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.NotFoundException;
+import javassist.*;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
-public class PreMockClassLoader extends ClassLoader { // TODO: Use javaassist.Loader ?
+public class PreMockClassLoader extends ClassLoader {
 
     private static Map<String, CtTransformer> classTransformers = Maps.newHashMap();
 
-    private ClassPool pool;
+    private ClassPool pool = new ClassPool();
 
     public synchronized static void addClasses(Map<String, CtTransformer> transforms) {
         for(Map.Entry<String, CtTransformer> entry : transforms.entrySet()) {
@@ -44,12 +41,11 @@ public class PreMockClassLoader extends ClassLoader { // TODO: Use javaassist.Lo
 
     public PreMockClassLoader(ClassLoader parent) {
         super(parent);
-        pool = ClassPool.getDefault();
+        pool.appendClassPath(new ClassClassPath(this.getClass())); // pool = ClassPool.getDefault();
     }
 
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
-
         // no mater what, do not allow certain classes to be loaded by this
         // class loader. change this as you see fit (and are able to).
         if (name.startsWith("java.")) {
@@ -65,46 +61,48 @@ public class PreMockClassLoader extends ClassLoader { // TODO: Use javaassist.Lo
         } else if (name.startsWith("com.pressassociation.bus.junit.")) {
             return super.loadClass(name);
         } else {
-            String classKey = name;
-            if(classKey.indexOf('$') > 0) {
-                classKey = classKey.substring(0, classKey.indexOf('$'));
-            }
-            if (classTransformers.containsKey(classKey)) {
-                // only load the classes specified with the class loader,
-                // otherwise leave it up to the parent.
-                if(!classTransformers.containsKey(classKey)) {
-                    classTransformers.put(classKey, CtTransformers.noopTransformer());
-                }
-                return findClass(name);
+            if (classTransformers.containsKey(name)) {
+                return loadMockedClass(name);
             } else {
-                return super.loadClass(name);
+                return loadUnmockedClass(name);
             }
         }
     }
 
-    public Class<?> findClass(String name) throws ClassNotFoundException {
-
+    public Class<?> loadMockedClass(String name) {
+        byte[] clazz;
+        ClassPool.doPruning = false;
         try {
-            CtClass cc = pool.get(name);
+            CtClass type = pool.get(name);
 
             CtTransformer transformer = classTransformers.get(name);
-            ((transformer == null) ? CtTransformers.noopTransformer() : transformer).transform(cc);
+            ((transformer == null) ? CtTransformers.noopTransformer() : transformer).transform(type);
 
-            // TODO THIS IS JUST A TEST
-//            if(MbMessage.class.getName().equals(name)) {
-//                cc = pool.get(MockMbMessage.class.getName());
-//                cc.setName(name);
-//            }
-            byte[] b = cc.toBytecode();
-
-            return defineClass(name, b, 0, b.length);
-        } catch (NotFoundException e) {
-            throw new ClassNotFoundException();
-        } catch (IOException e) {
-            throw new ClassNotFoundException();
-        } catch (CannotCompileException e) {
-            throw new ClassNotFoundException();
+            clazz = type.toBytecode();
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to transform class with name " + name + ". Reason: " + e.getMessage(), e);
         }
+        return defineClass(name, clazz, 0, clazz.length);
+    }
+
+    private Class<?> loadUnmockedClass(String name) throws ClassFormatError, ClassNotFoundException {
+        byte bytes[] = null;
+        try {
+            String ignoredClass = "net.sf.cglib.proxy.Enhancer$EnhancerKey$$KeyFactoryByCGLIB$$";
+            String ignoredClass2 = "net.sf.cglib.core.MethodWrapper$MethodWrapperKey$$KeyFactoryByCGLIB";
+            if (name.startsWith(ignoredClass) || name.startsWith(ignoredClass2)) {
+                // ignore
+            } else {
+                final CtClass ctClass = pool.get(name);
+                if (ctClass.isFrozen()) {
+                    ctClass.defrost();
+                }
+                bytes = ctClass.toBytecode();
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to load class with name " + name + ". Reason: " + e.getMessage(), e);
+        }
+        return bytes == null ? null : defineClass(name, bytes, 0, bytes.length);
     }
 
 }

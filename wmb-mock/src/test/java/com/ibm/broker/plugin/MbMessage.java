@@ -14,6 +14,7 @@ public class MbMessage {
     public static final int FINALIZE_NONE = 0;
     public static final int FINALIZE_VALIDATE = 1;
 
+
     MbMessage(long handle) {
         if (Trace.isOn) Trace.logNamedEntryData(this, "MbMessage", "handle[" + handle + "]");
         this.handle_ = handle;
@@ -90,7 +91,7 @@ public class MbMessage {
         if (Trace.isOn) Trace.logNamedExit(this, "clearMessage");
     }
 
-    public void finalizeMessage(int paramInt) throws MbException {
+    public void finalizeMessage(int noneOrValidate) throws MbException {
         try {
             if (Trace.isOn) Trace.logNamedEntry(this, "finalizeMessage");
 
@@ -103,7 +104,7 @@ public class MbMessage {
             if (isReadOnly()) {
                 throw new MbReadOnlyMessageException();
             }
-            _finalizeMessage(this.handle_, paramInt);
+            _finalizeMessage(this.handle_, noneOrValidate);
         } catch (MbException localMbException) {
             if (Trace.isOn) Trace.logStackTrace(this, "finalizeMessage", localMbException);
             throw localMbException;
@@ -274,7 +275,7 @@ public class MbMessage {
 
     private native void _clearMessage(long handle, long inputContextHandle) throws MbException;
 
-    private native void _finalizeMessage(long handle, int paramInt) throws MbException;
+    private native void _finalizeMessage(long handle, int noneOrValidate) throws MbException;
 
     private native byte[] _getBuffer(long handle) throws MbException;
 

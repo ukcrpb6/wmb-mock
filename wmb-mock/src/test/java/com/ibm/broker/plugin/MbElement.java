@@ -109,7 +109,7 @@ public class MbElement {
         }
     }
 
-    public MbElement createElementAfter(String paramString) throws MbException {
+    public MbElement createElementAfter(String parserName) throws MbException {
         String str = "createElementAfter2";
         try {
             if (Trace.isOn) Trace.logNamedEntry(this, str);
@@ -117,7 +117,7 @@ public class MbElement {
             if (isReadOnly()) {
                 throw new MbReadOnlyMessageException();
             }
-            long l = _createElementAfterUsingParser(this.handle_, paramString);
+            long l = _createElementAfterUsingParser(this.handle_, parserName);
 
             if (l == 0L) {
                 return null;
@@ -436,7 +436,7 @@ public class MbElement {
         try {
             if (Trace.isOn) Trace.logNamedEntry(this, str);
 
-            return _getType(this.handle_) & 0xF000000;
+            return _getType(this.handle_) & TYPE_MASK_GENERIC;
         } catch (MbException ex) {
             if (Trace.isOn) Trace.logStackTrace(this, str, ex);
             throw ex;
@@ -453,7 +453,7 @@ public class MbElement {
         try {
             if (Trace.isOn) Trace.logNamedEntry(this, str);
 
-            return _getType(this.handle_) & 0xFFFFFF;
+            return _getType(this.handle_) & TYPE_MASK_SPECIFIC;
         } catch (MbException ex) {
             if (Trace.isOn) Trace.logStackTrace(this, str, ex);
             throw ex;
@@ -573,7 +573,7 @@ public class MbElement {
                     } else if ((paramObject instanceof MbTimestamp)) {
                         MbTimestamp o = (MbTimestamp) paramObject;
                         bool = "GMT".equals(o.getTimeZone().getID());
-                        setMbTimeStampValue(this.handle_, o.get(Calendar.YEAR), o.get(Calendar.MONTH) + 1, o.get(Calendar.DAY_OF_MONTH), o.get(11), o.get(12), getMicroSeconds(o), bool);
+                        setMbTimeStampValue(this.handle_, o.get(Calendar.YEAR), o.get(Calendar.MONTH) + 1, o.get(Calendar.DAY_OF_MONTH), o.get(Calendar.HOUR), o.get(Calendar.MINUTE), getMicroSeconds(o), bool);
                     } else if ((paramObject instanceof Duration)) {
                         Duration o = (Duration) paramObject;
                         setDurationValue(this.handle_, o.getSign(), o.getYears(), o.getMonths(), o.getDays(), o.getHours(), o.getMinutes(), o.getSeconds());
@@ -1025,10 +1025,10 @@ public class MbElement {
 
             str = "MbElement( type: " + Integer.toHexString(i);
 
-            if ((i & 0x1000000) == 16777216) {
+            if ((i & 0x1000000) == TYPE_NAME) {
                 str = str + " name: " + getName();
             }
-            if ((i & 0x2000000) == 33554432) {
+            if ((i & 0x2000000) == TYPE_VALUE) {
                 str = str + " value: " + getValue();
             }
             str = str + " )";
@@ -1163,11 +1163,11 @@ public class MbElement {
 
             int i = paramMbElement.getType();
 
-            if (i == 16777216) {
+            if (i == TYPE_NAME) {
                 str = str + indent() + "MbElement( name: " + paramMbElement.getName();
-            } else if (i == 33554432) {
+            } else if (i == TYPE_VALUE) {
                 str = str + indent() + "MbElement( value: " + paramMbElement.getValue();
-            } else if (i == 50331648) {
+            } else if (i == TYPE_NAME_VALUE) {
                 str = str + indent() + "MbElement( name: " + paramMbElement.getName() + ", " + paramMbElement.getValue();
             } else {
                 str = str + indent() + "MbElement( Unknown";

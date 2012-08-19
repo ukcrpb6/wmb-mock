@@ -2,7 +2,6 @@ package com.test;
 
 import com.ibm.broker.plugin.MbException;
 import com.ibm.broker.plugin.MbMessage;
-import com.ibm.broker.plugin.MbRecoverableException;
 import com.ibm.broker.plugin.MbXPath;
 import com.pressassociation.bus.junit.MbJUnit4ClassRunner;
 import com.pressassociation.bus.junit.MbXPathValue;
