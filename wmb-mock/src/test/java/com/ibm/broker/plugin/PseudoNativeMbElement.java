@@ -1,22 +1,20 @@
 package com.ibm.broker.plugin;
 
-import com.google.common.base.Function;
-import com.google.common.base.Objects;
-import com.google.common.base.Optional;
-import com.ibm.broker.plugin.IMbElement;
-import org.jaxen.XPath;
-import org.jaxen.saxpath.SAXPathException;
+import com.google.common.base.*;
+import com.google.common.collect.AbstractIterator;
+import com.ibm.broker.plugin.visitor.MbMessageVisitor;
+import com.ibm.broker.plugin.visitor.MbVisitable;
+
+import java.util.Iterator;
 
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
-public class PseudoNativeMbElement {
+public class PseudoNativeMbElement implements MbVisitable {
 
     private static final int TYPE_MASK_GENERIC = 251658240;
 
     private static final int TYPE_MASK_SPECIFIC = 16777215;
-
-    private PseudoNativeMbMessage message;
 
     PseudoNativeMbElement parent;
 
@@ -28,78 +26,91 @@ public class PseudoNativeMbElement {
 
     PseudoNativeMbElement nextSibling;
 
-    private String name;
+    private String name = "";
 
     private Object value;
 
     private boolean readOnly;
 
-    // Proxy
-    private MbElement mbElement;
-
-    private String namespace;
+    private String namespace = "";
 
     private int type;
 
     private String parserClassName;
 
+    private PseudoNativeMbMessage message;
+
     PseudoNativeMbElement() {
     }
 
-    @Override public String getName() throws MbException {
+    PseudoNativeMbElement(PseudoNativeMbMessage message) {
+        this.message = message;
+    }
+
+    public PseudoNativeMbElement(int type) {
+        this.type = type;
+    }
+
+    public PseudoNativeMbElement(String parserClassName) {
+        this.parserClassName = parserClassName;
+    }
+
+    public PseudoNativeMbElement(int type, String name, Object value) {
+        this.type = type;
+        this.name = name;
+        this.value = value;
+    }
+
+    public String getName() throws MbException {
         return name;
     }
 
-    @Override public Object getValue() throws MbException {
+    public Object getValue() throws MbException {
         return value;
     }
 
-    @Override public MbElement getParent() throws MbException {
-        return parent.getMbElement();
+    public PseudoNativeMbElement getParent() throws MbException {
+        return parent;
     }
 
-    @Override public void setName(String arg0) throws MbException {
+    public void setName(String arg0) throws MbException {
         this.name = arg0;
     }
 
-    @Override public MbElement copy() throws MbException {
+    public PseudoNativeMbElement copy() throws MbException {
         return null;
     }
 
-    @Override public int getType() throws MbException {
+    public int getType() throws MbException {
         return type & TYPE_MASK_GENERIC;
     }
 
-    @Override public boolean isReadOnly() {
+    public boolean isReadOnly() {
         return readOnly;
     }
 
-    @Override public void setValue(Object arg0) throws MbException {
+    public void setValue(Object arg0) throws MbException {
         this.value = arg0;
     }
 
-    private static PseudoNativeMbElement checkMockMbElement(MbElement element) {
-        return ((MbMockFactory.IMockMbElement) element).getMockMbElement();
+    private static PseudoNativeMbElement checkMockMbElement(PseudoNativeMbElement element) {
+        return Preconditions.checkNotNull(element);
     }
 
-    @Override public boolean is(MbElement arg0) {
-        return this.equals(checkMockMbElement(arg0));
-    }
-
-    @Override public String getNamespace() throws MbException {
+    public String getNamespace() throws MbException {
         return namespace;
     }
 
-    @Override public MbElement createElementAfter(int arg0) throws MbException {
-        MbElement e = MbMockFactory.getInstance().createMbElement();
+    public PseudoNativeMbElement createElementAfter(int arg0) throws MbException {
+        PseudoNativeMbElement e = PseudoNativeMbElementManager.getInstance().createPseudoNativeMbElement();
         PseudoNativeMbElement mockMbElement = checkMockMbElement(e);
         mockMbElement.type = arg0;
         addAfter(e);
         return e;
     }
 
-    @Override public MbElement createElementAfter(String arg0) throws MbException {
-        MbElement e = MbMockFactory.getInstance().createMbElement();
+    public PseudoNativeMbElement createElementAfter(String arg0) throws MbException {
+        PseudoNativeMbElement e = PseudoNativeMbElementManager.getInstance().createPseudoNativeMbElement();
         PseudoNativeMbElement mockMbElement = checkMockMbElement(e);
         mockMbElement.setParserClassName(arg0);
         addAfter(e);
@@ -113,8 +124,8 @@ public class PseudoNativeMbElement {
      *             + TYPE_VALUE
      *             + TYPE_NAME_VALUE
      */
-    @Override public MbElement createElementAfter(int arg0, String arg1, Object arg2) throws MbException {
-        MbElement e = MbMockFactory.getInstance().createMbElement();
+    public PseudoNativeMbElement createElementAfter(int arg0, String arg1, Object arg2) throws MbException {
+        PseudoNativeMbElement e = PseudoNativeMbElementManager.getInstance().createPseudoNativeMbElement();
         PseudoNativeMbElement mockMbElement = checkMockMbElement(e);
         mockMbElement.type = arg0;
         mockMbElement.setName(arg1);
@@ -123,16 +134,16 @@ public class PseudoNativeMbElement {
         return e;
     }
 
-    @Override public MbElement createElementBefore(int arg0) throws MbException {
-        MbElement e = MbMockFactory.getInstance().createMbElement();
+    public PseudoNativeMbElement createElementBefore(int arg0) throws MbException {
+        PseudoNativeMbElement e = PseudoNativeMbElementManager.getInstance().createPseudoNativeMbElement();
         PseudoNativeMbElement mockMbElement = checkMockMbElement(e);
         mockMbElement.type = arg0;
         addBefore(e);
         return e;
     }
 
-    @Override public MbElement createElementBefore(int arg0, String arg1, Object arg2) throws MbException {
-        MbElement e = MbMockFactory.getInstance().createMbElement();
+    public PseudoNativeMbElement createElementBefore(int arg0, String arg1, Object arg2) throws MbException {
+        PseudoNativeMbElement e = PseudoNativeMbElementManager.getInstance().createPseudoNativeMbElement();
         PseudoNativeMbElement mockMbElement = checkMockMbElement(e);
         mockMbElement.type = arg0;
         mockMbElement.setName(arg1);
@@ -141,32 +152,32 @@ public class PseudoNativeMbElement {
         return e;
     }
 
-    @Override public MbElement createElementBefore(String arg0) throws MbException {
-        MbElement e = MbMockFactory.getInstance().createMbElement();
+    public PseudoNativeMbElement createElementBefore(String arg0) throws MbException {
+        PseudoNativeMbElement e = PseudoNativeMbElementManager.getInstance().createPseudoNativeMbElement();
         PseudoNativeMbElement mockMbElement = checkMockMbElement(e);
         mockMbElement.setParserClassName(arg0);
         addBefore(e);
         return e;
     }
 
-    @Override public MbElement createElementAsFirstChild(int arg0) throws MbException {
-        MbElement e = MbMockFactory.getInstance().createMbElement();
+    public PseudoNativeMbElement createElementAsFirstChild(int arg0) throws MbException {
+        PseudoNativeMbElement e = PseudoNativeMbElementManager.getInstance().createPseudoNativeMbElement();
         PseudoNativeMbElement mockMbElement = checkMockMbElement(e);
         mockMbElement.type = arg0;
         addAsFirstChild(e);
         return e;
     }
 
-    @Override public MbElement createElementAsFirstChild(String arg0) throws MbException {
-        MbElement e = MbMockFactory.getInstance().createMbElement();
+    public PseudoNativeMbElement createElementAsFirstChild(String arg0) throws MbException {
+        PseudoNativeMbElement e = PseudoNativeMbElementManager.getInstance().createPseudoNativeMbElement();
         PseudoNativeMbElement mockMbElement = checkMockMbElement(e);
         mockMbElement.setParserClassName(arg0);
         addAsFirstChild(e);
         return e;
     }
 
-    @Override public MbElement createElementAsFirstChild(int arg0, String arg1, Object arg2) throws MbException {
-        MbElement e = MbMockFactory.getInstance().createMbElement();
+    public PseudoNativeMbElement createElementAsFirstChild(int arg0, String arg1, Object arg2) throws MbException {
+        PseudoNativeMbElement e = PseudoNativeMbElementManager.getInstance().createPseudoNativeMbElement();
         PseudoNativeMbElement mockMbElement = checkMockMbElement(e);
         mockMbElement.type = arg0;
         mockMbElement.setName(arg1);
@@ -175,16 +186,16 @@ public class PseudoNativeMbElement {
         return e;
     }
 
-    @Override public MbElement createElementAsLastChild(int arg0) throws MbException {
-        MbElement e = MbMockFactory.getInstance().createMbElement();
+    public PseudoNativeMbElement createElementAsLastChild(int arg0) throws MbException {
+        PseudoNativeMbElement e = PseudoNativeMbElementManager.getInstance().createPseudoNativeMbElement();
         PseudoNativeMbElement mockMbElement = checkMockMbElement(e);
         mockMbElement.type = arg0;
         addAsLastChild(e);
         return e;
     }
 
-    @Override public MbElement createElementAsLastChild(int arg0, String arg1, Object arg2) throws MbException {
-        MbElement e = MbMockFactory.getInstance().createMbElement();
+    public PseudoNativeMbElement createElementAsLastChild(int arg0, String arg1, Object arg2) throws MbException {
+        PseudoNativeMbElement e = PseudoNativeMbElementManager.getInstance().createPseudoNativeMbElement();
         PseudoNativeMbElement mockMbElement = checkMockMbElement(e);
         mockMbElement.type = arg0;
         mockMbElement.setName(arg1);
@@ -193,88 +204,92 @@ public class PseudoNativeMbElement {
         return e;
     }
 
-    @Override public MbElement createElementAsLastChild(String arg0) throws MbException {
-        MbElement e = MbMockFactory.getInstance().createMbElement();
+    public PseudoNativeMbElement createElementAsLastChild(String arg0) throws MbException {
+        PseudoNativeMbElement e = PseudoNativeMbElementManager.getInstance().createPseudoNativeMbElement();
         PseudoNativeMbElement mockMbElement = checkMockMbElement(e);
         mockMbElement.setName(arg0);
         addAsLastChild(e);
         return e;
     }
 
-    @Override public void setNamespace(String arg0) throws MbException {
+    public void setNamespace(String arg0) throws MbException {
         this.namespace = arg0;
     }
 
     @Deprecated
-    @Override public int getParserContext() throws MbException {
+    public int getParserContext() throws MbException {
         return getSpecificType();
     }
 
-    @Override public int getSpecificType() throws MbException {
+    public int getSpecificType() throws MbException {
         return this.type;
     }
 
-    @Override public void setSpecificType(int arg0) throws MbException {
+    public void setSpecificType(int arg0) throws MbException {
         this.type = arg0;
     }
 
-    @Override public String getValueAsString() throws MbException {
+    public String getValueAsString() throws MbException {
         return String.valueOf(value);
     }
 
-    @Override public int getValueState() throws MbException {
+    public int getValueState() throws MbException {
         throw new UnsupportedOperationException();
     }
 
-    @Override public String getParserClassName() throws MbException {
+    public String getParserClassName() throws MbException {
         return (parserClassName == null) ? parent.getParserClassName() : parserClassName;
     }
 
-    @Override public MbElement getNextSibling() throws MbException {
-        return nextSibling == null ? null : nextSibling.getMbElement();
+    public PseudoNativeMbElement getNextSibling() throws MbException {
+        return nextSibling; // == null ? null : nextSibling.getMbElement();
     }
 
-    @Override public MbElement getPreviousSibling() throws MbException {
-        return previousSibling == null ? null : previousSibling.getMbElement();
+    public PseudoNativeMbElement getPreviousSibling() throws MbException {
+        return previousSibling; // == null ? null : previousSibling.getMbElement();
     }
 
-    @Override public MbElement getFirstChild() throws MbException {
-        return firstChild == null ? null : firstChild.getMbElement();
+    public PseudoNativeMbElement getFirstChild() throws MbException {
+        return firstChild; // == null ? null : firstChild.getMbElement();
     }
 
-    @Override public MbElement getLastChild() throws MbException {
-        return lastChild == null ? null : lastChild.getMbElement();
+    public PseudoNativeMbElement getLastChild() throws MbException {
+        return lastChild; // == null ? null : lastChild.getMbElement();
     }
 
-    @Override public MbElement getFirstElementByPath(String arg0) throws MbException {
+    public PseudoNativeMbElement getFirstElementByPath(String arg0) throws MbException {
         throw new UnsupportedOperationException();
     }
 
-    @Override public MbElement[] getAllElementsByPath(String arg0) throws MbException {
+    public PseudoNativeMbElement[] getAllElementsByPath(String arg0) throws MbException {
         throw new UnsupportedOperationException();
     }
 
-    @Override public void addBefore(MbElement element) throws MbException {
-        PseudoNativeMbElement newMbElement = checkMockMbElement(element);
-        newMbElement.parent = this.parent;
-        if (this.parent.firstChild == this) this.parent.firstChild = newMbElement;
-        if (this.previousSibling != null) this.previousSibling.nextSibling = newMbElement;
-        newMbElement.previousSibling = this.previousSibling;
-        newMbElement.nextSibling = this;
-        this.previousSibling = newMbElement;
+    public void addBefore(PseudoNativeMbElement element) throws MbException {
+        checkValidParent();
+        element.parent = this.parent;
+        if (this.parent.firstChild == this) this.parent.firstChild = element;
+        if (this.previousSibling != null) this.previousSibling.nextSibling = element;
+        element.previousSibling = this.previousSibling;
+        element.nextSibling = this;
+        this.previousSibling = element;
     }
 
-    @Override public void addAfter(MbElement element) throws MbException {
-        PseudoNativeMbElement newMbElement = checkMockMbElement(element);
-        newMbElement.parent = this.parent;
-        if (this.parent.lastChild == this) this.parent.lastChild = newMbElement;
-        if (this.nextSibling != null) this.nextSibling.previousSibling = newMbElement;
-        newMbElement.nextSibling = this.nextSibling;
-        newMbElement.previousSibling = this;
-        this.nextSibling = newMbElement;
+    public void addAfter(PseudoNativeMbElement element) throws MbException {
+        checkValidParent();
+        element.parent = this.parent;
+        if (this.parent.lastChild == this) this.parent.lastChild = element;
+        if (this.nextSibling != null) this.nextSibling.previousSibling = element;
+        element.nextSibling = this.nextSibling;
+        element.previousSibling = this;
+        this.nextSibling = element;
     }
 
-    @Override public void addAsFirstChild(MbElement arg0) throws MbException {
+    private void checkValidParent() {
+        Preconditions.checkState(this.parent != null, "Elements cannot be added as siblings of root element");
+    }
+
+    public void addAsFirstChild(PseudoNativeMbElement arg0) throws MbException {
         PseudoNativeMbElement newMbElement = checkMockMbElement(arg0);
         newMbElement.parent = this;
         if (this.firstChild != null) this.firstChild.previousSibling = newMbElement;
@@ -283,7 +298,7 @@ public class PseudoNativeMbElement {
         if (lastChild == null) lastChild = firstChild;
     }
 
-    @Override public void addAsLastChild(MbElement arg0) throws MbException {
+    public void addAsLastChild(PseudoNativeMbElement arg0) throws MbException {
         PseudoNativeMbElement newMbElement = checkMockMbElement(arg0);
         newMbElement.parent = this;
         if (this.lastChild != null) this.lastChild.nextSibling = newMbElement;
@@ -292,56 +307,32 @@ public class PseudoNativeMbElement {
         if (firstChild == null) firstChild = lastChild;
     }
 
-    @Override public void copyElementTree(MbElement arg0) throws MbException {
+    public void copyElementTree(PseudoNativeMbElement arg0) throws MbException {
         throw new UnsupportedOperationException();
     }
 
-    @Override public void detach() throws MbException {
+    public void detach() throws MbException {
         previousSibling.nextSibling = nextSibling;
         nextSibling.previousSibling = previousSibling;
         if (parent.firstChild == this) parent.firstChild = this.nextSibling;
         if (parent.lastChild == this) parent.lastChild = this.previousSibling;
     }
 
-    @Override
     public byte[] toBitstream(String arg0, String arg1, String arg2, int arg3, int arg4, int arg5) throws MbException {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public MbElement createElementAsLastChildFromBitstream(byte[] arg0, String arg1, String arg2, String arg3, String arg4, int arg5, int arg6, int arg7) throws MbException {
+    public PseudoNativeMbElement createElementAsLastChildFromBitstream(byte[] arg0, String arg1, String arg2, String arg3, String arg4, int arg5, int arg6, int arg7) throws MbException {
         throw new UnsupportedOperationException();
     }
 
-    @Override public Object evaluateXPath(MbXPath arg0) throws MbException {
-        if (arg0 instanceof MbJUnitRunner.GetXPathExpression) {
-            MockMbNavigator navigator = new MockMbNavigator();
-            try {
-                XPath xpath = navigator.parseXPath(((MbJUnitRunner.GetXPathExpression) arg0).getXPathExpression());
-                return xpath.selectNodes(this);
-            } catch (SAXPathException e) {
-                throw NiceMbException.propagate(e);
-            }
-        }
-        throw new UnsupportedOperationException();
+    public Object evaluateXPath(MbXPath xpath) throws MbException {
+        return PseudoNativeMbXPathManager.getInstance().getNativeMbXPath(xpath).evaluateXPath(this);
     }
 
-    @Override public Object evaluateXPath(String arg0) throws MbException {
-        MockMbNavigator navigator = new MockMbNavigator();
-        try {
-            XPath xpath = navigator.parseXPath(arg0);
-            return xpath.selectNodes(this);
-        } catch (SAXPathException e) {
-            throw NiceMbException.propagate(e);
-        }
-    }
-
-    public void setMbElement(MbElement mbElement) {
-        this.mbElement = mbElement;
-    }
-
-    public MbElement getMbElement() {
-        return mbElement;
+    public Object evaluateXPath(String xpath) throws MbException {
+        return PseudoNativeMbXPathManager.getInstance()
+                .getNativeMbXPath(new MbXPath(xpath, new MbElement(this.hashCode()))).evaluateXPath(this);
     }
 
     public void setParserClassName(String parserClassName) {
@@ -349,11 +340,12 @@ public class PseudoNativeMbElement {
         this.name = parserClassName;  // Hash lookup know values ie PropertiesParser -> Properties?
     }
 
-    @Override public String toString() {
+    public String toString() {
         return Objects.toStringHelper(this)
                 .add("parent", Optional.fromNullable(parent).transform(new Function<PseudoNativeMbElement, Integer>() {
-                    @Override public Integer apply(PseudoNativeMbElement input) {
-                        return input.getMbElement().hashCode();
+                    @Override
+                    public Integer apply(PseudoNativeMbElement input) {
+                        return input.hashCode();
                     }
                 }).orNull())
                 .add("namespace", namespace)
@@ -363,5 +355,44 @@ public class PseudoNativeMbElement {
                 .add("genericType", type & TYPE_MASK_GENERIC)
                 .add("specificType", type & TYPE_MASK_SPECIFIC)
                 .add("value", value).omitNullValues().toString();
+    }
+
+    public PseudoNativeMbMessage getNativeMbMessage() {
+        if(message == null) {
+            message = Preconditions.checkNotNull(parent,
+                    "Root elements should always be associated with a message").getNativeMbMessage();
+        }
+        return message;
+    }
+
+    public MbMessage getMbMessage() {
+        // TODO: Check validity of native message - retrieve from PseudoNativeMbMessageManager
+        return new MbMessage(getNativeMbMessage().hashCode());
+    }
+
+    @Override
+    public void accept(MbMessageVisitor visitor) {
+        visitor.visit(this);
+        Iterator<PseudoNativeMbElement> iter = new AbstractIterator<PseudoNativeMbElement>() {
+            PseudoNativeMbElement next = firstChild;
+
+            @Override
+            protected PseudoNativeMbElement computeNext() {
+                if (next != null) {
+                    PseudoNativeMbElement current = next;
+                    try {
+                        next = next.getNextSibling();
+                    } catch (MbException e) {
+                        throw Throwables.propagate(e);
+                    }
+                    return current;
+                }
+                return endOfData();
+            }
+        };
+
+        while (iter.hasNext()) {
+            iter.next().accept(visitor);
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.ibm.broker.plugin;
 
 import com.google.common.collect.Maps;
+import com.ibm.broker.plugin.visitor.MbMessageVisitor;
 
 import java.util.Map;
 
@@ -19,6 +20,10 @@ public class PseudoNativeMbMessageManager implements NativeMbMessageManager {
     private PseudoNativeMbMessageManager() {
     }
 
+    private long getNativeHandle(PseudoNativeMbElement element) {
+        return element == null ? 0L : element.hashCode();
+    }
+
     @Override
     public long _createMessage(long handle) throws MbException {
         PseudoNativeMbMessage message = new PseudoNativeMbMessage();
@@ -28,13 +33,15 @@ public class PseudoNativeMbMessageManager implements NativeMbMessageManager {
 
     @Override
     public void _createMessage(long[] paramArrayOfLong) throws MbException {
-        // Brand spanking new message
-        throw new UnsupportedOperationException();
+        PseudoNativeMbMessage message = new PseudoNativeMbMessage();
+        paramArrayOfLong[0] = message.hashCode();
+        paramArrayOfLong[1] = 0L;
+        nativeMessages.put((long) message.hashCode(), message);
     }
 
     @Override
     public void _clearMessage(long handle, long inputContextHandle) throws MbException {
-        nativeMessages.get(handle).clearMessage(inputContextHandle);
+//        nativeMessages.get(handle).clearMessage(inputContextHandle);
     }
 
     @Override
@@ -54,21 +61,33 @@ public class PseudoNativeMbMessageManager implements NativeMbMessageManager {
 
     @Override
     public long _getRootElement(long handle) throws MbException {
-        return nativeMessages.get(handle).getRootElement();
+        return getNativeHandle(nativeMessages.get(handle).getRootElement());
     }
 
     @Override
     public void _copy(long handle, long inputContextHandle) throws MbException {
-        nativeMessages.get(handle).copy(inputContextHandle);
+//        nativeMessages.get(handle).copy(inputContextHandle);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Object _evaluateXPath(long handle, long xpathHandle, MbXPath paramMbXPath) throws MbException {
-        return nativeMessages.get(handle).evaluateXPath(xpathHandle, paramMbXPath);
+//        return nativeMessages.get(handle).evaluateXPath(xpathHandle, paramMbXPath);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Object _evaluateXPath(long handle, String paramString) throws MbException {
         return nativeMessages.get(handle).evaluateXPath(paramString);
+    }
+
+    public void visit(MbMessageVisitor visitor) throws MbException {
+        for(PseudoNativeMbMessage message : nativeMessages.values()) {
+            message.accept(visitor);
+        }
+    }
+
+    public void visit(long handle, MbMessageVisitor visitor) throws MbException {
+        nativeMessages.get(handle).accept(visitor);
     }
 }

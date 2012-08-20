@@ -3,7 +3,7 @@ package com.ibm.broker.plugin;
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
-public interface NativeMbElement {
+public interface NativeMbElementManager {
     long _createElementAfter(long handle) throws MbException;
 
     long _createElementAfterUsingParser(long handle, String paramString) throws MbException;

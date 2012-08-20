@@ -1,5 +1,6 @@
 package com.ibm.broker.plugin;
 
+import com.google.common.base.Objects;
 import com.ibm.broker.trace.Trace;
 
 import javax.xml.datatype.Duration;
@@ -1210,5 +1211,15 @@ public class MbElement {
         String newLine() {
             return "\n";
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof MbElement && handle_ == ((MbElement) o).handle_;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.valueOf(handle_).hashCode();
     }
 }

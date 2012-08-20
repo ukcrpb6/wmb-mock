@@ -3,6 +3,7 @@ package com.ibm.broker.plugin;
 import com.ibm.broker.trace.Trace;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class MbMessage {
     private static final String copyright = "Licensed Material - Property of IBM \n5648-C63 (c) Copyright IBM Corp. 2001 - All Rights Reserved. \nUS Government Users Restricted Rights - Use,duplication or disclosure \nrestricted by GSA ADP Schedule Contract with IBM Corp.";
@@ -13,7 +14,6 @@ public class MbMessage {
     private boolean cleared = false;
     public static final int FINALIZE_NONE = 0;
     public static final int FINALIZE_VALIDATE = 1;
-
 
     MbMessage(long handle) {
         if (Trace.isOn) Trace.logNamedEntryData(this, "MbMessage", "handle[" + handle + "]");
@@ -74,12 +74,32 @@ public class MbMessage {
         return this.readOnly;
     }
 
-    public void clearMessage() throws MbException {
-        if (Trace.isOn) Trace.logNamedEntry(this, "clearMessage");
+    boolean checkNotCleared(String methodName) throws MbRecoverableException {
+        if (this.handle_ == 0L) {
+            throw new MbRecoverableException(this, methodName, 3221229850L, "Message has been cleared.", new String[]{getClass().getName()});
+        }
+        return true;
+    }
 
+    boolean checkWritable() throws MbReadOnlyMessageException {
         if (isReadOnly()) {
             throw new MbReadOnlyMessageException();
         }
+        return true;
+    }
+
+    List<MbElement> createMbElementList(long[] handles) {
+        MbElement[] arrayOfMbElement = new MbElement[handles.length];
+        for (int i = 0; i < handles.length; i++) {
+            arrayOfMbElement[i] = new MbElement(handles[i], isReadOnly());
+        }
+        return Arrays.asList(arrayOfMbElement);
+    }
+
+    public void clearMessage() throws MbException {
+        if (Trace.isOn) Trace.logNamedEntry(this, "clearMessage");
+
+        checkWritable();
         if ((this.handle_ != 0L) && (this.mustFinalize)) {
             _clearMessage(this.handle_, this.inputContextHandle_);
             this.handle_ = 0L;
@@ -95,15 +115,9 @@ public class MbMessage {
         try {
             if (Trace.isOn) Trace.logNamedEntry(this, "finalizeMessage");
 
-            if (this.handle_ == 0L) {
-                String[] arrayOfString = new String[1];
-                arrayOfString[0] = getClass().getName();
-                throw new MbRecoverableException(this, "finalizeMessage", 3221229850L, "Message has been cleared.", arrayOfString);
-            }
+            checkNotCleared("finalizeMessage");
+            checkWritable();
 
-            if (isReadOnly()) {
-                throw new MbReadOnlyMessageException();
-            }
             _finalizeMessage(this.handle_, noneOrValidate);
         } catch (MbException localMbException) {
             if (Trace.isOn) Trace.logStackTrace(this, "finalizeMessage", localMbException);
@@ -117,9 +131,7 @@ public class MbMessage {
         try {
             if (Trace.isOn) Trace.logNamedEntry(this, "getBuffer");
 
-            if (this.handle_ == 0L) {
-                throw new MbRecoverableException(this, "getBuffer", 3221229850L, "Message has been cleared.", new String[]{getClass().getName()});
-            }
+            checkNotCleared("getBuffer");
 
             return _getBuffer(this.handle_);
         } catch (MbException localMbException) {
@@ -134,11 +146,7 @@ public class MbMessage {
         try {
             if (Trace.isOn) Trace.logNamedEntry(this, "writeBuffer");
 
-            if (this.handle_ == 0L) {
-                String[] arrayOfString = new String[1];
-                arrayOfString[0] = getClass().getName();
-                throw new MbRecoverableException(this, "writeBuffer", 3221229850L, "Message has been cleared.", arrayOfString);
-            }
+            checkNotCleared("writeBuffer");
 
             _writeBuffer(this.handle_);
         } catch (MbException localMbException) {
@@ -153,9 +161,7 @@ public class MbMessage {
         try {
             if (Trace.isOn) Trace.logNamedEntry(this, "getRootElement");
 
-            if (this.handle_ == 0L) {
-                throw new MbRecoverableException(this, "getRootElement", 3221229850L, "Message has been cleared.", new String[]{getClass().getName()});
-            }
+            checkNotCleared("getRootElement");
 
             return new MbElement(_getRootElement(this.handle_), isReadOnly());
         } catch (MbException localMbException) {
@@ -170,15 +176,9 @@ public class MbMessage {
         try {
             if (Trace.isOn) Trace.logNamedEntry(this, "copy");
 
-            if (this.handle_ == 0L) {
-                String[] arrayOfString = new String[1];
-                arrayOfString[0] = getClass().getName();
-                throw new MbRecoverableException(this, "copy", 3221229850L, "Message has been cleared.", arrayOfString);
-            }
+            checkNotCleared("copy");
+            checkWritable();
 
-            if (isReadOnly()) {
-                throw new MbReadOnlyMessageException();
-            }
             if (paramMbMessage == null) {
                 throw new NullPointerException("copy: sourceMessage is null");
             }
@@ -195,21 +195,15 @@ public class MbMessage {
         try {
             if (Trace.isOn) Trace.logNamedEntry(this, "evaluateXPath");
 
-            Object localObject1 = _evaluateXPath(this.handle_, paramString);
+            Object result = _evaluateXPath(this.handle_, paramString);
 
-            if ((localObject1 instanceof long[])) {
-                long[] localObject2 = (long[]) localObject1;
-
-                MbElement[] arrayOfMbElement = new MbElement[localObject2.length];
-                for (int i = 0; i < localObject2.length; i++) {
-                    arrayOfMbElement[i] = new MbElement(localObject2[i], isReadOnly());
-                }
-                return Arrays.asList(arrayOfMbElement);
+            if ((result instanceof long[])) {
+                return createMbElementList((long[]) result);
             }
-            return localObject1;
-        } catch (MbException localMbException) {
-            if (Trace.isOn) Trace.logStackTrace(this, "evaluateXPath", localMbException);
-            throw localMbException;
+            return result;
+        } catch (MbException ex) {
+            if (Trace.isOn) Trace.logStackTrace(this, "evaluateXPath", ex);
+            throw ex;
         } finally {
             if (Trace.isOn) Trace.logNamedExit(this, "evaluateXPath");
         }
@@ -219,21 +213,15 @@ public class MbMessage {
         try {
             if (Trace.isOn) Trace.logNamedEntry(this, "evaluateXPath");
 
-            Object localObject1 = _evaluateXPath(this.handle_, paramMbXPath.getHandle(), paramMbXPath);
+            Object result = _evaluateXPath(this.handle_, paramMbXPath.getHandle(), paramMbXPath);
 
-            if ((localObject1 instanceof long[])) {
-                long[] localObject2 = (long[]) localObject1;
-
-                MbElement[] arrayOfMbElement = new MbElement[localObject2.length];
-                for (int i = 0; i < localObject2.length; i++) {
-                    arrayOfMbElement[i] = new MbElement(localObject2[i], isReadOnly());
-                }
-                return Arrays.asList(arrayOfMbElement);
+            if ((result instanceof long[])) {
+                return createMbElementList((long[]) result);
             }
-            return localObject1;
-        } catch (MbException localMbException) {
-            if (Trace.isOn) Trace.logStackTrace(this, "evaluateXPath", localMbException);
-            throw localMbException;
+            return result;
+        } catch (MbException ex) {
+            if (Trace.isOn) Trace.logStackTrace(this, "evaluateXPath", ex);
+            throw ex;
         } finally {
             if (Trace.isOn) Trace.logNamedExit(this, "evaluateXPath");
         }
@@ -256,7 +244,6 @@ public class MbMessage {
     }
 
     String toString(int paramInt) {
-
         return indent(paramInt) + super.toString();
     }
 
@@ -288,4 +275,14 @@ public class MbMessage {
     private native Object _evaluateXPath(long handle, long inputContextHandle, MbXPath paramMbXPath) throws MbException;
 
     private native Object _evaluateXPath(long handle, String paramString) throws MbException;
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof MbMessage && handle_ == ((MbMessage) o).handle_;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.valueOf(handle_).hashCode();
+    }
 }
