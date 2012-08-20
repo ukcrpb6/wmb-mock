@@ -17,6 +17,7 @@
     </properties>
 
     <modules>
+        <!--<module>jplugin2-test</module>-->
         <module>wmb-util</module>
         <module>wmb-mock</module>
         <!--<module>wmb-hibernate</module>-->

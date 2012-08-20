@@ -42,6 +42,11 @@ public class PseudoNativeMbMessageManager implements NativeMbMessageManager {
         return element == null ? 0L : element.hashCode();
     }
 
+
+    public void clear() {
+        nativeMessages.clear();
+    }
+
     @Override
     public long _createMessage(long handle) throws MbException {
         PseudoNativeMbMessage message = new PseudoNativeMbMessage();

@@ -310,7 +310,9 @@ public class MbJUnitRunnerTest {
             }
         });
         System.out.println(" *** END *** ");
+        PseudoNativeMbXPathManager.getInstance().clear();
+        PseudoNativeMbElementManager.getInstance().clear();
+        PseudoNativeMbMessageManager.getInstance().clear();
     }
-
 
 }

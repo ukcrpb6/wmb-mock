@@ -44,6 +44,10 @@ public class PseudoNativeMbElementManager implements NativeMbElementManager {
     private PseudoNativeMbElementManager() {
     }
 
+    public void clear() {
+        nativeElements.clear();
+    }
+
     private long getNativeHandle(PseudoNativeMbElement element) {
         return element == null ? 0L : element.hashCode();
     }

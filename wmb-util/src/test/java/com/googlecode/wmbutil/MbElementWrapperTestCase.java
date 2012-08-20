@@ -2,18 +2,21 @@ package com.googlecode.wmbutil;
 
 import com.googlecode.wmbutil.messages.MbElementWrapper;
 import com.ibm.broker.plugin.MbElement;
+import com.ibm.broker.plugin.MbMockPolicy;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.powermock.core.classloader.annotations.MockPolicy;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.mockito.Mockito.*;
 
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(PowerMockRunner.class)
+@MockPolicy(MbMockPolicy.class)
 public class MbElementWrapperTestCase {
 
   @Mock private MbElement element;

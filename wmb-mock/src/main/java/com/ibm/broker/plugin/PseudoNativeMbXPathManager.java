@@ -45,6 +45,10 @@ public class PseudoNativeMbXPathManager implements NativeMbXPathManager {
         return engines.get(xpath.getHandle());
     }
 
+    public void clear() {
+        engines.clear();
+    }
+
     @Override
     public synchronized long _createXPathEngine(String s, long contextHandle) throws MbException {
         PseudoNativeMbXPath xpathEngine = new PseudoNativeMbXPath(s, contextHandle);
