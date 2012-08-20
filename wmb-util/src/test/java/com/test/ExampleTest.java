@@ -1,7 +1,6 @@
 package com.test;
 
 import com.google.common.base.Throwables;
-import com.pressassociation.bus.junit.*;
 import javassist.*;
 import junit.framework.Assert;
 import org.junit.Test;

@@ -19,6 +19,7 @@
     <module>wmb-hibernate</module>
     <module>wmb-cache-dao</module>
     <module>wmb-logging-dao</module>
+      <module>wmb-mock</module>
   </modules>
 
   <dependencyManagement>

@@ -1,10 +1,8 @@
 package com.googlecode.wmbutil.messages;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.googlecode.wmbutil.NiceMbException;
-import com.googlecode.wmbutil.util.ElementUtil;
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
 
