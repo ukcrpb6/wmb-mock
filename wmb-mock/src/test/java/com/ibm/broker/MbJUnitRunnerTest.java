@@ -1,4 +1,4 @@
-/**
+package com.ibm.broker; /**
  * Copyright 2012 Bob Browning
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,20 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import com.google.common.base.Objects;
 import com.ibm.broker.plugin.*;
 import com.ibm.broker.plugin.visitor.MbMessageVisitor;
+import com.ibm.broker.trace.LoggingNativeTracer;
+import com.ibm.broker.trace.NativeTracer;
+import com.ibm.broker.trace.NativeTracerFactory;
+import com.ibm.broker.trace.Trace;
 import junit.framework.Assert;
 import org.jaxen.XPath;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.core.classloader.annotations.MockPolicy;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.BitSet;
 import java.util.List;
@@ -36,45 +38,24 @@ import java.util.TimeZone;
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({MbMessage.class, MbElement.class, MbXPath.class})
+@MockPolicy(MbMockPolicy.class)
 public class MbJUnitRunnerTest {
 
-    @Before
-    public void stubMbMessageNativeMethods() throws Exception {
-        for( final Method m : NativeMbMessageManager.class.getDeclaredMethods() ) {
-            PowerMockito.replace(MbMessage.class.getDeclaredMethod(m.getName(), m.getParameterTypes())).with(new InvocationHandler() {
-                @Override
-                public Object invoke(Object o, Method method, Object[] args) throws Throwable {
-                    return m.invoke(PseudoNativeMbMessageManager.getInstance(), args);
-                }
-            });
-        }
+    MbJUnitRunnerTest() {
+        NativeTracerFactory.setTracerClass(LoggingNativeTracer.class);
+        NativeTracerFactory.setClassUnderTest(MbJUnitRunnerTest.class);
     }
 
-    @Before
-    public void stubMbElementNativeMethods() throws NoSuchMethodException {
-        for( final Method m : NativeMbElementManager.class.getDeclaredMethods() ) {
-            final Method targetMethod = MbElement.class.getDeclaredMethod(m.getName(), m.getParameterTypes());
-            PowerMockito.replace(targetMethod).with(new InvocationHandler() {
-                @Override
-                public Object invoke(Object o, Method method, Object[] args) throws Throwable {
-                    return m.invoke(PseudoNativeMbElementManager.getInstance(), args);
-                }
-            });
-        }
-    }
-
-    @Before
-    public void stubMbXPathNativeMethods() throws NoSuchMethodException {
-        for( final Method m : NativeMbXPathManager.class.getDeclaredMethods() ) {
-            final Method targetMethod = MbXPath.class.getDeclaredMethod(m.getName(), m.getParameterTypes());
-            PowerMockito.replace(targetMethod).with(new InvocationHandler() {
-                @Override
-                public Object invoke(Object o, Method method, Object[] args) throws Throwable {
-                    return m.invoke(PseudoNativeMbXPathManager.getInstance(), args);
-                }
-            });
-        }
+    @Test
+    public void testEquals() throws Exception {
+        NativeTracer t = new NativeTracer();
+        t.setLogLevel(1);
+        System.out.println(NativeTracer.class.getClassLoader());
+        Trace.setLogLevel(Trace.DEBUGTRACE);
+        MbMessage m = new MbMessage();
+        MbElement xmlnsc = m.getRootElement().createElementAsFirstChild(MbXMLNSC.PARSER_NAME);
+        MbElement xmlnsc2 = m.getRootElement().getLastChild();
+        System.out.println(Objects.toStringHelper(xmlnsc).add("hashCode", xmlnsc.hashCode()).add("equals", xmlnsc2.equals(xmlnsc)).toString());
     }
 
     @Test
@@ -102,6 +83,7 @@ public class MbJUnitRunnerTest {
         Assert.assertNotNull(e);
 
         final MbElement firstChild = e.createElementAsFirstChild(MbXMLNSC.PARSER_NAME);
+        Assert.assertTrue(firstChild.equals(e.getFirstChild()));
         Assert.assertEquals(firstChild, e.getFirstChild());
         Assert.assertEquals(firstChild, e.getLastChild());
         Assert.assertNull(firstChild.getPreviousSibling());
@@ -218,7 +200,7 @@ public class MbJUnitRunnerTest {
         testCreateWithValue(BitSet.class, b);
     }
 
-    public <T> void createNamedValue(MbElement parent, Class<T> klass, String name,  T value) throws Exception {
+    public <T> void createNamedValue(MbElement parent, Class<T> klass, String name, T value) throws Exception {
         MbElement firstField = parent.createElementAsFirstChild(MbXMLNSC.FIELD, name, value);
         Assert.assertEquals(name, firstField.getName());
         Assert.assertEquals(klass, firstField.getValue().getClass());
@@ -235,12 +217,12 @@ public class MbJUnitRunnerTest {
     public void testCreateWithMbTimestampValue() throws Exception {
         MbTestObject initialState = createMessageAndFirstChild();
         MbElement firstChild = initialState.child;
-        MbTimestamp timestamp = new MbTimestamp(2012,1,1,1,1,1);
+        MbTimestamp timestamp = new MbTimestamp(2012, 1, 1, 1, 1, 1);
         timestamp.setTimeZone(TimeZone.getTimeZone("GMT"));
         MbElement firstField = firstChild.createElementAsFirstChild(MbXMLNSC.FIELD, "fieldName", timestamp);
         System.out.println(firstField);
         Assert.assertEquals(MbTimestamp.class, firstField.getValue().getClass());
-        Assert.assertEquals(timestamp.getTimeInMillis(), ((MbTimestamp)firstField.getValue()).getTimeInMillis());
+        Assert.assertEquals(timestamp.getTimeInMillis(), ((MbTimestamp) firstField.getValue()).getTimeInMillis());
 //        Assert.assertEquals(timestamp.toString(), firstField.getValueAsString());
     }
 
@@ -248,12 +230,12 @@ public class MbJUnitRunnerTest {
     public void testCreateWithMbTimeValue() throws Exception {
         MbTestObject initialState = createMessageAndFirstChild();
         MbElement firstChild = initialState.child;
-        MbTime time = new MbTime(1,1,1);
+        MbTime time = new MbTime(1, 1, 1);
         time.setTimeZone(TimeZone.getTimeZone("GMT"));
         MbElement firstField = firstChild.createElementAsFirstChild(MbXMLNSC.FIELD, "fieldName", time);
         System.out.println(firstField);
         Assert.assertEquals(MbTime.class, firstField.getValue().getClass());
-        Assert.assertEquals(time.getTimeInMillis(), ((MbTime)firstField.getValue()).getTimeInMillis());
+        Assert.assertEquals(time.getTimeInMillis(), ((MbTime) firstField.getValue()).getTimeInMillis());
 //        Assert.assertEquals(timestamp.toString(), firstField.getValueAsString());
     }
 
@@ -261,20 +243,20 @@ public class MbJUnitRunnerTest {
     public void testCreateWithMbDateValue() throws Exception {
         MbTestObject initialState = createMessageAndFirstChild();
         MbElement firstChild = initialState.child;
-        MbDate date = new MbDate(2012,1,1);
+        MbDate date = new MbDate(2012, 1, 1);
         MbElement firstField = firstChild.createElementAsFirstChild(MbXMLNSC.FIELD, "fieldName", date);
         Assert.assertEquals(MbDate.class, firstField.getValue().getClass());
-        Assert.assertEquals(date.getTimeInMillis(), ((MbDate)firstField.getValue()).getTimeInMillis());
+        Assert.assertEquals(date.getTimeInMillis(), ((MbDate) firstField.getValue()).getTimeInMillis());
 //        Assert.assertEquals(timestamp.toString(), firstField.getValueAsString());
     }
 
     private MbTestObject createTestTree() throws Exception {
         MbTestObject o = createMessageAndFirstChild();
-        for(int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10; i++) {
             createNamedValue(o.child, Integer.class, "field-" + i, i % 2);
         }
         MbElement folder = o.child.createElementAsLastChild(MbXMLNSC.FOLDER);
-        for(int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10; i++) {
             createNamedValue(folder, Integer.class, "field-" + i, i % 2);
         }
         return o;

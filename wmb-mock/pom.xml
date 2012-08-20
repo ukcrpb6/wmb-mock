@@ -16,9 +16,20 @@
     </properties>
 
     <dependencies>
+        <!-- IBM Dependencies -->
         <dependency>
             <groupId>com.ibm.broker</groupId>
-            <artifactId>jplugin2</artifactId>
+            <artifactId>jplugin2-test</artifactId>
+            <version>8.0.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ibm.broker</groupId>
+            <artifactId>jplugininternal</artifactId>
+            <version>8.0.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ibm.broker</groupId>
+            <artifactId>bipbroker</artifactId>
             <version>8.0.0.0</version>
         </dependency>
 
@@ -37,30 +48,23 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Mockito -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>1.9.0</version>
-            <scope>test</scope>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>javassist</groupId>-->
-            <!--<artifactId>javassist</artifactId>-->
-            <!--<version>3.6.0.GA</version>-->
-        <!--</dependency>-->
-
+        <!-- Powermock -->
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
             <version>${powermock.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-mockito</artifactId>
             <version>${powermock.version}</version>
-            <scope>test</scope>
         </dependency>
 
 
@@ -68,7 +72,6 @@
             <groupId>com.pressassociation.bus.jaxen</groupId>
             <artifactId>jaxen</artifactId>
             <version>1.1.5</version>
-            <scope>test</scope>
             <exclusions>
                 <exclusion>
                     <groupId>maven-plugins</groupId>

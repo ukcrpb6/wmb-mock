@@ -373,7 +373,7 @@ public class PseudoNativeMbElement implements MbVisitable {
     }
 
     public PseudoNativeMbMessage getNativeMbMessage() {
-        if(message == null) {
+        if (message == null) {
             message = Preconditions.checkNotNull(parent,
                     "Root elements should always be associated with a message").getNativeMbMessage();
         }

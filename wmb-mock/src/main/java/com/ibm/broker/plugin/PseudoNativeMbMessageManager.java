@@ -100,7 +100,7 @@ public class PseudoNativeMbMessageManager implements NativeMbMessageManager {
     }
 
     public void visit(MbMessageVisitor visitor) throws MbException {
-        for(PseudoNativeMbMessage message : nativeMessages.values()) {
+        for (PseudoNativeMbMessage message : nativeMessages.values()) {
             message.accept(visitor);
         }
     }

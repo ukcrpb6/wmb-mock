@@ -13,11 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ibm.broker.trace;
+package com.ibm.broker.plugin.visitor;
+
+import com.ibm.broker.plugin.PseudoNativeMbElement;
+import com.ibm.broker.plugin.PseudoNativeMbMessage;
 
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
-public interface TraceListener {
-    void traceEvent(int level);
+public interface MbMessageVisitor {
+    void visit(PseudoNativeMbMessage message);
+
+    void visit(PseudoNativeMbElement element);
 }

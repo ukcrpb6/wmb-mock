@@ -88,11 +88,11 @@ public class PseudoNativeMbXPath {
     public Object evaluateXPath(PseudoNativeMbElement nativeMbElement) throws MbException {
         try {
             PseudoNativeMbElement context = PseudoNativeMbElementManager.getInstance().getNativeMbElement(contextHandle);
-            if( context == null ) {
+            if (context == null) {
                 context = PseudoNativeMbElementManager.getInstance()
                         .getNativeMbElement(nativeMbElement.getMbMessage().getRootElement().getLastChild());
             }
-            if(context == null) {
+            if (context == null) {
                 throw new IllegalStateException("No XPath context provided and message has no children");
             }
             System.out.println("Evaluating " + xpath + " with context " + context);

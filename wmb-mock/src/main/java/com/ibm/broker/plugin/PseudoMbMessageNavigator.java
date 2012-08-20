@@ -1,3 +1,18 @@
+/**
+ * Copyright 2012 Bob Browning
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.ibm.broker.plugin;
 
 import com.google.common.base.Throwables;
@@ -25,7 +40,7 @@ public class PseudoMbMessageNavigator extends DefaultNavigator {
 
     FauxDocumentNode documentNode;
 
-    public void setDocumentNode( PseudoNativeMbElement root ) {
+    public void setDocumentNode(PseudoNativeMbElement root) {
         documentNode = new FauxDocumentNode(root);
     }
 
@@ -167,7 +182,7 @@ public class PseudoMbMessageNavigator extends DefaultNavigator {
 
     @Override
     public Object getDocumentNode(Object contextNode) {
-        if(documentNode != null) {
+        if (documentNode != null) {
             return documentNode;
         }
         if (contextNode instanceof MbMessage) {
@@ -177,7 +192,7 @@ public class PseudoMbMessageNavigator extends DefaultNavigator {
             PseudoNativeMbElement nativeMbElement = checkNativeMbElement(checkMockMbElement(contextNode));
             return nativeMbElement.getMbMessage();
         }
-        if(contextNode instanceof PseudoNativeMbElement) {
+        if (contextNode instanceof PseudoNativeMbElement) {
             return ((PseudoNativeMbElement) contextNode).getMbMessage();
         }
         throw new IllegalArgumentException("Element type " + contextNode.getClass() + " not supported.");
@@ -185,7 +200,7 @@ public class PseudoMbMessageNavigator extends DefaultNavigator {
 
     @Override
     public Iterator getChildAxisIterator(Object contextNode) throws UnsupportedAxisException {
-        if(contextNode instanceof FauxDocumentNode) {
+        if (contextNode instanceof FauxDocumentNode) {
             return getChildAxisIterator(((FauxDocumentNode) contextNode).root);
         }
         if (contextNode instanceof MbMessage) {
@@ -222,7 +237,7 @@ public class PseudoMbMessageNavigator extends DefaultNavigator {
 
     @Override
     public Iterator getParentAxisIterator(Object contextNode) throws UnsupportedAxisException {
-        if(contextNode instanceof FauxDocumentNode) {
+        if (contextNode instanceof FauxDocumentNode) {
             return JaxenConstants.EMPTY_ITERATOR;
         }
         if (contextNode instanceof MbMessage) {
@@ -246,9 +261,9 @@ public class PseudoMbMessageNavigator extends DefaultNavigator {
     @Override
     public Object createAfter(Object contextNode, String localName, String namespacePrefix, String namespaceURI) throws UnsupportedAxisException {
         PseudoNativeMbElement nativeMbElement;
-        if(contextNode instanceof MbElement) {
+        if (contextNode instanceof MbElement) {
             nativeMbElement = checkNativeMbElement(checkMockMbElement(contextNode));
-        } else if(contextNode instanceof PseudoNativeMbElement) {
+        } else if (contextNode instanceof PseudoNativeMbElement) {
             nativeMbElement = (PseudoNativeMbElement) contextNode;
         } else {
             throw new IllegalArgumentException("Element type " + contextNode.getClass() + " not supported.");
@@ -267,9 +282,9 @@ public class PseudoMbMessageNavigator extends DefaultNavigator {
     @Override
     public Object createBefore(Object contextNode, String localName, String namespacePrefix, String namespaceURI) throws UnsupportedAxisException {
         PseudoNativeMbElement nativeMbElement;
-        if(contextNode instanceof MbElement) {
+        if (contextNode instanceof MbElement) {
             nativeMbElement = checkNativeMbElement(checkMockMbElement(contextNode));
-        } else if(contextNode instanceof PseudoNativeMbElement) {
+        } else if (contextNode instanceof PseudoNativeMbElement) {
             nativeMbElement = (PseudoNativeMbElement) contextNode;
         } else {
             throw new IllegalArgumentException("Element type " + contextNode.getClass() + " not supported.");
@@ -288,9 +303,9 @@ public class PseudoMbMessageNavigator extends DefaultNavigator {
     @Override
     public Object createAsFirstChild(Object contextNode, String localName, String namespacePrefix, String namespaceURI) throws UnsupportedAxisException {
         PseudoNativeMbElement nativeMbElement;
-        if(contextNode instanceof MbElement) {
+        if (contextNode instanceof MbElement) {
             nativeMbElement = checkNativeMbElement(checkMockMbElement(contextNode));
-        } else if(contextNode instanceof PseudoNativeMbElement) {
+        } else if (contextNode instanceof PseudoNativeMbElement) {
             nativeMbElement = (PseudoNativeMbElement) contextNode;
         } else {
             throw new IllegalArgumentException("Element type " + contextNode.getClass() + " not supported.");
@@ -309,9 +324,9 @@ public class PseudoMbMessageNavigator extends DefaultNavigator {
     @Override
     public Object createAsLastChild(Object contextNode, String localName, String namespacePrefix, String namespaceURI) throws UnsupportedAxisException {
         PseudoNativeMbElement nativeMbElement;
-        if(contextNode instanceof MbElement) {
+        if (contextNode instanceof MbElement) {
             nativeMbElement = checkNativeMbElement(checkMockMbElement(contextNode));
-        } else if(contextNode instanceof PseudoNativeMbElement) {
+        } else if (contextNode instanceof PseudoNativeMbElement) {
             nativeMbElement = (PseudoNativeMbElement) contextNode;
         } else {
             throw new IllegalArgumentException("Element type " + contextNode.getClass() + " not supported.");
