@@ -1,6 +1,5 @@
 package com.ibm.broker.plugin;
 
-import com.google.common.base.Objects;
 import com.ibm.broker.trace.Trace;
 
 import javax.xml.datatype.Duration;

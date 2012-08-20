@@ -1,28 +1,40 @@
+/**
+ * Copyright 2012 Bob Browning
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import com.ibm.broker.plugin.*;
 import com.ibm.broker.plugin.visitor.MbMessageVisitor;
-import com.ibm.broker.plugin.visitor.MbVisitable;
 import junit.framework.Assert;
 import org.jaxen.XPath;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import javax.sound.midi.SysexMessage;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.BitSet;
-import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+/**
+ * @author Bob Browning <bob.browning@pressassociation.com>
+ */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({MbMessage.class, MbElement.class, MbXPath.class})
 public class MbJUnitRunnerTest {

@@ -1,3 +1,4 @@
+
 package com.ibm.broker.trace;
 
 import java.io.ByteArrayOutputStream;
