@@ -281,17 +281,24 @@ public class MbJUnitRunnerTest {
     @Test
     public void testMbXPath() throws Exception {
         MbTestObject o = createTestTree();
-        MbXPath x = new MbXPath("//*");
-        o.root.evaluateXPath(x);
+        MbXPath x = new MbXPath("/field-1");
+        List result = (List) o.root.evaluateXPath(x);
+        Assert.assertEquals(1, result.size());
+
+        x = new MbXPath("/field-1", o.root.getLastChild());
+        result = (List) o.root.evaluateXPath(x);
+        Assert.assertEquals(1, result.size());
+
+        x = new MbXPath("/field-1", o.root);
+        result = (List) o.root.evaluateXPath(x);
+        Assert.assertEquals(0, result.size());
+
         MbXPath x2 = new MbXPath("//*", o.root);
-        o.root.evaluateXPath(x2);
-        o.root.evaluateXPath("//*");
-//        PseudoMbMessageNavigator nav = new PseudoMbMessageNavigator();
-//        XPath xpath = nav.parseXPath("//field-1");
-//        List list = xpath.selectNodes(o.message);
-//        Assert.assertNotNull(list);
-//        Assert.assertEquals(2, list.size());
-        o.root.evaluateXPath("//field-0/?$child");
+        result = (List) o.root.evaluateXPath(x2);
+        Assert.assertEquals(22, result.size());
+
+        result = (List) o.root.evaluateXPath("//*");
+        Assert.assertEquals(22, result.size());
     }
 
     @After

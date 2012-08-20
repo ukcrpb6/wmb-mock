@@ -15,6 +15,24 @@ import java.util.NoSuchElementException;
  */
 public class PseudoMbMessageNavigator extends DefaultNavigator {
 
+    class FauxDocumentNode {
+        PseudoNativeMbElement root;
+
+        FauxDocumentNode(PseudoNativeMbElement root) {
+            this.root = root;
+        }
+    }
+
+    FauxDocumentNode documentNode;
+
+    public void setDocumentNode( PseudoNativeMbElement root ) {
+        documentNode = new FauxDocumentNode(root);
+    }
+
+    public void clearDocumentNode() {
+        documentNode = null;
+    }
+
     private static PseudoNativeMbElement checkNativeMbElement(MbElement element) {
         int handle = element.hashCode();
         PseudoNativeMbElement nativeMbElement =
@@ -75,7 +93,7 @@ public class PseudoMbMessageNavigator extends DefaultNavigator {
 
     @Override
     public boolean isDocument(Object object) {
-        return object instanceof MbMessage;
+        return object instanceof MbMessage || (documentNode != null && documentNode.equals(object));
     }
 
     @Override
@@ -149,6 +167,9 @@ public class PseudoMbMessageNavigator extends DefaultNavigator {
 
     @Override
     public Object getDocumentNode(Object contextNode) {
+        if(documentNode != null) {
+            return documentNode;
+        }
         if (contextNode instanceof MbMessage) {
             return contextNode;
         }
@@ -164,6 +185,9 @@ public class PseudoMbMessageNavigator extends DefaultNavigator {
 
     @Override
     public Iterator getChildAxisIterator(Object contextNode) throws UnsupportedAxisException {
+        if(contextNode instanceof FauxDocumentNode) {
+            return getChildAxisIterator(((FauxDocumentNode) contextNode).root);
+        }
         if (contextNode instanceof MbMessage) {
             try {
                 return getChildAxisIterator(((MbMessage) contextNode).getRootElement());
@@ -198,6 +222,9 @@ public class PseudoMbMessageNavigator extends DefaultNavigator {
 
     @Override
     public Iterator getParentAxisIterator(Object contextNode) throws UnsupportedAxisException {
+        if(contextNode instanceof FauxDocumentNode) {
+            return JaxenConstants.EMPTY_ITERATOR;
+        }
         if (contextNode instanceof MbMessage) {
             return JaxenConstants.EMPTY_ITERATOR;
         }

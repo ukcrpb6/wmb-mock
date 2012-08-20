@@ -69,7 +69,21 @@ public class PseudoNativeMbXPath {
 
     public Object evaluateXPath(PseudoNativeMbElement nativeMbElement) throws MbException {
         try {
-            return navigator.parseXPath(xpath).selectNodes(nativeMbElement);
+            PseudoNativeMbElement context = PseudoNativeMbElementManager.getInstance().getNativeMbElement(contextHandle);
+            if( context == null ) {
+                context = PseudoNativeMbElementManager.getInstance()
+                        .getNativeMbElement(nativeMbElement.getMbMessage().getRootElement().getLastChild());
+            }
+            if(context == null) {
+                throw new IllegalStateException("No XPath context provided and message has no children");
+            }
+            System.out.println("Evaluating " + xpath + " with context " + context);
+            navigator.setDocumentNode(context);
+            try {
+                return navigator.parseXPath(xpath).selectNodes(context);
+            } finally {
+                navigator.clearDocumentNode();
+            }
         } catch (SAXPathException e) {
             throw Throwables.propagate(e);
         }
