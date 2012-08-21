@@ -86,4 +86,8 @@ public class PseudoNativeMbMessage implements NativeFor<MbMessage>, MbVisitable 
         return hashCode();
     }
 
+    @Override public boolean isManaged() {
+        return PseudoNativeMbMessageManager.getInstance().isManaged(this);
+    }
+
 }
