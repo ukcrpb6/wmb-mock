@@ -45,6 +45,11 @@ public class PseudoNativeMbElementManager extends AbstractNativeManager<MbElemen
         return new PseudoNativeMbElement();
     }
 
+    @Override
+    public long getHandle(MbElement object) {
+        return object.getHandle();
+    }
+
     /*
      * Helper functions
      */

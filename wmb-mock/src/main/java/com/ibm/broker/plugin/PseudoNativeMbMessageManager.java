@@ -38,6 +38,10 @@ public class PseudoNativeMbMessageManager
         return new PseudoNativeMbMessage();
     }
 
+    @Override public long getHandle(MbMessage object) {
+        return object.getHandle();
+    }
+
     /*
      * Native Interface
      */

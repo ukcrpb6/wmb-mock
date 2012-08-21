@@ -36,8 +36,10 @@ public abstract class AbstractNativeManager<T, N extends NativeFor<T>> {
         return allocations.get(handle);
     }
 
+    public abstract long getHandle(T object);
+
     public N getNative(T object) {
-        return getNative(object.hashCode());
+        return getNative(getHandle(object));
     }
 
     protected N allocate(Object... parameters) {
@@ -55,7 +57,7 @@ public abstract class AbstractNativeManager<T, N extends NativeFor<T>> {
     }
 
     protected void remove(T o) {
-        remove(o.hashCode());
+        remove(getHandle(o));
     }
 
     protected abstract N createNativeInstance(Object... parameters);
@@ -65,7 +67,7 @@ public abstract class AbstractNativeManager<T, N extends NativeFor<T>> {
     }
 
     public boolean isManaged(T o) {
-        return isManaged(o.hashCode());
+        return isManaged(getHandle(o));
     }
 
     public boolean isManaged(N o) {

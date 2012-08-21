@@ -79,7 +79,7 @@ public class PseudoNativeMbMessage implements NativeFor<MbMessage>, MbVisitable 
     }
 
     @Override public MbMessage get() {
-        return new MbMessage(this.hashCode());
+        return new MbMessage(this.getHandle());
     }
 
     @Override public long getHandle() {

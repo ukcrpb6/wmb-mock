@@ -479,10 +479,10 @@ public class PseudoNativeMbElement implements NativeFor<MbElement>, MbVisitable 
 
     public String toString() {
         return Objects.toStringHelper(this)
-                .add("parent", Optional.fromNullable(parent).transform(new Function<PseudoNativeMbElement, Integer>() {
+                .add("parent", Optional.fromNullable(parent).transform(new Function<PseudoNativeMbElement, Long>() {
                     @Override
-                    public Integer apply(PseudoNativeMbElement input) {
-                        return input.hashCode();
+                    public Long apply(PseudoNativeMbElement input) {
+                        return input.getHandle();
                     }
                 }).orNull())
                 .add("namespace", namespace)
@@ -527,7 +527,7 @@ public class PseudoNativeMbElement implements NativeFor<MbElement>, MbVisitable 
      */
 
     @Override public MbElement get() {
-        return new MbElement(this.hashCode());
+        return new MbElement(this.getHandle());
     }
 
     @Override public long getHandle() {

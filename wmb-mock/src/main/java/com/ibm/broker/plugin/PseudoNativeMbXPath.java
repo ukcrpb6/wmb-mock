@@ -95,7 +95,7 @@ public class PseudoNativeMbXPath implements NativeFor<MbXPath> {
             //noinspection unchecked
             return Lists.transform((List<PseudoNativeMbElement>) o, new Function<PseudoNativeMbElement, MbElement>() {
                 @Override public MbElement apply(PseudoNativeMbElement input) {
-                    return new MbElement(input.hashCode());
+                    return new MbElement(input.getHandle());
                 }
             });
         }

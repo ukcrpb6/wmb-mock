@@ -49,7 +49,7 @@ public class PseudoMbMessageNavigator extends DefaultNavigator {
     }
 
     private static PseudoNativeMbElement checkNativeMbElement(MbElement element) {
-        int handle = element.hashCode();
+        long handle = element.getHandle();
         PseudoNativeMbElement nativeMbElement = PseudoNativeMbElementManager.getInstance().getNative(handle);
         if (nativeMbElement == null) {
             throw new NoSuchElementException("No native element found matching handle #" + handle);
@@ -62,7 +62,7 @@ public class PseudoMbMessageNavigator extends DefaultNavigator {
             return (MbElement) element;
         }
         if (element instanceof PseudoNativeMbElement) {
-            return new MbElement(element.hashCode());
+            return ((PseudoNativeMbElement) element).get();
         }
         throw new IllegalArgumentException("Unsupported type " + element.getClass());
     }

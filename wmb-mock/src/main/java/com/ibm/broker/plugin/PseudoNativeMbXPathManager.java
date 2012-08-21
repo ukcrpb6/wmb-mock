@@ -36,13 +36,18 @@ public class PseudoNativeMbXPathManager extends AbstractNativeManager<MbXPath, P
         return new PseudoNativeMbXPath((String) parameters[0], (Long) parameters[1]);
     }
 
+    @Override public long getHandle(MbXPath object) {
+        return object.getHandle();
+    }
+
     /*
      * Native Interface
      */
 
     @Override
     public synchronized long _createXPathEngine(String xpath, long contextHandle) throws MbException {
-        return allocate(xpath, contextHandle).getHandle();
+        PseudoNativeMbXPath engine = allocate(xpath, contextHandle);
+        return engine.getHandle();
     }
 
     @Override
