@@ -15,16 +15,20 @@
  */
 package com.ibm.broker.plugin;
 
+import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.base.Throwables;
+import com.google.common.collect.Lists;
 import org.jaxen.SimpleNamespaceContext;
 import org.jaxen.SimpleVariableContext;
 import org.jaxen.saxpath.SAXPathException;
 
+import java.util.List;
+
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
-public class PseudoNativeMbXPath {
+public class PseudoNativeMbXPath implements NativeFor<MbXPath> {
 
     private String xpath;
 
@@ -86,11 +90,24 @@ public class PseudoNativeMbXPath {
     }
 
     public Object evaluateXPath(PseudoNativeMbElement nativeMbElement) throws MbException {
+        Object o = evaluateNativeXPath(nativeMbElement);
+        if(o instanceof List) {
+            //noinspection unchecked
+            return Lists.transform((List<PseudoNativeMbElement>) o, new Function<PseudoNativeMbElement, MbElement>() {
+                @Override public MbElement apply(PseudoNativeMbElement input) {
+                    return new MbElement(input.hashCode());
+                }
+            });
+        }
+        return o;
+    }
+
+    Object evaluateNativeXPath(PseudoNativeMbElement nativeMbElement) throws MbException {
         try {
-            PseudoNativeMbElement context = PseudoNativeMbElementManager.getInstance().getNativeMbElement(contextHandle);
+            PseudoNativeMbElement context = PseudoNativeMbElementManager.getInstance().getNative(contextHandle);
             if (context == null) {
                 context = PseudoNativeMbElementManager.getInstance()
-                        .getNativeMbElement(nativeMbElement.getMbMessage().getRootElement().getLastChild());
+                        .getNative(nativeMbElement.getMbMessage().getRootElement().getLastChild().getHandle());
             }
             if (context == null) {
                 throw new IllegalStateException("No XPath context provided and message has no children");
@@ -105,5 +122,21 @@ public class PseudoNativeMbXPath {
         } catch (SAXPathException e) {
             throw Throwables.propagate(e);
         }
+    }
+
+    /*
+     * NativeFor Interface
+     */
+
+    @Override public MbXPath get() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override public long getHandle() {
+        return hashCode();
+    }
+
+    @Override public boolean isManaged() {
+        return PseudoNativeMbXPathManager.getInstance().isManaged(this);
     }
 }

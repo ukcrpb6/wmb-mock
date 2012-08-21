@@ -17,15 +17,20 @@ package com.ibm.broker.plugin;
 
 import com.google.common.base.*;
 import com.google.common.collect.AbstractIterator;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
 import com.ibm.broker.plugin.visitor.MbMessageVisitor;
 import com.ibm.broker.plugin.visitor.MbVisitable;
 
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
-public class PseudoNativeMbElement implements MbVisitable {
+public class PseudoNativeMbElement implements NativeFor<MbElement>, MbVisitable {
 
     private static final int TYPE_MASK_GENERIC = 251658240;
 
@@ -40,6 +45,8 @@ public class PseudoNativeMbElement implements MbVisitable {
     PseudoNativeMbElement previousSibling;
 
     PseudoNativeMbElement nextSibling;
+
+    private String path = null;
 
     private String name = "";
 
@@ -58,22 +65,16 @@ public class PseudoNativeMbElement implements MbVisitable {
     PseudoNativeMbElement() {
     }
 
-    PseudoNativeMbElement(PseudoNativeMbMessage message) {
+    PseudoNativeMbElement(PseudoNativeMbElement element) {
+        this.name = element.name;
+        this.value = element.value;
+        this.type = element.type;
+        this.parserClassName = element.parserClassName;
+        this.readOnly = false;
+    }
+
+    void setMessage(PseudoNativeMbMessage message) {
         this.message = message;
-    }
-
-    public PseudoNativeMbElement(int type) {
-        this.type = type;
-    }
-
-    public PseudoNativeMbElement(String parserClassName) {
-        this.parserClassName = parserClassName;
-    }
-
-    public PseudoNativeMbElement(int type, String name, Object value) {
-        this.type = type;
-        this.name = name;
-        this.value = value;
     }
 
     public String getName() throws MbException {
@@ -132,22 +133,22 @@ public class PseudoNativeMbElement implements MbVisitable {
         return e;
     }
 
-    /**
-     * @param arg0 The type of syntax element to be created.
-     *             This must be either a valid specific type value for the associated parser or one of the following generic types:
-     *             + TYPE_NAME
-     *             + TYPE_VALUE
-     *             + TYPE_NAME_VALUE
-     */
-    public PseudoNativeMbElement createElementAfter(int arg0, String arg1, Object arg2) throws MbException {
-        PseudoNativeMbElement e = PseudoNativeMbElementManager.getInstance().createPseudoNativeMbElement();
-        PseudoNativeMbElement mockMbElement = checkMockMbElement(e);
-        mockMbElement.type = arg0;
-        mockMbElement.setName(arg1);
-        mockMbElement.setValue(arg2);
-        addAfter(e);
-        return e;
-    }
+//    /**
+//     * @param arg0 The type of syntax element to be created.
+//     *             This must be either a valid specific type value for the associated parser or one of the following generic types:
+//     *             + TYPE_NAME
+//     *             + TYPE_VALUE
+//     *             + TYPE_NAME_VALUE
+//     */
+//    public PseudoNativeMbElement createElementAfter(int arg0, String arg1, Object arg2) throws MbException {
+//        PseudoNativeMbElement e = PseudoNativeMbElementManager.getInstance().createPseudoNativeMbElement();
+//        PseudoNativeMbElement mockMbElement = checkMockMbElement(e);
+//        mockMbElement.type = arg0;
+//        mockMbElement.setName(arg1);
+//        mockMbElement.setValue(arg2);
+//        addAfter(e);
+//        return e;
+//    }
 
     public PseudoNativeMbElement createElementBefore(int arg0) throws MbException {
         PseudoNativeMbElement e = PseudoNativeMbElementManager.getInstance().createPseudoNativeMbElement();
@@ -157,15 +158,15 @@ public class PseudoNativeMbElement implements MbVisitable {
         return e;
     }
 
-    public PseudoNativeMbElement createElementBefore(int arg0, String arg1, Object arg2) throws MbException {
-        PseudoNativeMbElement e = PseudoNativeMbElementManager.getInstance().createPseudoNativeMbElement();
-        PseudoNativeMbElement mockMbElement = checkMockMbElement(e);
-        mockMbElement.type = arg0;
-        mockMbElement.setName(arg1);
-        mockMbElement.setValue(arg2);
-        addBefore(e);
-        return e;
-    }
+//    public PseudoNativeMbElement createElementBefore(int arg0, String arg1, Object arg2) throws MbException {
+//        PseudoNativeMbElement e = PseudoNativeMbElementManager.getInstance().createPseudoNativeMbElement();
+//        PseudoNativeMbElement mockMbElement = checkMockMbElement(e);
+//        mockMbElement.type = arg0;
+//        mockMbElement.setName(arg1);
+//        mockMbElement.setValue(arg2);
+//        addBefore(e);
+//        return e;
+//    }
 
     public PseudoNativeMbElement createElementBefore(String arg0) throws MbException {
         PseudoNativeMbElement e = PseudoNativeMbElementManager.getInstance().createPseudoNativeMbElement();
@@ -191,15 +192,15 @@ public class PseudoNativeMbElement implements MbVisitable {
         return e;
     }
 
-    public PseudoNativeMbElement createElementAsFirstChild(int arg0, String arg1, Object arg2) throws MbException {
-        PseudoNativeMbElement e = PseudoNativeMbElementManager.getInstance().createPseudoNativeMbElement();
-        PseudoNativeMbElement mockMbElement = checkMockMbElement(e);
-        mockMbElement.type = arg0;
-        mockMbElement.setName(arg1);
-        mockMbElement.setValue(arg2);
-        addAsFirstChild(e);
-        return e;
-    }
+//    public PseudoNativeMbElement createElementAsFirstChild(int arg0, String arg1, Object arg2) throws MbException {
+//        PseudoNativeMbElement e = PseudoNativeMbElementManager.getInstance().createPseudoNativeMbElement();
+//        PseudoNativeMbElement mockMbElement = checkMockMbElement(e);
+//        mockMbElement.type = arg0;
+//        mockMbElement.setName(arg1);
+//        mockMbElement.setValue(arg2);
+//        addAsFirstChild(e);
+//        return e;
+//    }
 
     public PseudoNativeMbElement createElementAsLastChild(int arg0) throws MbException {
         PseudoNativeMbElement e = PseudoNativeMbElementManager.getInstance().createPseudoNativeMbElement();
@@ -257,27 +258,137 @@ public class PseudoNativeMbElement implements MbVisitable {
     }
 
     public PseudoNativeMbElement getNextSibling() throws MbException {
-        return nextSibling; // == null ? null : nextSibling.getMbElement();
+        return nextSibling;
     }
 
     public PseudoNativeMbElement getPreviousSibling() throws MbException {
-        return previousSibling; // == null ? null : previousSibling.getMbElement();
+        return previousSibling;
     }
 
     public PseudoNativeMbElement getFirstChild() throws MbException {
-        return firstChild; // == null ? null : firstChild.getMbElement();
+        return firstChild;
     }
 
     public PseudoNativeMbElement getLastChild() throws MbException {
-        return lastChild; // == null ? null : lastChild.getMbElement();
+        return lastChild;
+    }
+
+    private <T> List<T> checkListType(Object o, Class<T> klass) {
+        if (o instanceof List) {
+            return ImmutableList.copyOf(Iterables.filter((List) o, klass));
+        }
+        throw new IllegalArgumentException("Expected a List<" + klass.getSimpleName() + "> but got " + o.getClass());
+    }
+
+    public Iterator<PseudoNativeMbElement> followingSiblingIterator() {
+        return followingSiblingIterator(false);
+    }
+
+    public Iterator<PseudoNativeMbElement> followingSiblingIterator(final boolean inclusive) {
+        return new AbstractIterator<PseudoNativeMbElement>() {
+            PseudoNativeMbElement next = inclusive ? PseudoNativeMbElement.this : nextSibling;
+
+            @Override protected PseudoNativeMbElement computeNext() {
+                if (next != null) {
+                    PseudoNativeMbElement current = next;
+                    next = next.nextSibling;
+                    return current;
+                }
+                return endOfData();
+            }
+        };
+    }
+    public Iterator<PseudoNativeMbElement> precedingSiblingIterator() {
+        return precedingSiblingIterator(false);
+    }
+
+    public Iterator<PseudoNativeMbElement> precedingSiblingIterator(boolean inclusive) {
+        final PseudoNativeMbElement stopCondition = inclusive ? nextSibling : this;
+        return new AbstractIterator<PseudoNativeMbElement>() {
+            PseudoNativeMbElement next = parent.firstChild;
+
+            @Override protected PseudoNativeMbElement computeNext() {
+                if (next != null && next != stopCondition) {
+                    PseudoNativeMbElement current = next;
+                    next = next.nextSibling;
+                    return current;
+                }
+                return endOfData();
+            }
+        };
+    }
+
+    public Iterator<PseudoNativeMbElement> childIterator() {
+        return new AbstractIterator<PseudoNativeMbElement>() {
+            PseudoNativeMbElement next = firstChild;
+
+            @Override protected PseudoNativeMbElement computeNext() {
+                if (next != null) {
+                    PseudoNativeMbElement current = next;
+                    next = next.nextSibling;
+                    return current;
+                }
+                return endOfData();
+            }
+        };
+    }
+
+    private PseudoNativeMbElement findChildByName(final String childName) {
+        return Iterators.find(childIterator(), new Predicate<PseudoNativeMbElement>() {
+            @Override public boolean apply(PseudoNativeMbElement input) {
+                try {
+                    return input.getName().equals(childName);
+                } catch (MbException e) {
+                    throw Throwables.propagate(e);
+                }
+            }
+        }, null);
+    }
+
+    public String getPath() {
+        if (path == null) {
+            path = cachePath();
+        }
+        return path;
+    }
+
+    private String cachePath() {
+        if (parent == null) {
+            return name == null ? "/" : "/" + name;
+        }
+        return parent.getPath() + "/" + name;
     }
 
     public PseudoNativeMbElement getFirstElementByPath(String arg0) throws MbException {
-        throw new UnsupportedOperationException();
+        final String path = getPath();
+        if (arg0.startsWith(path)) {
+            if (arg0.length() > path.length()) {
+                arg0 = arg0.substring(path.length(), arg0.length());
+            } else {
+                arg0 = arg0.substring(path.length(), arg0.length() - 1);
+            }
+        }
+        return getFirstElementByPath(Preconditions.checkNotNull(arg0).split("/"));
+    }
+
+    private PseudoNativeMbElement getFirstElementByPath(String[] pathSegments) throws MbException {
+        if ("".equals(pathSegments[0])) {
+            return getNativeMbMessage().getRootElement()
+                    .getFirstElementByPath(Arrays.copyOfRange(pathSegments, 1, pathSegments.length));
+        }
+
+        PseudoNativeMbElement child = findChildByName(pathSegments[0]);
+        if (pathSegments.length > 1) {
+            return child.getFirstElementByPath(Arrays.copyOfRange(pathSegments, 1, pathSegments.length));
+        }
+        return child;
+
     }
 
     public PseudoNativeMbElement[] getAllElementsByPath(String arg0) throws MbException {
-        throw new UnsupportedOperationException();
+        System.out.println("WARNING: Uses XPath behaviour to evaluate may not be entirely accurate");
+        List<PseudoNativeMbElement> children = checkListType(evaluateNativeXPath(arg0), PseudoNativeMbElement.class);
+        return children.toArray(new PseudoNativeMbElement[children.size()]);
     }
 
     public void addBefore(PseudoNativeMbElement element) throws MbException {
@@ -322,6 +433,7 @@ public class PseudoNativeMbElement implements MbVisitable {
         if (firstChild == null) firstChild = lastChild;
     }
 
+    // TODO: Handle copying of element
     public void copyElementTree(PseudoNativeMbElement arg0) throws MbException {
         throw new UnsupportedOperationException();
     }
@@ -331,28 +443,38 @@ public class PseudoNativeMbElement implements MbVisitable {
         nextSibling.previousSibling = previousSibling;
         if (parent.firstChild == this) parent.firstChild = this.nextSibling;
         if (parent.lastChild == this) parent.lastChild = this.previousSibling;
+        this.path = null;
+        this.parent = null;
+        this.message = null;
     }
 
+    // TODO: Handle bitstream
     public byte[] toBitstream(String arg0, String arg1, String arg2, int arg3, int arg4, int arg5) throws MbException {
         throw new UnsupportedOperationException();
     }
 
+    // TODO: Handle bitstream
     public PseudoNativeMbElement createElementAsLastChildFromBitstream(byte[] arg0, String arg1, String arg2, String arg3, String arg4, int arg5, int arg6, int arg7) throws MbException {
         throw new UnsupportedOperationException();
     }
 
     public Object evaluateXPath(MbXPath xpath) throws MbException {
-        return PseudoNativeMbXPathManager.getInstance().getNativeMbXPath(xpath).evaluateXPath(this);
+        return PseudoNativeMbXPathManager.getInstance().getNative(xpath).evaluateXPath(this);
+    }
+
+    public Object evaluateNativeXPath(String xpath) throws MbException {
+        return PseudoNativeMbXPathManager.getInstance()
+                .getNative(new MbXPath(xpath, new MbElement(this.getHandle()))).evaluateNativeXPath(this);
     }
 
     public Object evaluateXPath(String xpath) throws MbException {
         return PseudoNativeMbXPathManager.getInstance()
-                .getNativeMbXPath(new MbXPath(xpath, new MbElement(this.hashCode()))).evaluateXPath(this);
+                .getNative(new MbXPath(xpath, new MbElement(this.getHandle()))).evaluateXPath(this);
     }
 
     public void setParserClassName(String parserClassName) {
         this.parserClassName = parserClassName;
-        this.name = parserClassName;  // Hash lookup know values ie PropertiesParser -> Properties?
+        this.name = parserClassName;  // TODO Hash lookup know values ie PropertiesParser -> Properties?
     }
 
     public String toString() {
@@ -374,40 +496,45 @@ public class PseudoNativeMbElement implements MbVisitable {
 
     public PseudoNativeMbMessage getNativeMbMessage() {
         if (message == null) {
-            message = Preconditions.checkNotNull(parent,
-                    "Root elements should always be associated with a message").getNativeMbMessage();
+            if (parent == null) {
+                return null; // Detached message
+            }
+            message = parent.getNativeMbMessage();
         }
         return message;
     }
 
     public MbMessage getMbMessage() {
-        // TODO: Check validity of native message - retrieve from PseudoNativeMbMessageManager
-        return new MbMessage(getNativeMbMessage().hashCode());
+        PseudoNativeMbMessage message = getNativeMbMessage();
+        return message != null && message.isManaged() ? new MbMessage(message.getHandle()) : null;
     }
+
+    /*
+     * Visitable Interface
+     */
 
     @Override
     public void accept(MbMessageVisitor visitor) {
         visitor.visit(this);
-        Iterator<PseudoNativeMbElement> iter = new AbstractIterator<PseudoNativeMbElement>() {
-            PseudoNativeMbElement next = firstChild;
-
-            @Override
-            protected PseudoNativeMbElement computeNext() {
-                if (next != null) {
-                    PseudoNativeMbElement current = next;
-                    try {
-                        next = next.getNextSibling();
-                    } catch (MbException e) {
-                        throw Throwables.propagate(e);
-                    }
-                    return current;
-                }
-                return endOfData();
-            }
-        };
-
+        Iterator<PseudoNativeMbElement> iter = childIterator();
         while (iter.hasNext()) {
             iter.next().accept(visitor);
         }
+    }
+
+    /*
+     * NativeFor Interface
+     */
+
+    @Override public MbElement get() {
+        return new MbElement(this.hashCode());
+    }
+
+    @Override public long getHandle() {
+        return hashCode();
+    }
+
+    @Override public boolean isManaged() {
+        return PseudoNativeMbElementManager.getInstance().isManaged(this);
     }
 }

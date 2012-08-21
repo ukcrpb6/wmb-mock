@@ -15,17 +15,13 @@
  */
 package com.ibm.broker.plugin;
 
-import com.google.common.collect.Maps;
 import com.ibm.broker.plugin.visitor.MbMessageVisitor;
-
-import java.util.Map;
 
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
-public class PseudoNativeMbMessageManager implements NativeMbMessageManager {
-
-    Map<Long, PseudoNativeMbMessage> nativeMessages = Maps.newHashMap();
+public class PseudoNativeMbMessageManager
+        extends AbstractNativeManager<MbMessage, PseudoNativeMbMessage> implements NativeMbMessageManager {
 
     private static class InstanceHolder {
         static final PseudoNativeMbMessageManager instance = new PseudoNativeMbMessageManager();
@@ -38,43 +34,39 @@ public class PseudoNativeMbMessageManager implements NativeMbMessageManager {
     private PseudoNativeMbMessageManager() {
     }
 
-    private long getNativeHandle(PseudoNativeMbElement element) {
-        return element == null ? 0L : element.hashCode();
+    @Override protected PseudoNativeMbMessage createNativeInstance(Object... parameters) {
+        return new PseudoNativeMbMessage();
     }
 
-
-    public void clear() {
-        nativeMessages.clear();
-    }
+    /*
+     * Native Interface
+     */
 
     @Override
     public long _createMessage(long handle) throws MbException {
-        PseudoNativeMbMessage message = new PseudoNativeMbMessage();
-        nativeMessages.put((long) message.hashCode(), message);
-        return message.hashCode();
+        return allocate().getHandle();
     }
 
     @Override
     public void _createMessage(long[] paramArrayOfLong) throws MbException {
-        PseudoNativeMbMessage message = new PseudoNativeMbMessage();
-        paramArrayOfLong[0] = message.hashCode();
+        PseudoNativeMbMessage message = allocate();
+        paramArrayOfLong[0] = message.getHandle();
         paramArrayOfLong[1] = 0L;
-        nativeMessages.put((long) message.hashCode(), message);
     }
 
     @Override
     public void _clearMessage(long handle, long inputContextHandle) throws MbException {
-//        nativeMessages.get(handle).clearMessage(inputContextHandle);
+        getNative(handle).clearMessage();
     }
 
     @Override
     public void _finalizeMessage(long handle, int noneOrValidate) throws MbException {
-        nativeMessages.get(handle).finalizeMessage(noneOrValidate);
+        getNative(handle).finalizeMessage(noneOrValidate);
     }
 
     @Override
     public byte[] _getBuffer(long handle) throws MbException {
-        return nativeMessages.get(handle).getBuffer();
+        return getNative(handle).getBuffer();
     }
 
     @Override
@@ -84,33 +76,38 @@ public class PseudoNativeMbMessageManager implements NativeMbMessageManager {
 
     @Override
     public long _getRootElement(long handle) throws MbException {
-        return getNativeHandle(nativeMessages.get(handle).getRootElement());
+        return getNative(handle).getRootElement().getHandle();
     }
 
     @Override
     public void _copy(long handle, long inputContextHandle) throws MbException {
-//        nativeMessages.get(handle).copy(inputContextHandle);
+        // TODO: Add copy implementation
+//        getNative(handle).copy(inputContextHandle);
         throw new UnsupportedOperationException();
     }
 
     @Override
     public Object _evaluateXPath(long handle, long xpathHandle, MbXPath paramMbXPath) throws MbException {
-//        return nativeMessages.get(handle).evaluateXPath(xpathHandle, paramMbXPath);
-        throw new UnsupportedOperationException();
+        // TODO: XPath handle is it required what does it do?
+        return getNative(handle).evaluateXPath(paramMbXPath);
     }
 
     @Override
     public Object _evaluateXPath(long handle, String paramString) throws MbException {
-        return nativeMessages.get(handle).evaluateXPath(paramString);
+        return getNative(handle).evaluateXPath(paramString);
     }
 
+    /*
+     * Visitor interface
+     */
+
     public void visit(MbMessageVisitor visitor) throws MbException {
-        for (PseudoNativeMbMessage message : nativeMessages.values()) {
+        for (PseudoNativeMbMessage message : getAllocations()) {
             message.accept(visitor);
         }
     }
 
     public void visit(long handle, MbMessageVisitor visitor) throws MbException {
-        nativeMessages.get(handle).accept(visitor);
+        getNative(handle).accept(visitor);
     }
 }

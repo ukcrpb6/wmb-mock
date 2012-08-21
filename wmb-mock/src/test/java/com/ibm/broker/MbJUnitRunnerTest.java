@@ -295,6 +295,23 @@ public class MbJUnitRunnerTest {
         Assert.assertEquals(22, result.size());
     }
 
+    @Test
+    public void testGetFirstElementByPath() throws Exception {
+        MbTestObject o = createTestTree();
+        MbElement e = o.root.getFirstElementByPath("/field-1");
+        Assert.assertNull(e);
+        e = o.root.getFirstElementByPath("/XMLNSC/field-1");
+        Assert.assertNotNull(e);
+    }
+
+    @Test
+    public void testGetAllElementByPath() throws Exception {
+        MbTestObject o = createTestTree();
+        MbElement[] elements = o.root.getAllElementsByPath("//field-1");
+        Assert.assertNotNull(elements);
+        Assert.assertEquals(2, elements.length);
+    }
+
     @After
     public void dumpMessages() throws Exception {
         System.out.println(" *** START *** ");
@@ -310,9 +327,6 @@ public class MbJUnitRunnerTest {
             }
         });
         System.out.println(" *** END *** ");
-        PseudoNativeMbXPathManager.getInstance().clear();
-        PseudoNativeMbElementManager.getInstance().clear();
-        PseudoNativeMbMessageManager.getInstance().clear();
     }
 
 }

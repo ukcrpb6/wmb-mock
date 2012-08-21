@@ -25,7 +25,7 @@ import static com.google.common.base.Preconditions.checkState;
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
-public class PseudoNativeMbMessage implements MbVisitable {
+public class PseudoNativeMbMessage implements NativeFor<MbMessage>, MbVisitable {
 
     private PseudoNativeMbElement rootElement;
 
@@ -69,7 +69,7 @@ public class PseudoNativeMbMessage implements MbVisitable {
     }
 
     public String toString() {
-        return Objects.toStringHelper(this).add("read-only", readOnly).add("rootElement", rootElement).toString();
+        return Objects.toStringHelper(this).add("read-only", readOnly).toString();
     }
 
     @Override
@@ -77,4 +77,13 @@ public class PseudoNativeMbMessage implements MbVisitable {
         visitor.visit(this);
         this.getRootElement().accept(visitor);
     }
+
+    @Override public MbMessage get() {
+        return new MbMessage(this.hashCode());
+    }
+
+    @Override public long getHandle() {
+        return hashCode();
+    }
+
 }

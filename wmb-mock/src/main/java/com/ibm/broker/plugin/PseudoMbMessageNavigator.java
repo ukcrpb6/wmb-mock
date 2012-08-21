@@ -50,8 +50,7 @@ public class PseudoMbMessageNavigator extends DefaultNavigator {
 
     private static PseudoNativeMbElement checkNativeMbElement(MbElement element) {
         int handle = element.hashCode();
-        PseudoNativeMbElement nativeMbElement =
-                PseudoNativeMbElementManager.getInstance().getNativeMbElement(handle);
+        PseudoNativeMbElement nativeMbElement = PseudoNativeMbElementManager.getInstance().getNative(handle);
         if (nativeMbElement == null) {
             throw new NoSuchElementException("No native element found matching handle #" + handle);
         }
@@ -258,19 +257,31 @@ public class PseudoMbMessageNavigator extends DefaultNavigator {
         return JaxenConstants.EMPTY_ITERATOR;
     }
 
-    @Override
-    public Object createAfter(Object contextNode, String localName, String namespacePrefix, String namespaceURI) throws UnsupportedAxisException {
-        PseudoNativeMbElement nativeMbElement;
+    private PseudoNativeMbElement getCurrentElement(Object contextNode) {
+        if (contextNode instanceof FauxDocumentNode) {
+            return ((FauxDocumentNode) contextNode).root;
+        }
+        if (contextNode instanceof MbMessage) {
+            try {
+                long _handle = PseudoNativeMbMessageManager.getInstance()._getRootElement(((MbMessage) contextNode).getHandle());
+                return PseudoNativeMbElementManager.getInstance().getNative(_handle);
+            } catch (MbException e) {
+                throw Throwables.propagate(e);
+            }
+        }
         if (contextNode instanceof MbElement) {
-            nativeMbElement = checkNativeMbElement(checkMockMbElement(contextNode));
-        } else if (contextNode instanceof PseudoNativeMbElement) {
-            nativeMbElement = (PseudoNativeMbElement) contextNode;
-        } else {
-            throw new IllegalArgumentException("Element type " + contextNode.getClass() + " not supported.");
+            return checkNativeMbElement((MbElement) contextNode);
+        }
+        if (contextNode instanceof PseudoNativeMbElement) {
+            return (PseudoNativeMbElement) contextNode;
         }
 
+        throw new IllegalArgumentException("Element type " + contextNode.getClass() + " not supported.");
+    }
+    @Override
+    public Object createAfter(Object contextNode, String localName, String namespacePrefix, String namespaceURI) throws UnsupportedAxisException {
         try {
-            PseudoNativeMbElement newElement = nativeMbElement.createElementAfter(MbElement.TYPE_UNKNOWN);
+            PseudoNativeMbElement newElement = getCurrentElement(contextNode).createElementAfter(MbElement.TYPE_UNKNOWN);
             newElement.setName(localName);
             newElement.setNamespace(namespaceURI);
             return newElement;
@@ -281,17 +292,8 @@ public class PseudoMbMessageNavigator extends DefaultNavigator {
 
     @Override
     public Object createBefore(Object contextNode, String localName, String namespacePrefix, String namespaceURI) throws UnsupportedAxisException {
-        PseudoNativeMbElement nativeMbElement;
-        if (contextNode instanceof MbElement) {
-            nativeMbElement = checkNativeMbElement(checkMockMbElement(contextNode));
-        } else if (contextNode instanceof PseudoNativeMbElement) {
-            nativeMbElement = (PseudoNativeMbElement) contextNode;
-        } else {
-            throw new IllegalArgumentException("Element type " + contextNode.getClass() + " not supported.");
-        }
-
         try {
-            PseudoNativeMbElement newElement = nativeMbElement.createElementBefore(MbElement.TYPE_UNKNOWN);
+            PseudoNativeMbElement newElement = getCurrentElement(contextNode).createElementBefore(MbElement.TYPE_UNKNOWN);
             newElement.setName(localName);
             newElement.setNamespace(namespaceURI);
             return newElement;
@@ -302,17 +304,8 @@ public class PseudoMbMessageNavigator extends DefaultNavigator {
 
     @Override
     public Object createAsFirstChild(Object contextNode, String localName, String namespacePrefix, String namespaceURI) throws UnsupportedAxisException {
-        PseudoNativeMbElement nativeMbElement;
-        if (contextNode instanceof MbElement) {
-            nativeMbElement = checkNativeMbElement(checkMockMbElement(contextNode));
-        } else if (contextNode instanceof PseudoNativeMbElement) {
-            nativeMbElement = (PseudoNativeMbElement) contextNode;
-        } else {
-            throw new IllegalArgumentException("Element type " + contextNode.getClass() + " not supported.");
-        }
-
         try {
-            PseudoNativeMbElement newElement = nativeMbElement.createElementAsFirstChild(MbElement.TYPE_UNKNOWN);
+            PseudoNativeMbElement newElement = getCurrentElement(contextNode).createElementAsFirstChild(MbElement.TYPE_UNKNOWN);
             newElement.setName(localName);
             newElement.setNamespace(namespaceURI);
             return newElement;
@@ -323,17 +316,8 @@ public class PseudoMbMessageNavigator extends DefaultNavigator {
 
     @Override
     public Object createAsLastChild(Object contextNode, String localName, String namespacePrefix, String namespaceURI) throws UnsupportedAxisException {
-        PseudoNativeMbElement nativeMbElement;
-        if (contextNode instanceof MbElement) {
-            nativeMbElement = checkNativeMbElement(checkMockMbElement(contextNode));
-        } else if (contextNode instanceof PseudoNativeMbElement) {
-            nativeMbElement = (PseudoNativeMbElement) contextNode;
-        } else {
-            throw new IllegalArgumentException("Element type " + contextNode.getClass() + " not supported.");
-        }
-
         try {
-            PseudoNativeMbElement newElement = nativeMbElement.createElementAsLastChild(MbElement.TYPE_UNKNOWN);
+            PseudoNativeMbElement newElement = getCurrentElement(contextNode).createElementAsLastChild(MbElement.TYPE_UNKNOWN);
             newElement.setName(localName);
             newElement.setNamespace(namespaceURI);
             return newElement;
