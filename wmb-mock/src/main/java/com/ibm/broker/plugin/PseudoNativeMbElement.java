@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
-public class PseudoNativeMbElement implements NativeFor<MbElement>, MbVisitable {
+public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> implements MbVisitable {
 
     private static final int TYPE_MASK_GENERIC = 251658240;
 
@@ -52,8 +52,6 @@ public class PseudoNativeMbElement implements NativeFor<MbElement>, MbVisitable 
 
     private Object value;
 
-    private boolean readOnly;
-
     private String namespace = "";
 
     private int type;
@@ -70,7 +68,6 @@ public class PseudoNativeMbElement implements NativeFor<MbElement>, MbVisitable 
         this.value = element.value;
         this.type = element.type;
         this.parserClassName = element.parserClassName;
-        this.readOnly = false;
     }
 
     void setMessage(PseudoNativeMbMessage message) {
@@ -99,10 +96,6 @@ public class PseudoNativeMbElement implements NativeFor<MbElement>, MbVisitable 
 
     public int getType() throws MbException {
         return type & TYPE_MASK_GENERIC;
-    }
-
-    public boolean isReadOnly() {
-        return readOnly;
     }
 
     public void setValue(Object arg0) throws MbException {
@@ -528,10 +521,6 @@ public class PseudoNativeMbElement implements NativeFor<MbElement>, MbVisitable 
 
     @Override public MbElement get() {
         return new MbElement(this.getHandle());
-    }
-
-    @Override public long getHandle() {
-        return hashCode();
     }
 
     @Override public boolean isManaged() {

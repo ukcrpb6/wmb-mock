@@ -20,27 +20,15 @@ import com.google.common.base.Objects;
 import com.ibm.broker.plugin.visitor.MbMessageVisitor;
 import com.ibm.broker.plugin.visitor.MbVisitable;
 
-import static com.google.common.base.Preconditions.checkState;
-
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
-public class PseudoNativeMbMessage implements NativeFor<MbMessage>, MbVisitable {
+public class PseudoNativeMbMessage extends AbstractPseudoNative<MbMessage> implements MbVisitable {
 
     private PseudoNativeMbElement rootElement;
 
-    private boolean readOnly;
-
     public PseudoNativeMbMessage() {
         this.rootElement = PseudoNativeMbElementManager.getInstance().createPseudoNativeMbElement(this);
-    }
-
-    private void checkMutable() {
-        checkState(!readOnly, "Message is immutable");
-    }
-
-    public boolean isReadOnly() {
-        return readOnly;
     }
 
     public byte[] getBuffer() throws MbException {
@@ -48,12 +36,10 @@ public class PseudoNativeMbMessage implements NativeFor<MbMessage>, MbVisitable 
     }
 
     public void clearMessage() throws MbException {
-        checkMutable();
         rootElement = PseudoNativeMbElementManager.getInstance().createPseudoNativeMbElement(this);
     }
 
     public void finalizeMessage(int noneOrValidate) throws MbException {
-        this.readOnly = true;
     }
 
     public PseudoNativeMbElement getRootElement() throws MbException {
@@ -69,7 +55,7 @@ public class PseudoNativeMbMessage implements NativeFor<MbMessage>, MbVisitable 
     }
 
     public String toString() {
-        return Objects.toStringHelper(this).add("read-only", readOnly).toString();
+        return Objects.toStringHelper(this).toString();
     }
 
     @Override
@@ -80,10 +66,6 @@ public class PseudoNativeMbMessage implements NativeFor<MbMessage>, MbVisitable 
 
     @Override public MbMessage get() {
         return new MbMessage(this.getHandle());
-    }
-
-    @Override public long getHandle() {
-        return hashCode();
     }
 
     @Override public boolean isManaged() {

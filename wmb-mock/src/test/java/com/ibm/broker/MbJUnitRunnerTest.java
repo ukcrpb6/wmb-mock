@@ -312,6 +312,17 @@ public class MbJUnitRunnerTest {
         Assert.assertEquals(2, elements.length);
     }
 
+    @Test
+    public void testMessageAssembly() throws Exception {
+        MbMessageAssembly assembly = PseudoNativeMbMessageAssemblyManager.getInstance().createBlankReadOnlyMessageAssembly();
+        Assert.assertNotNull(assembly);
+        Assert.assertNotNull(assembly.getMessage());
+        Assert.assertFalse(assembly.getLocalEnvironment().isReadOnly());
+        Assert.assertFalse(assembly.getGlobalEnvironment().isReadOnly());
+        Assert.assertFalse(assembly.getExceptionList().isReadOnly());
+        Assert.assertTrue(assembly.getMessage().isReadOnly());
+    }
+
     @After
     public void dumpMessages() throws Exception {
         System.out.println(" *** START *** ");

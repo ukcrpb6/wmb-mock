@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
-public class PseudoNativeMbXPath implements NativeFor<MbXPath> {
+public class PseudoNativeMbXPath extends AbstractPseudoNative<MbXPath> {
 
     private String xpath;
 
@@ -130,10 +130,6 @@ public class PseudoNativeMbXPath implements NativeFor<MbXPath> {
 
     @Override public MbXPath get() {
         throw new UnsupportedOperationException();
-    }
-
-    @Override public long getHandle() {
-        return hashCode();
     }
 
     @Override public boolean isManaged() {

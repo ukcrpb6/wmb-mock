@@ -34,6 +34,7 @@ import java.lang.reflect.Method;
 public class MbMockPolicy implements PowerMockPolicy {
     @Override public void applyClassLoadingPolicy(MockPolicyClassLoadingSettings settings) {
         settings.addFullyQualifiedNamesOfClassesToLoadByMockClassloader(new String[]{
+                MbMessageAssembly.class.getName(),
                 MbMessage.class.getName(),
                 MbElement.class.getName(),
                 MbXPath.class.getName(),
@@ -46,8 +47,10 @@ public class MbMockPolicy implements PowerMockPolicy {
         PseudoNativeMbXPathManager.getInstance().clear();
         PseudoNativeMbElementManager.getInstance().clear();
         PseudoNativeMbMessageManager.getInstance().clear();
+        PseudoNativeMbMessageAssemblyManager.getInstance().clear();
 
         proxyNativeTracerNativeMethods(settings);
+        proxyMbMessageAssemblyNativeMethods(settings);
         proxyMbMessageNativeMethods(settings);
         proxyMbElementNativeMethods(settings);
         proxyMbXPathNativeMethods(settings);
@@ -74,6 +77,18 @@ public class MbMockPolicy implements PowerMockPolicy {
                 @Override
                 public Object invoke(Object o, Method method, Object[] args) throws Throwable {
                     return m.invoke(PseudoNativeMbMessageManager.getInstance(), args);
+                }
+            });
+        }
+    }
+
+    public void proxyMbMessageAssemblyNativeMethods(MockPolicyInterceptionSettings settings) {
+        for (final Method m : NativeMbMessageAssemblyManager.class.getDeclaredMethods()) {
+            Method method = Whitebox.getMethod(MbMessageAssembly.class, m.getName(), m.getParameterTypes());
+            settings.proxyMethod(method, new InvocationHandler() {
+                @Override
+                public Object invoke(Object o, Method method, Object[] args) throws Throwable {
+                    return m.invoke(PseudoNativeMbMessageAssemblyManager.getInstance(), args);
                 }
             });
         }
