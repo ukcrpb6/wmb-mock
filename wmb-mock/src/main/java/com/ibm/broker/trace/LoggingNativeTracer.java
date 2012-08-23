@@ -16,21 +16,67 @@
 package com.ibm.broker.trace;
 
 import com.google.common.base.Preconditions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static com.ibm.broker.trace.Trace.*;
 
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
 public class LoggingNativeTracer extends AbstractNativeTracer {
 
-    private final Logger logger;
-    private final Class<?> classUnderTest;
+    public static final Marker EVENT_MARKER  = MarkerFactory.getMarker("EVENT");
+    public static final Marker SYSTEM_MARKER = MarkerFactory.getMarker("SYSTEM");
+    public static final Marker USER_MARKER   = MarkerFactory.getMarker("USER");
 
-    public LoggingNativeTracer(Class<?> classUnderTest) {
-        this.classUnderTest = classUnderTest;
-        this.logger = Logger.getLogger(classUnderTest.getName());
+    private static class InstanceHolder {
+        private static final LoggingNativeTracer INSTANCE = new LoggingNativeTracer();
+    }
+
+    public static LoggingNativeTracer getInstance() {
+        return InstanceHolder.INSTANCE;
+    }
+
+    private final ThreadLocal<Logger> logger = new ThreadLocal<Logger>() {
+        @Override protected Logger initialValue() {
+            return LoggerFactory.getLogger(getTestClass());
+        }
+    };
+
+    private final ThreadLocal<Class<?>> testClass = new ThreadLocal<Class<?>>() {
+        @Override protected Class<?> initialValue() {
+            return LoggingNativeTracer.class;
+        }
+    };
+
+    private final ThreadLocal<Integer> level = new ThreadLocal<Integer>();
+
+    public LoggingNativeTracer() {
+        this.level.set(NONE);
+    }
+
+    public LoggingNativeTracer(Class<?> testClass) {
+        this.testClass.set(testClass);
+        this.level.set(NONE);
+    }
+
+    public Logger getLogger() {
+        return logger.get();
+    }
+
+    public Class<?> getTestClass() {
+        return testClass.get();
+    }
+
+    public void setTestClass(Class<?> testClass) {
+        this.testClass.set(testClass);
+    }
+
+    public int getLevel() {
+        return level.get();
     }
 
     public static String join(String s, Object... additional) {
@@ -46,116 +92,146 @@ public class LoggingNativeTracer extends AbstractNativeTracer {
     }
 
     @Override public String getTraceFileName() {
-        return classUnderTest.getName();
+        return getTestClass().getName();
     }
 
     @Override public void logNamedDebugEntry(String s) {
-        logger.fine(s);
+        log(EVENT, s);
     }
 
     @Override public void logNamedDebugEntryData(String s, String s1) {
-        logger.fine(join(s, s1));
+        log(EVENT, join(s, s1));
     }
 
     @Override public void logNamedDebugExit(String s) {
-        logger.fine(s);
+        log(EVENT, s);
     }
 
     @Override public void logNamedDebugExitData(String s, String s1) {
-        logger.fine(join(s, s1));
+        log(EVENT, join(s, s1));
     }
 
     @Override public void logNamedDebugTrace(String s, String paramString2) {
-        logger.fine(join(s, paramString2));
+        log(DEBUGTRACE, join(s, paramString2));
     }
 
     @Override public void logNamedDebugTraceData(String s, String paramString2, String s1) {
-        logger.fine(join(s, s1));
+        log(DEBUGTRACE, join(s, s1));
     }
 
     @Override public void logNamedEntry(String s) {
-        logger.fine(s);
+        log(EVENT, s);
     }
 
     @Override public void logNamedEntryData(String s, String s1) {
-        logger.fine(join(s, s1));
+        log(EVENT, join(s, s1));
     }
 
     @Override public void logNamedExit(String s) {
-        logger.fine(s);
+        log(EVENT, s);
     }
 
     @Override public void logNamedExitData(String s, String s1) {
-        logger.fine(join(s, s1));
+        log(EVENT, join(s, s1));
     }
 
     @Override public void logNamedSpecialEntry(String s) {
-        logger.fine(join(s));
+        log(EVENT, join(s));
     }
 
     @Override public void logNamedSpecialEntryData(String s, String s1) {
-        logger.fine(join(s, s1));
+        log(EVENT, join(s, s1));
     }
 
     @Override public void logNamedSpecialExit(String s) {
-        logger.fine(join(s));
+        log(EVENT, join(s));
     }
 
     @Override public void logNamedSpecialExitData(String s, String s1) {
-        logger.fine(join(s, s1));
+        log(EVENT, join(s, s1));
     }
 
     @Override public void logNamedSpecialTrace(String s, String paramString2) {
-        logger.fine(join(s, paramString2));
+        log(TRACE, join(s, paramString2));
     }
 
     @Override public void logNamedSpecialTraceData(String s, String paramString2, String s1) {
-        logger.fine(join(s, paramString2, s1));
+        log(TRACE, join(s, paramString2, s1));
     }
 
     @Override public void logNamedTrace(String s, String paramString3) {
-        logger.fine(join(s, paramString3));
+        log(TRACE, join(s, paramString3));
     }
 
     @Override public void logNamedTraceData(String s, String paramString2, String s1) {
-        logger.fine(join(s, paramString2, s1));
+        log(TRACE, join(s, paramString2, s1));
     }
 
     @Override public void logNamedUserDebugTrace(String s, String paramString2, long paramLong, String paramString3) {
-        logger.fine(join(s, paramString2, paramLong, paramString3));
+        log(USERDEBUGTRACE, join(s, paramString2, paramLong, paramString3));
     }
 
     @Override
     public void logNamedUserDebugTraceData(String s, String paramString2, long paramLong, String paramString3, String[] strings) {
-        logger.fine(join(s, paramString2, paramLong, paramString3, strings));
+        log(USERDEBUGTRACE, join(s, paramString2, paramLong, paramString3, strings));
     }
 
     @Override public void logNamedUserTrace(String s, String paramString2, long paramLong, String paramString3) {
-        logger.fine(join(s, paramString2, paramLong, paramString3));
+        log(USERTRACE, join(s, paramString2, paramLong, paramString3));
     }
 
     @Override
     public void logNamedUserTraceData(String s, String paramString2, long paramLong, String paramString3, String[] strings) {
-        logger.fine(join(s, paramString2, paramLong, paramString3, strings));
+        log(USERTRACE, join(s, paramString2, paramLong, paramString3, strings));
     }
 
     @Override public void logSourceNamedDebugEntry(String s, String paramString2) {
-        logger.fine(join(s, paramString2));
+        log(EVENT, join(s, paramString2));
     }
 
     @Override public void logSourceNamedDebugEntryData(String s, String paramString2, String s1) {
-        logger.fine(join(s, paramString2, s1));
+        log(EVENT, join(s, paramString2, s1));
     }
 
     @Override public void logSourceNamedEntry(String s, String paramString2) {
-        logger.fine(join(s, paramString2));
+        log(EVENT, join(s, paramString2));
     }
 
     @Override public void logSourceNamedEntryData(String s, String paramString2, String s1) {
-        logger.fine(join(s, paramString2));
+        log(EVENT, join(s, paramString2));
     }
 
     @Override public void setLogLevel(int level) {
-        logger.setLevel(Level.FINE);
+        this.level.set(level);
+    }
+
+    /*
+        public static final int NONE = 0;
+        public static final int EVENT = 1;
+        public static final int USERTRACE = 2;
+        public static final int USERDEBUGTRACE = 3;
+        public static final int TRACE = 4;
+        public static final int DEBUGTRACE = 5;
+     */
+    private void log(int level, String message) {
+        if(level <= getLevel()) {
+            switch(level) {
+                case EVENT:
+                    getLogger().info(EVENT_MARKER, message);
+                    break;
+                case USERTRACE:
+                    getLogger().info(USER_MARKER, message);
+                    break;
+                case TRACE:
+                    getLogger().info(SYSTEM_MARKER, message);
+                    break;
+                case USERDEBUGTRACE:
+                    getLogger().debug(USER_MARKER, message);
+                    break;
+                case DEBUGTRACE:
+                    getLogger().debug(SYSTEM_MARKER, message);
+                    break;
+            }
+        }
     }
 }
