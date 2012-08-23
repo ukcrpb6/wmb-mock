@@ -1,4 +1,4 @@
-package com.ibm.broker.plugin; /**
+/**
  * Copyright 2012 Bob Browning
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,20 +13,22 @@ package com.ibm.broker.plugin; /**
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.ibm.broker.plugin;
 
 import com.google.common.base.Objects;
-import com.ibm.broker.plugin.visitor.MbMessageVisitor;
-import com.ibm.broker.trace.LoggingNativeTracer;
-import com.ibm.broker.trace.NativeTracer;
-import com.ibm.broker.trace.NativeTracerFactory;
+import com.ibm.broker.plugin.visitor.DefaultMbMessageVisitor;
 import com.ibm.broker.trace.Trace;
+import com.ibm.broker.trace.TraceRule;
 import junit.framework.Assert;
 import org.jaxen.XPath;
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.MockPolicy;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.BitSet;
@@ -40,21 +42,43 @@ import java.util.TimeZone;
 @MockPolicy(MbMockPolicy.class)
 public class MbJUnitRunnerTest {
 
-    MbJUnitRunnerTest() {
-        NativeTracerFactory.setTracerClass(LoggingNativeTracer.class);
-        NativeTracerFactory.setClassUnderTest(MbJUnitRunnerTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(MbJUnitRunnerTest.class);
+
+    private DefaultMbMessageVisitor visitor = new DefaultMbMessageVisitor() {
+        @Override public void visit(PseudoNativeMbMessageAssembly assembly) {
+            System.out.println(assembly.toString());
+        }
+
+        @Override
+        public void visit(PseudoNativeMbMessage message) {
+            System.out.println(message.toString());
+        }
+
+        @Override
+        public void visit(PseudoNativeMbElement element) {
+            System.out.println(element.toString());
+        }
+    };
+
+    @Rule
+    public TraceRule traceRule = new TraceRule();
+
+    @Test
+    public void testTracer() throws Exception {
+        Trace.setLogLevel(Trace.DEBUGTRACE);
+        Trace.logNamedEntry("name", "1");
+        Trace.logNamedDebugEntry("debugName", "1");
+        Trace.logNamedDebugTrace("traceName", "1", "2");
+        Trace.logNamedUserTrace("userTraceName", "1", "2", 0L, "5");
+        Trace.logNamedUserDebugTrace("userDebugName", "1", "2", 0L, "5");
     }
 
     @Test
     public void testEquals() throws Exception {
-        NativeTracer t = new NativeTracer();
-        t.setLogLevel(1);
-        System.out.println(NativeTracer.class.getClassLoader());
-        Trace.setLogLevel(Trace.DEBUGTRACE);
         MbMessage m = new MbMessage();
         MbElement xmlnsc = m.getRootElement().createElementAsFirstChild(MbXMLNSC.PARSER_NAME);
         MbElement xmlnsc2 = m.getRootElement().getLastChild();
-        System.out.println(Objects.toStringHelper(xmlnsc).add("hashCode", xmlnsc.hashCode()).add("equals", xmlnsc2.equals(xmlnsc)).toString());
+        logger.debug(Objects.toStringHelper(xmlnsc).add("hashCode", xmlnsc.hashCode()).add("equals", xmlnsc2.equals(xmlnsc)).toString());
     }
 
     @Test
@@ -82,13 +106,13 @@ public class MbJUnitRunnerTest {
         Assert.assertNotNull(e);
 
         final MbElement firstChild = e.createElementAsFirstChild(MbXMLNSC.PARSER_NAME);
-        Assert.assertTrue(firstChild.equals(e.getFirstChild()));
-        Assert.assertEquals(firstChild, e.getFirstChild());
-        Assert.assertEquals(firstChild, e.getLastChild());
-        Assert.assertEquals(e.getFirstChild(), e.getLastChild());
+//        Assert.assertTrue(firstChild.equals(e.getFirstChild()));
+        MbAssert.assertEquals(firstChild, e.getFirstChild());
+        MbAssert.assertEquals(firstChild, e.getLastChild());
+        MbAssert.assertEquals(e.getFirstChild(), e.getLastChild());
         Assert.assertNull(firstChild.getPreviousSibling());
         Assert.assertNull(firstChild.getNextSibling());
-        Assert.assertEquals(e, firstChild.getParent());
+        MbAssert.assertEquals(e, firstChild.getParent());
         return new MbTestObject(message, firstChild);
     }
 
@@ -99,12 +123,12 @@ public class MbJUnitRunnerTest {
         MbElement firstChild = initialState.child;
 
         MbElement nextSibling = e.createElementAsFirstChild(MbXMLNSC.PARSER_NAME);
-        Assert.assertEquals(nextSibling, e.getFirstChild());
-        Assert.assertEquals(firstChild, e.getLastChild());
+        MbAssert.assertEquals(nextSibling, e.getFirstChild());
+        MbAssert.assertEquals(firstChild, e.getLastChild());
         Assert.assertNull(nextSibling.getPreviousSibling());
-        Assert.assertEquals(firstChild, nextSibling.getNextSibling());
-        Assert.assertEquals(nextSibling, firstChild.getPreviousSibling());
-        Assert.assertEquals(e, nextSibling.getParent());
+        MbAssert.assertEquals(firstChild, nextSibling.getNextSibling());
+        MbAssert.assertEquals(nextSibling, firstChild.getPreviousSibling());
+        MbAssert.assertEquals(e, nextSibling.getParent());
     }
 
     @Test
@@ -114,12 +138,12 @@ public class MbJUnitRunnerTest {
         MbElement firstChild = initialState.child;
 
         MbElement nextSibling = e.createElementAsLastChild(MbXMLNSC.PARSER_NAME);
-        Assert.assertEquals(firstChild, e.getFirstChild());
-        Assert.assertEquals(nextSibling, e.getLastChild());
+        MbAssert.assertEquals(firstChild, e.getFirstChild());
+        MbAssert.assertEquals(nextSibling, e.getLastChild());
         Assert.assertNull(nextSibling.getNextSibling());
-        Assert.assertEquals(nextSibling, firstChild.getNextSibling());
-        Assert.assertEquals(firstChild, nextSibling.getPreviousSibling());
-        Assert.assertEquals(e, nextSibling.getParent());
+        MbAssert.assertEquals(nextSibling, firstChild.getNextSibling());
+        MbAssert.assertEquals(firstChild, nextSibling.getPreviousSibling());
+        MbAssert.assertEquals(e, nextSibling.getParent());
     }
 
 
@@ -130,12 +154,12 @@ public class MbJUnitRunnerTest {
         MbElement firstChild = initialState.child;
 
         MbElement nextSibling = firstChild.createElementBefore(MbXMLNSC.PARSER_NAME);
-        Assert.assertEquals(nextSibling, e.getFirstChild());
-        Assert.assertEquals(firstChild, e.getLastChild());
+        MbAssert.assertEquals(nextSibling, e.getFirstChild());
+        MbAssert.assertEquals(firstChild, e.getLastChild());
         Assert.assertNull(nextSibling.getPreviousSibling());
-        Assert.assertEquals(firstChild, nextSibling.getNextSibling());
-        Assert.assertEquals(nextSibling, firstChild.getPreviousSibling());
-        Assert.assertEquals(e, nextSibling.getParent());
+        MbAssert.assertEquals(firstChild, nextSibling.getNextSibling());
+        MbAssert.assertEquals(nextSibling, firstChild.getPreviousSibling());
+        MbAssert.assertEquals(e, nextSibling.getParent());
     }
 
     @Test
@@ -145,12 +169,12 @@ public class MbJUnitRunnerTest {
         MbElement firstChild = initialState.child;
 
         MbElement nextSibling = firstChild.createElementAfter(MbXMLNSC.PARSER_NAME);
-        Assert.assertEquals(firstChild, e.getFirstChild());
-        Assert.assertEquals(nextSibling, e.getLastChild());
+        MbAssert.assertEquals(firstChild, e.getFirstChild());
+        MbAssert.assertEquals(nextSibling, e.getLastChild());
         Assert.assertNull(nextSibling.getNextSibling());
-        Assert.assertEquals(nextSibling, firstChild.getNextSibling());
-        Assert.assertEquals(firstChild, nextSibling.getPreviousSibling());
-        Assert.assertEquals(e, nextSibling.getParent());
+        MbAssert.assertEquals(nextSibling, firstChild.getNextSibling());
+        MbAssert.assertEquals(firstChild, nextSibling.getPreviousSibling());
+        MbAssert.assertEquals(e, nextSibling.getParent());
     }
 
     @Test
@@ -220,10 +244,10 @@ public class MbJUnitRunnerTest {
         MbTimestamp timestamp = new MbTimestamp(2012, 1, 1, 1, 1, 1);
         timestamp.setTimeZone(TimeZone.getTimeZone("GMT"));
         MbElement firstField = firstChild.createElementAsFirstChild(MbXMLNSC.FIELD, "fieldName", timestamp);
-        System.out.println(firstField);
+        logger.debug(firstField.toString());
         Assert.assertEquals(MbTimestamp.class, firstField.getValue().getClass());
         Assert.assertEquals(timestamp.getTimeInMillis(), ((MbTimestamp) firstField.getValue()).getTimeInMillis());
-//        Assert.assertEquals(timestamp.toString(), firstField.getValueAsString());
+//        MbAssert.assertEquals(timestamp.toString(), firstField.getValueAsString());
     }
 
     @Test
@@ -233,10 +257,10 @@ public class MbJUnitRunnerTest {
         MbTime time = new MbTime(1, 1, 1);
         time.setTimeZone(TimeZone.getTimeZone("GMT"));
         MbElement firstField = firstChild.createElementAsFirstChild(MbXMLNSC.FIELD, "fieldName", time);
-        System.out.println(firstField);
+        logger.debug(firstField.toString());
         Assert.assertEquals(MbTime.class, firstField.getValue().getClass());
         Assert.assertEquals(time.getTimeInMillis(), ((MbTime) firstField.getValue()).getTimeInMillis());
-//        Assert.assertEquals(timestamp.toString(), firstField.getValueAsString());
+//        MbAssert.assertEquals(timestamp.toString(), firstField.getValueAsString());
     }
 
     @Test
@@ -247,7 +271,7 @@ public class MbJUnitRunnerTest {
         MbElement firstField = firstChild.createElementAsFirstChild(MbXMLNSC.FIELD, "fieldName", date);
         Assert.assertEquals(MbDate.class, firstField.getValue().getClass());
         Assert.assertEquals(date.getTimeInMillis(), ((MbDate) firstField.getValue()).getTimeInMillis());
-//        Assert.assertEquals(timestamp.toString(), firstField.getValueAsString());
+//        MbAssert.assertEquals(timestamp.toString(), firstField.getValueAsString());
     }
 
     private MbTestObject createTestTree() throws Exception {
@@ -329,6 +353,7 @@ public class MbJUnitRunnerTest {
         Assert.assertTrue(assembly.getMessage().isReadOnly());
         MbMessageAssembly outAssembly = new MbMessageAssembly(assembly, new MbMessage(assembly.getMessage()));
         Assert.assertFalse(outAssembly.getMessage().isReadOnly());
+        PseudoNativeMbMessageAssemblyManager.getInstance().accept(visitor);
     }
 
     @Test
@@ -337,7 +362,7 @@ public class MbJUnitRunnerTest {
         MbElement root = message.getRootElement();
         Assert.assertNotNull(root);
 
-        root.setValue(new MbDate(2000,1,1));
+        root.setValue(new MbDate(2000, 1, 1));
 
         MbElement clone = root.copy();
         Assert.assertNotNull(clone);
@@ -346,8 +371,6 @@ public class MbJUnitRunnerTest {
         MbDate date = (MbDate) clone.getValue();
         date.set(2012, 12, 31);
         Assert.assertNotSame(root.getValue(), date);
-
-        System.out.println(Long.valueOf(1L).getClass().isPrimitive());
     }
 
     @Test
@@ -360,24 +383,21 @@ public class MbJUnitRunnerTest {
 
     @Test(expected = MbException.class)
     public void testMbException() throws Exception {
-        throw new MbException("a", "b", "c", "d", "", new Object[] { "" });
+        throw new MbException("a", "b", "c", "d", "", new Object[]{""});
     }
 
     @After
     public void dumpMessages() throws Exception {
-        System.out.println(" *** START *** ");
-        PseudoNativeMbMessageManager.getInstance().visit(new MbMessageVisitor() {
-            @Override
-            public void visit(PseudoNativeMbMessage message) {
-                System.out.println(message.toString());
+        logger.info(" *** START *** ");
+        try {
+            if(!PseudoNativeMbMessageAssemblyManager.getInstance().getAllocations().isEmpty()) {
+                PseudoNativeMbMessageAssemblyManager.getInstance().accept(visitor);
+            } else {
+                PseudoNativeMbMessageManager.getInstance().accept(visitor);
             }
-
-            @Override
-            public void visit(PseudoNativeMbElement element) {
-                System.out.println(element.toString());
-            }
-        });
-        System.out.println(" *** END *** ");
+        } finally {
+            logger.info(" *** END *** ");
+        }
     }
 
 }
