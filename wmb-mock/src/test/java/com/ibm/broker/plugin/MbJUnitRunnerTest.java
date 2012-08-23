@@ -1,4 +1,4 @@
-package com.ibm.broker; /**
+package com.ibm.broker.plugin; /**
  * Copyright 2012 Bob Browning
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,6 @@ package com.ibm.broker; /**
  */
 
 import com.google.common.base.Objects;
-import com.ibm.broker.plugin.*;
 import com.ibm.broker.plugin.visitor.MbMessageVisitor;
 import com.ibm.broker.trace.LoggingNativeTracer;
 import com.ibm.broker.trace.NativeTracer;
@@ -86,6 +85,7 @@ public class MbJUnitRunnerTest {
         Assert.assertTrue(firstChild.equals(e.getFirstChild()));
         Assert.assertEquals(firstChild, e.getFirstChild());
         Assert.assertEquals(firstChild, e.getLastChild());
+        Assert.assertEquals(e.getFirstChild(), e.getLastChild());
         Assert.assertNull(firstChild.getPreviousSibling());
         Assert.assertNull(firstChild.getNextSibling());
         Assert.assertEquals(e, firstChild.getParent());
@@ -321,6 +321,46 @@ public class MbJUnitRunnerTest {
         Assert.assertFalse(assembly.getGlobalEnvironment().isReadOnly());
         Assert.assertFalse(assembly.getExceptionList().isReadOnly());
         Assert.assertTrue(assembly.getMessage().isReadOnly());
+    }
+
+    @Test
+    public void testOutMessageAssembly() throws Exception {
+        MbMessageAssembly assembly = PseudoNativeMbMessageAssemblyManager.getInstance().createBlankReadOnlyMessageAssembly();
+        Assert.assertTrue(assembly.getMessage().isReadOnly());
+        MbMessageAssembly outAssembly = new MbMessageAssembly(assembly, new MbMessage(assembly.getMessage()));
+        Assert.assertFalse(outAssembly.getMessage().isReadOnly());
+    }
+
+    @Test
+    public void testMbElementClone() throws Exception {
+        MbMessage message = new MbMessage();
+        MbElement root = message.getRootElement();
+        Assert.assertNotNull(root);
+
+        root.setValue(new MbDate(2000,1,1));
+
+        MbElement clone = root.copy();
+        Assert.assertNotNull(clone);
+
+        Assert.assertNotSame(root, clone);
+        MbDate date = (MbDate) clone.getValue();
+        date.set(2012, 12, 31);
+        Assert.assertNotSame(root.getValue(), date);
+
+        System.out.println(Long.valueOf(1L).getClass().isPrimitive());
+    }
+
+    @Test
+    public void testCopy() throws Exception {
+        MbMessageAssembly assembly = PseudoNativeMbMessageAssemblyManager.getInstance().createBlankReadOnlyMessageAssembly();
+        MbMessage message = new MbMessage(assembly.getMessage());
+        Assert.assertNotNull(message);
+        Assert.assertNotSame(assembly.getMessage().getRootElement(), message.getRootElement());
+    }
+
+    @Test(expected = MbException.class)
+    public void testMbException() throws Exception {
+        throw new MbException("a", "b", "c", "d", "", new Object[] { "" });
     }
 
     @After
