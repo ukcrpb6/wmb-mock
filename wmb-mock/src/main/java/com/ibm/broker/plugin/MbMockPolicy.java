@@ -17,10 +17,7 @@ package com.ibm.broker.plugin;
 
 import com.ibm.broker.classloading.EgSharedClassLoader;
 import com.ibm.broker.plugin.recordwriters.RecordTooLongException;
-import com.ibm.broker.trace.INativeTracer;
-import com.ibm.broker.trace.NativeTracer;
-import com.ibm.broker.trace.NativeTracerFactory;
-import com.ibm.broker.trace.Trace;
+import com.ibm.broker.trace.*;
 import org.powermock.api.support.SuppressCode;
 import org.powermock.core.spi.PowerMockPolicy;
 import org.powermock.mockpolicies.MockPolicyClassLoadingSettings;
@@ -78,13 +75,12 @@ public class MbMockPolicy implements PowerMockPolicy {
     }
 
     public void proxyNativeTracerNativeMethods(MockPolicyInterceptionSettings settings) {
-        final INativeTracer tracer = NativeTracerFactory.getInstance().newTracer();
         for (final Method m : INativeTracer.class.getDeclaredMethods()) {
             Method method = Whitebox.getMethod(NativeTracer.class, m.getName(), m.getParameterTypes());
             settings.proxyMethod(method, new InvocationHandler() {
                 @Override
                 public Object invoke(Object o, Method method, Object[] args) throws Throwable {
-                    return m.invoke(tracer, args);
+                    return m.invoke(LoggingNativeTracer.getInstance(), args);
                 }
             });
         }
