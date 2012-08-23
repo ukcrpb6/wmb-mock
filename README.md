@@ -158,12 +158,15 @@ public class MyFirstJavaComputeNodeTest {
         return new MbMessageAssembly(assembly, message);
     }
 
-	private LinkedListMultimap<String, MbMessageAssembly> evaluate(MbMessageAssembly assembly) throws MbException {
+	private LinkedListMultimap<String, MbMessageAssembly> evaluate(MbMessageAssembly assembly) 
+	    throws MbException {	        
+        // Mock compute node method invocations    
 		doReturn(mockOutputTerminal).when(computeNode).getOutputTerminal("out");
 		doReturn(mockAlternateTerminal).when(computeNode).getOutputTerminal("alternate");
 		doCallRealMethod().when(computeNode).evaluate(any(MbMessageAssembly.class));
 
-		final LinkedListMultimap<String, MbMessageAssembly> propagatedAssemblies = LinkedListMultimap.create();
+		final LinkedListMultimap<String, MbMessageAssembly> propagatedAssemblies 
+		    = LinkedListMultimap.create();
 
 		// Capture Propagated Messages
 		doAnswer(new Answer<MbMessageAssembly>() {
