@@ -17,6 +17,8 @@ package com.ibm.broker.plugin;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -25,6 +27,8 @@ import java.util.Map;
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
 public abstract class AbstractNativeManager<T, N extends NativeFor<T>> {
+
+    private static final Logger logger = LoggerFactory.getLogger(AbstractNativeManager.class);
 
     private Map<Long, N> allocations = Maps.newConcurrentMap();
 
@@ -43,6 +47,7 @@ public abstract class AbstractNativeManager<T, N extends NativeFor<T>> {
     }
 
     protected N register(N instance) {
+        logger.info("Registering new {} with handle {}", instance.getClass().getSimpleName(), instance.getHandle());
         allocations.put(instance.getHandle(), instance);
         return instance;
     }
