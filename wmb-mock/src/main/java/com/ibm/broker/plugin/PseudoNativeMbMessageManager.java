@@ -17,12 +17,13 @@ package com.ibm.broker.plugin;
 
 import com.google.common.base.Throwables;
 import com.ibm.broker.plugin.visitor.MbMessageVisitor;
+import com.ibm.broker.plugin.visitor.MbVisitable;
 
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
 public class PseudoNativeMbMessageManager
-        extends AbstractNativeManager<MbMessage, PseudoNativeMbMessage> implements NativeMbMessageManager {
+        extends AbstractNativeManager<MbMessage, PseudoNativeMbMessage> implements NativeMbMessageManager, MbVisitable {
 
     private static class InstanceHolder {
         static final PseudoNativeMbMessageManager instance = new PseudoNativeMbMessageManager();
@@ -109,13 +110,13 @@ public class PseudoNativeMbMessageManager
      * Visitor interface
      */
 
-    public void visit(MbMessageVisitor visitor) throws MbException {
+    public void accept(MbMessageVisitor visitor) throws MbException {
         for (PseudoNativeMbMessage message : getAllocations()) {
             message.accept(visitor);
         }
     }
 
-    public void visit(long handle, MbMessageVisitor visitor) throws MbException {
+    public void accept(long handle, MbMessageVisitor visitor) throws MbException {
         getNative(handle).accept(visitor);
     }
 }

@@ -16,6 +16,8 @@
 package com.ibm.broker.plugin;
 
 import com.google.common.base.Throwables;
+import com.ibm.broker.plugin.visitor.MbMessageVisitor;
+import com.ibm.broker.plugin.visitor.MbVisitable;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -27,7 +29,7 @@ import java.util.TimeZone;
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
-public class PseudoNativeMbElementManager extends AbstractNativeManager<MbElement, PseudoNativeMbElement> implements NativeMbElementManager {
+public class PseudoNativeMbElementManager extends AbstractNativeManager<MbElement, PseudoNativeMbElement> implements NativeMbElementManager, MbVisitable {
 
     private static class InstanceHolder {
         static final PseudoNativeMbElementManager instance = new PseudoNativeMbElementManager();
@@ -353,5 +355,19 @@ public class PseudoNativeMbElementManager extends AbstractNativeManager<MbElemen
     @Override
     public Object _evaluateXPath(long handle, String xpath) throws MbException {
         return getNative(handle).evaluateXPath(xpath);
+    }
+
+    /*
+     * Visitable Interface
+     */
+
+    @Override public void accept(MbMessageVisitor visitor) throws MbException {
+        for(PseudoNativeMbElement a : getAllocations()) {
+            a.accept(visitor);
+        }
+    }
+
+    public void accept(long handle, MbMessageVisitor visitor) throws MbException {
+        getNative(handle).accept(visitor);
     }
 }
