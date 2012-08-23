@@ -1,9 +1,12 @@
 package com.ibm.broker.plugin;
 
+import com.ibm.broker.plugin.visitor.MbMessageVisitor;
+import com.ibm.broker.plugin.visitor.MbVisitable;
+
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
-public class PseudoNativeMbMessageAssembly extends AbstractPseudoNative<MbMessageAssembly> {
+public class PseudoNativeMbMessageAssembly extends AbstractPseudoNative<MbMessageAssembly> implements MbVisitable {
 
     private PseudoNativeMbMessage message;
     private PseudoNativeMbMessage localEnvironment;
@@ -16,6 +19,7 @@ public class PseudoNativeMbMessageAssembly extends AbstractPseudoNative<MbMessag
 
     public void setExceptionList(PseudoNativeMbMessage exceptionList) {
         this.exceptionList = exceptionList;
+        this.exceptionList.setName("ExceptionList");
     }
 
     public PseudoNativeMbMessage getGlobalEnvironment() {
@@ -24,6 +28,7 @@ public class PseudoNativeMbMessageAssembly extends AbstractPseudoNative<MbMessag
 
     public void setGlobalEnvironment(PseudoNativeMbMessage globalEnvironment) {
         this.globalEnvironment = globalEnvironment;
+        this.globalEnvironment.setName("Environment");
     }
 
     public PseudoNativeMbMessage getLocalEnvironment() {
@@ -32,6 +37,7 @@ public class PseudoNativeMbMessageAssembly extends AbstractPseudoNative<MbMessag
 
     public void setLocalEnvironment(PseudoNativeMbMessage localEnvironment) {
         this.localEnvironment = localEnvironment;
+        this.localEnvironment.setName("LocalEnvironment");
     }
 
     public PseudoNativeMbMessage getMessage() {
@@ -40,6 +46,7 @@ public class PseudoNativeMbMessageAssembly extends AbstractPseudoNative<MbMessag
 
     public void setMessage(PseudoNativeMbMessage message) {
         this.message = message;
+        this.message.setName("Root");
     }
 
     public void clearMessageAssembly() {
@@ -61,4 +68,11 @@ public class PseudoNativeMbMessageAssembly extends AbstractPseudoNative<MbMessag
         return PseudoNativeMbMessageAssemblyManager.getInstance().isManaged(this);
     }
 
+    @Override public void accept(MbMessageVisitor visitor) throws MbException {
+        visitor.visit(this);
+        visitor.visit(localEnvironment);
+        visitor.visit(globalEnvironment);
+        visitor.visit(exceptionList);
+        visitor.visit(message);
+    }
 }

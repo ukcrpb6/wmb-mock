@@ -17,6 +17,7 @@ package com.ibm.broker.plugin;
 
 
 import com.google.common.base.Objects;
+import com.google.common.base.Preconditions;
 import com.ibm.broker.plugin.visitor.MbMessageVisitor;
 import com.ibm.broker.plugin.visitor.MbVisitable;
 
@@ -26,6 +27,8 @@ import com.ibm.broker.plugin.visitor.MbVisitable;
 public class PseudoNativeMbMessage extends AbstractPseudoNative<MbMessage> implements MbVisitable, Cloneable {
 
     private PseudoNativeMbElement rootElement;
+
+    private String name = null;
 
     public PseudoNativeMbMessage() {
         this.rootElement = PseudoNativeMbElementManager.getInstance().createPseudoNativeMbElement(this);
@@ -55,7 +58,7 @@ public class PseudoNativeMbMessage extends AbstractPseudoNative<MbMessage> imple
     }
 
     public String toString() {
-        return Objects.toStringHelper(this).toString();
+        return Objects.toStringHelper(this).add("name", name).omitNullValues().toString();
     }
 
     @Override
@@ -82,5 +85,9 @@ public class PseudoNativeMbMessage extends AbstractPseudoNative<MbMessage> imple
     public void setRootElement(PseudoNativeMbElement rootElement) {
         this.rootElement = rootElement;
         this.rootElement.setMessage(this);
+    }
+
+    public void setName(String name) {
+        this.name = Preconditions.checkNotNull(name);
     }
 }
