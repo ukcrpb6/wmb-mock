@@ -15,6 +15,7 @@
  */
 package com.ibm.broker.plugin;
 
+import com.google.common.base.Throwables;
 import com.ibm.broker.plugin.visitor.MbMessageVisitor;
 
 /**
@@ -85,9 +86,12 @@ public class PseudoNativeMbMessageManager
 
     @Override
     public void _copy(long handle, long inputContextHandle) throws MbException {
-        // TODO: Add copy implementation
-//        getNative(handle).copy(inputContextHandle);
-        throw new UnsupportedOperationException();
+        try {
+            PseudoNativeMbElement clone = getNative(inputContextHandle).getRootElement().clone();
+            getNative(handle).setRootElement(clone);
+        } catch (CloneNotSupportedException e) {
+            throw Throwables.propagate(e);
+        }
     }
 
     @Override

@@ -5,7 +5,7 @@ package com.ibm.broker.plugin;
  */
 public abstract class AbstractPseudoNative<T> implements NativeFor<T> {
 
-    private long handle = hashCode();
+    private long handle;
 
     protected AbstractPseudoNative() {
         this.handle = hashCode();
@@ -23,4 +23,9 @@ public abstract class AbstractPseudoNative<T> implements NativeFor<T> {
         return handle;
     }
 
+    @Override protected Object clone() throws CloneNotSupportedException {
+        AbstractPseudoNative clone = (AbstractPseudoNative) super.clone();
+        clone.handle = clone.hashCode();
+        return clone;
+    }
 }

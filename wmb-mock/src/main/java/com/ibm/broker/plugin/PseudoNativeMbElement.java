@@ -17,20 +17,19 @@ package com.ibm.broker.plugin;
 
 import com.google.common.base.*;
 import com.google.common.collect.AbstractIterator;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
+import com.google.common.collect.*;
 import com.ibm.broker.plugin.visitor.MbMessageVisitor;
 import com.ibm.broker.plugin.visitor.MbVisitable;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import javax.xml.datatype.Duration;
+import java.util.*;
 
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
-public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> implements MbVisitable {
+public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> implements MbVisitable, Cloneable {
+
+    private static final Set<Class<?>> IMMUTABLE_VALUES = ImmutableSet.of(Boolean.class, Character.class, Byte.class, Short.class, Integer.class, Long.class, Float.class, Double.class, Void.class, String.class, Duration.class);
 
     private static final int TYPE_MASK_GENERIC = 251658240;
 
@@ -91,7 +90,11 @@ public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> imple
     }
 
     public PseudoNativeMbElement copy() throws MbException {
-        return null;
+        try {
+            return this.clone();
+        } catch (CloneNotSupportedException e) {
+            throw Throwables.propagate(e); // TODO: Change to MbException
+        }
     }
 
     public int getType() throws MbException {
@@ -242,8 +245,22 @@ public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> imple
         return String.valueOf(value);
     }
 
+    /**
+     * TODO: Evaluate whether this is the correct implementation
+     * @return
+     * @throws MbException
+     */
     public int getValueState() throws MbException {
-        throw new UnsupportedOperationException();
+        switch(getType()) {
+            case MbElement.TYPE_VALUE:
+            case MbElement.TYPE_NAME_VALUE:
+                return value == null ? MbElement.VALUE_STATE_INVALID : MbElement.VALUE_STATE_VALID;
+            case MbElement.TYPE_NAME:
+            case MbElement.TYPE_SPECIAL:
+                return value == null ? MbElement.VALUE_STATE_VALID : MbElement.VALUE_STATE_INVALID;
+            default:
+                return MbElement.VALUE_STATE_UNDEFINED;
+        }
     }
 
     public String getParserClassName() throws MbException {
@@ -291,6 +308,7 @@ public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> imple
             }
         };
     }
+
     public Iterator<PseudoNativeMbElement> precedingSiblingIterator() {
         return precedingSiblingIterator(false);
     }
@@ -428,7 +446,22 @@ public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> imple
 
     // TODO: Handle copying of element
     public void copyElementTree(PseudoNativeMbElement arg0) throws MbException {
-        throw new UnsupportedOperationException();
+        PseudoNativeMbElement head = this.firstChild;
+        while(this.firstChild != null) {
+            head = head.nextSibling;
+            this.firstChild.detach();
+            this.firstChild = head;
+        }
+        this.firstChild = this.lastChild = null;
+
+        Iterator<PseudoNativeMbElement> iter = childIterator();
+        while (iter.hasNext()) {
+            try {
+                addAsLastChild(iter.next().clone());
+            } catch (CloneNotSupportedException e) {
+                throw Throwables.propagate(e); // Should never occur - TODO: replace with MbException
+            }
+        }
     }
 
     public void detach() throws MbException {
@@ -525,5 +558,44 @@ public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> imple
 
     @Override public boolean isManaged() {
         return PseudoNativeMbElementManager.getInstance().isManaged(this);
+    }
+
+    /*
+     * Cloneable Interface
+     */
+    @Override
+    public PseudoNativeMbElement clone() throws CloneNotSupportedException {
+        PseudoNativeMbElement clone = (PseudoNativeMbElement) super.clone();
+        PseudoNativeMbElementManager.getInstance().register(clone);
+
+        clone.parserClassName = this.parserClassName;
+        clone.type = this.type;
+        clone.name = this.name;
+        clone.namespace = this.namespace;
+
+        if(value != null) {
+            if (value.getClass().isPrimitive() || IMMUTABLE_VALUES.contains(value.getClass())) {
+                clone.value = this.value;
+            } else {
+                if (value instanceof Calendar) {
+                    clone.value = ((Calendar) value).clone();
+                } else if (value instanceof BitSet) {
+                    clone.value = ((BitSet) value).clone();
+                } else {
+                    throw new CloneNotSupportedException("Cannot clone value type " + value.getClass());
+                }
+            }
+        }
+
+        Iterator<PseudoNativeMbElement> iter = childIterator();
+        while (iter.hasNext()) {
+            try {
+                clone.addAsLastChild(iter.next().clone());
+            } catch (MbException e) {
+                throw new CloneNotSupportedException(e.getMessage());
+            }
+        }
+
+        return clone;
     }
 }

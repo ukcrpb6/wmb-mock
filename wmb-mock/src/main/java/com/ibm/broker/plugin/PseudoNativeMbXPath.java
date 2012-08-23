@@ -112,7 +112,6 @@ public class PseudoNativeMbXPath extends AbstractPseudoNative<MbXPath> {
             if (context == null) {
                 throw new IllegalStateException("No XPath context provided and message has no children");
             }
-            System.out.println("Evaluating " + xpath + " with context " + context);
             navigator.setDocumentNode(context);
             try {
                 return navigator.parseXPath(xpath).selectNodes(context);

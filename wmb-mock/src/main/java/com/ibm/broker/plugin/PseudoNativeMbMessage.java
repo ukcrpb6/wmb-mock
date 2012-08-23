@@ -23,7 +23,7 @@ import com.ibm.broker.plugin.visitor.MbVisitable;
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
-public class PseudoNativeMbMessage extends AbstractPseudoNative<MbMessage> implements MbVisitable {
+public class PseudoNativeMbMessage extends AbstractPseudoNative<MbMessage> implements MbVisitable, Cloneable {
 
     private PseudoNativeMbElement rootElement;
 
@@ -72,4 +72,15 @@ public class PseudoNativeMbMessage extends AbstractPseudoNative<MbMessage> imple
         return PseudoNativeMbMessageManager.getInstance().isManaged(this);
     }
 
+    @Override public Object clone() throws CloneNotSupportedException {
+        PseudoNativeMbMessage clone = (PseudoNativeMbMessage) super.clone();
+        clone.rootElement = this.rootElement.clone();
+        clone.rootElement.setMessage(this);
+        return clone;
+    }
+
+    public void setRootElement(PseudoNativeMbElement rootElement) {
+        this.rootElement = rootElement;
+        this.rootElement.setMessage(this);
+    }
 }

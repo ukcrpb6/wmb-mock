@@ -42,10 +42,13 @@ public abstract class AbstractNativeManager<T, N extends NativeFor<T>> {
         return getNative(getHandle(object));
     }
 
-    protected N allocate(Object... parameters) {
-        final N instance = createNativeInstance(parameters);
+    protected N register(N instance) {
         allocations.put(instance.getHandle(), instance);
         return instance;
+    }
+
+    protected N allocate(Object... parameters) {
+        return register(createNativeInstance(parameters));
     }
 
     protected void remove(long handle) {
