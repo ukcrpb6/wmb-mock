@@ -24,6 +24,11 @@
         </dependency>
         <dependency>
             <groupId>com.ibm.broker</groupId>
+            <artifactId>bootstrap</artifactId>
+            <version>8.0.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ibm.broker</groupId>
             <artifactId>jplugininternal</artifactId>
             <version>8.0.0.0</version>
         </dependency>
@@ -65,7 +70,6 @@
             <artifactId>powermock-api-mockito</artifactId>
             <version>${powermock.version}</version>
         </dependency>
-
 
         <dependency>
             <groupId>com.pressassociation.bus.jaxen</groupId>

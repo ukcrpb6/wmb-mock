@@ -15,6 +15,8 @@
  */
 package com.ibm.broker.plugin;
 
+import com.ibm.broker.classloading.EgSharedClassLoader;
+import com.ibm.broker.plugin.recordwriters.RecordTooLongException;
 import com.ibm.broker.trace.INativeTracer;
 import com.ibm.broker.trace.NativeTracer;
 import com.ibm.broker.trace.NativeTracerFactory;
@@ -34,6 +36,22 @@ import java.lang.reflect.Method;
 public class MbMockPolicy implements PowerMockPolicy {
     @Override public void applyClassLoadingPolicy(MockPolicyClassLoadingSettings settings) {
         settings.addFullyQualifiedNamesOfClassesToLoadByMockClassloader(new String[]{
+                // Need to have this class in the classloader to suppress the MbException calls
+                EgSharedClassLoader.class.getName(),
+                // Have to suppress writing to native logfile
+                MbException.class.getName(),
+                MbReadOnlyMessageException.class.getName(),
+                MbSecurityException.class.getName(),
+                MbJavaException.class.getName(),
+                MbFatalException.class.getName(),
+                MbRecoverableException.class.getName(),
+                MbConfigurationException.class.getName(),
+                MbConversionException.class.getName(),
+                RecordTooLongException.class.getName(),
+                MbParserException.class.getName(),
+                MbUserException.class.getName(),
+                MbDatabaseException.class.getName(),
+                // Mocked classes
                 MbMessageAssembly.class.getName(),
                 MbMessage.class.getName(),
                 MbElement.class.getName(),
@@ -48,6 +66,9 @@ public class MbMockPolicy implements PowerMockPolicy {
         PseudoNativeMbElementManager.getInstance().clear();
         PseudoNativeMbMessageManager.getInstance().clear();
         PseudoNativeMbMessageAssemblyManager.getInstance().clear();
+
+        // Suppress unwanted write to native logfile -- causes classloader exception
+        settings.addMethodsToSuppress(Whitebox.getMethod(MbException.class, "toLogString", Object.class));
 
         proxyNativeTracerNativeMethods(settings);
         proxyMbMessageAssemblyNativeMethods(settings);
