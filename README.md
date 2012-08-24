@@ -132,6 +132,30 @@ public void testMyFirstJavaComputeNodeWithInput() throws MbException {
 }
 
 ```
+
+Assertions
+----------
+
+Because MbMessage and MbElement do not provide implementations of hashcode or equals methods assertion that two wrappers
+are the equal _mbElementA.equals(mbElementB)_ produces unexpected results. Thus the standard junit assertions that
+depend on this fail, therefore complementary assertions are provided by the _MbAssert_ class.
+
+```java
+// ... //
+MbElement a = message.getRootElement().getFirstChild();
+MbElement b = message.getRootElement().getFirstElementByPath('/Properties');
+MbAssert.assertEquals("Expected first element to be the properties node", a, b);
+// ... //
+```
+
+TODO
+----
+
+Future Features:
+
+* Helper to remove necessary boilerplate for mocking java compute invocations
+* Enhanced assertions to cover common scenarios (for example assert that tree paths equal)
+
 Sample
 ------
 
