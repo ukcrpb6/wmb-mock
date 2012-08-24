@@ -8,6 +8,31 @@ To be able to perform unit testing of java code within the context of Message
 Broker, both the testing of java libraries that manipulate messages or the
 elements within; or the invocation of java compute nodes themselves.
 
+Implementation
+--------------
+
+The IBM java classes for { MbMessageAssembly, MbMessage, MbElement, MbXPath }
+are JNI wrapper objects which delegate to a native implementation. To ensure that
+no behaviour implemented by these classes is lost the mock library leverages the
+[Powermock framework](http://code.google.com/p/powermock/) which through bytecode
+manipulation allows the mocking of native methods.
+
+The native functionality of the aforementioned classes is encapsulated within a
+set of interfaces and a MockPolicy implementation is provided which defines the
+necessary mocking that needs to be performed to replace the native functionality
+with the mock java implemented functionality.
+
+To provided an XPath implementation that is functionaly equivalent to that provided
+by IBM the Jaxen library has been extended by the
+[jaxen-wmb-extensions](/ukcrpb6/jaxen-wmb-extensions) project which allows use of:
+
+* create-or-select:: axis
+* /?  - create or select
+* /?^ - create and select first child
+* /?$ - create and select last child
+* /?> - create and select preceding sibling
+* /?< - create and select following sibling
+
 Usage
 -----
 
