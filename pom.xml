@@ -51,7 +51,7 @@
 
     <scm>
         <connection>scm:git:git://github.com/ukcrpb6/wmb-mock</connection>
-        <developerConnection>scm:git:git://github.com/ukcrpb6/wmb-mock</developerConnection>
+        <developerConnection>scm:git:git@github.com:ukcrpb6/wmb-mock.git</developerConnection>
         <url>http://www.github.com/ukcrpb6/wmb-mock</url>
     </scm>
     <issueManagement>
