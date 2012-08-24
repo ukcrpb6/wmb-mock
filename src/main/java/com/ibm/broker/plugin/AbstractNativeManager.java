@@ -47,7 +47,7 @@ public abstract class AbstractNativeManager<T, N extends NativeFor<T>> {
     }
 
     protected N register(N instance) {
-        logger.info("Registering new {} with handle {}", instance.getClass().getSimpleName(), instance.getHandle());
+        logger.debug("Registering new {} with handle {}", instance.getClass().getSimpleName(), instance.getHandle());
         allocations.put(instance.getHandle(), instance);
         return instance;
     }
