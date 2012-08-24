@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<rss version="0.91">
+  <channel>
+    <title>Websphere Message Broker - Mock Framework - Checkstyle report</title>
+    <link>https://github.com/ukcrpb6/wmb-mock</link>
+    <description>Websphere Message Broker - Mock Framework - Checkstyle report</description>
+    <language>en-us</language>
+    <copyright>&#169;2012 Press Association</copyright>
+    <item>
+      <title>File: 26,
+             Errors: 1638,
+             Warnings: 0,
+             Infos: 0
+      </title>
+            <link>https://github.com/ukcrpb6/wmb-mock/checkstyle.html</link>
+      <description>
+        <p>Click <a href="https://github.com/ukcrpb6/wmb-mock/checkstyle.html">here</a> for the full Checkstyle report.</p>
+
+        <table summary="Files" boder="1">
+          <thead>
+            <tr>
+              <th>Files</th>
+              <th style="width:30px;"><abbr title="Info">I</abbr></th>
+              <th style="width:30px;"><abbr title="Warning">W</abbr></th>
+              <th style="width:30px;"><abbr title="Error">E</abbr></th>
+            </tr>
+          </thead>
+          <tbody>
+                          <tr>
+                <td>
+                  <a href="https://github.com/ukcrpb6/wmb-mock/checkstyle.html#com.ibm.broker.plugin.PseudoNativeMbMessageManager.java">com/ibm/broker/plugin/PseudoNativeMbMessageManager.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  50
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/ukcrpb6/wmb-mock/checkstyle.html#com.ibm.broker.plugin.PseudoNativeMbMessageAssembly.java">com/ibm/broker/plugin/PseudoNativeMbMessageAssembly.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  36
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/ukcrpb6/wmb-mock/checkstyle.html#com.ibm.broker.plugin.PseudoNativeMbElementManager.java">com/ibm/broker/plugin/PseudoNativeMbElementManager.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  224
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/ukcrpb6/wmb-mock/checkstyle.html#com.ibm.broker.plugin.PseudoNativeMbXPathManager.java">com/ibm/broker/plugin/PseudoNativeMbXPathManager.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  57
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/ukcrpb6/wmb-mock/checkstyle.html#com.ibm.broker.plugin.NativeMbMessageAssemblyManager.java">com/ibm/broker/plugin/NativeMbMessageAssemblyManager.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  33
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/ukcrpb6/wmb-mock/checkstyle.html#com.ibm.broker.plugin.PseudoNativeMbElement.java">com/ibm/broker/plugin/PseudoNativeMbElement.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  322
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/ukcrpb6/wmb-mock/checkstyle.html#com.ibm.broker.plugin.MbMockPolicy.java">com/ibm/broker/plugin/MbMockPolicy.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  63
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/ukcrpb6/wmb-mock/checkstyle.html#com.ibm.broker.plugin.visitor.MbVisitable.java">com/ibm/broker/plugin/visitor/MbVisitable.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/ukcrpb6/wmb-mock/checkstyle.html#com.ibm.broker.plugin.MbAssert.java">com/ibm/broker/plugin/MbAssert.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  39
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/ukcrpb6/wmb-mock/checkstyle.html#com.ibm.broker.plugin.AbstractNativeManager.java">com/ibm/broker/plugin/AbstractNativeManager.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  44
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/ukcrpb6/wmb-mock/checkstyle.html#com.ibm.broker.plugin.PseudoMbMessageNavigator.java">com/ibm/broker/plugin/PseudoMbMessageNavigator.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  123
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/ukcrpb6/wmb-mock/checkstyle.html#com.ibm.broker.trace.TraceRule.java">com/ibm/broker/trace/TraceRule.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  8
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/ukcrpb6/wmb-mock/checkstyle.html#com.ibm.broker.trace.NoopNativeTracer.java">com/ibm/broker/trace/NoopNativeTracer.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  3
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/ukcrpb6/wmb-mock/checkstyle.html#com.ibm.broker.plugin.visitor.MbMessageVisitor.java">com/ibm/broker/plugin/visitor/MbMessageVisitor.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  3
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/ukcrpb6/wmb-mock/checkstyle.html#com.ibm.broker.plugin.NativeMbMessageManager.java">com/ibm/broker/plugin/NativeMbMessageManager.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  21
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/ukcrpb6/wmb-mock/checkstyle.html#com.ibm.broker.trace.LoggingNativeTracer.java">com/ibm/broker/trace/LoggingNativeTracer.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  138
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/ukcrpb6/wmb-mock/checkstyle.html#com.ibm.broker.plugin.NativeMbXPathManager.java">com/ibm/broker/plugin/NativeMbXPathManager.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  24
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/ukcrpb6/wmb-mock/checkstyle.html#com.ibm.broker.plugin.AbstractPseudoNative.java">com/ibm/broker/plugin/AbstractPseudoNative.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  12
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/ukcrpb6/wmb-mock/checkstyle.html#com.ibm.broker.trace.INativeTracer.java">com/ibm/broker/trace/INativeTracer.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  39
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/ukcrpb6/wmb-mock/checkstyle.html#com.ibm.broker.plugin.PseudoNativeMbMessageAssemblyManager.java">com/ibm/broker/plugin/PseudoNativeMbMessageAssemblyManager.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  60
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/ukcrpb6/wmb-mock/checkstyle.html#com.ibm.broker.plugin.visitor.DefaultMbMessageVisitor.java">com/ibm/broker/plugin/visitor/DefaultMbMessageVisitor.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  10
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/ukcrpb6/wmb-mock/checkstyle.html#com.ibm.broker.plugin.PseudoNativeMbXPath.java">com/ibm/broker/plugin/PseudoNativeMbXPath.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  51
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/ukcrpb6/wmb-mock/checkstyle.html#com.ibm.broker.plugin.NativeMbElementManager.java">com/ibm/broker/plugin/NativeMbElementManager.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  105
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/ukcrpb6/wmb-mock/checkstyle.html#com.ibm.broker.plugin.PseudoNativeMbMessage.java">com/ibm/broker/plugin/PseudoNativeMbMessage.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  36
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/ukcrpb6/wmb-mock/checkstyle.html#com.ibm.broker.trace.AbstractNativeTracer.java">com/ibm/broker/trace/AbstractNativeTracer.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  132
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/ukcrpb6/wmb-mock/checkstyle.html#com.ibm.broker.plugin.NativeFor.java">com/ibm/broker/plugin/NativeFor.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  4
+                </td>
+              </tr>
+                      </tbody>
+        </table>
+        
+      </description>
+    </item>
+  </channel>
+</rss>
+
