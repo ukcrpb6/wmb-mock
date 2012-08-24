@@ -79,8 +79,10 @@ A suitable mock interaction with the java compute node can be achieved thus.
 private LinkedListMultimap<String, MbMessageAssembly> evaluate(MbMessageAssembly assembly)
     throws MbException {
     // Mock compute node method invocations
-	doReturn(mockOutputTerminal).when(computeNode).getOutputTerminal("out");
+    doReturn(mockOutputTerminal).when(computeNode).getOutputTerminal("out");
 	doReturn(mockAlternateTerminal).when(computeNode).getOutputTerminal("alternate");
+    doReturn("out").when(mockOutputTerminal).getName();
+    doReturn("alternate").when(mockAlternateTerminal).getName();
 	doCallRealMethod().when(computeNode).evaluate(any(MbMessageAssembly.class));
 
 	final LinkedListMultimap<String, MbMessageAssembly> propagatedAssemblies
@@ -187,6 +189,8 @@ public class MyFirstJavaComputeNodeTest {
         // Mock compute node method invocations    
 		doReturn(mockOutputTerminal).when(computeNode).getOutputTerminal("out");
 		doReturn(mockAlternateTerminal).when(computeNode).getOutputTerminal("alternate");
+        doReturn("out").when(mockOutputTerminal).getName();
+        doReturn("alternate").when(mockAlternateTerminal).getName();
 		doCallRealMethod().when(computeNode).evaluate(any(MbMessageAssembly.class));
 
 		final LinkedListMultimap<String, MbMessageAssembly> propagatedAssemblies 
