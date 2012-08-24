@@ -53,6 +53,11 @@
         <developerConnection>scm:git:git://github.com/ukcrpb6/wmb-mock</developerConnection>
         <url>http://www.github.com/ukcrpb6/wmb-mock</url>
     </scm>
+    <issueManagement>
+      <system>github</system>
+      <url>https://github.com/ukcrpb6/wmb-mock/issues</url>
+    </issueManagement>
+
 
     <dependencies>
         <!-- IBM Dependencies -->
