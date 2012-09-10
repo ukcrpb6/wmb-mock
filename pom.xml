@@ -156,6 +156,7 @@
             </exclusions>
         </dependency>
 
+        <!-- AspectJ for augmenting unit test invocations - aids in debugging calls that the native implementaitons make -->
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjrt</artifactId>
