@@ -20,11 +20,17 @@ import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.ibm.broker.plugin.visitor.MbMessageVisitor;
 import com.ibm.broker.plugin.visitor.MbVisitable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.Serializable;
 
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
-public class PseudoNativeMbMessage extends AbstractPseudoNative<MbMessage> implements MbVisitable, Cloneable {
+public class PseudoNativeMbMessage extends AbstractPseudoNative<MbMessage> implements MbVisitable, Cloneable, Serializable {
+
+    private static final Logger logger = LoggerFactory.getLogger(PseudoNativeMbMessage.class);
 
     private PseudoNativeMbElement rootElement;
 
@@ -43,6 +49,8 @@ public class PseudoNativeMbMessage extends AbstractPseudoNative<MbMessage> imple
     }
 
     public void finalizeMessage(int noneOrValidate) throws MbException {
+        logger.info("Finalization of message invoked with " + noneOrValidate);
+        logger.info("No mock implementation for finalization exists at present");
     }
 
     public PseudoNativeMbElement getRootElement() throws MbException {
@@ -50,11 +58,13 @@ public class PseudoNativeMbMessage extends AbstractPseudoNative<MbMessage> imple
     }
 
     public Object evaluateXPath(MbXPath xpath) throws MbException {
-        return rootElement.evaluateXPath(xpath);
+        PseudoNativeMbElement contextNode = rootElement.getLastChild();
+        return contextNode == null ? null : contextNode.evaluateXPath(xpath);
     }
 
     public Object evaluateXPath(String xpath) throws MbException {
-        return rootElement.evaluateXPath(xpath);
+        PseudoNativeMbElement contextNode = rootElement.getLastChild();
+        return contextNode == null ? null : contextNode.evaluateXPath(xpath);
     }
 
     public String toString() {
