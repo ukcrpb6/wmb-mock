@@ -25,12 +25,13 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.xml.datatype.Duration;
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
-public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> implements MbVisitable, Cloneable {
+public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> implements MbVisitable, Cloneable, Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(PseudoNativeMbElement.class);
 
@@ -54,9 +55,9 @@ public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> imple
 
     // Private Fields
 
-    private transient int modcount;
+    private transient volatile int modcount;
 
-    private String path = null;
+    private transient String path = null;
 
     private String name = "";
 
@@ -68,7 +69,7 @@ public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> imple
 
     private Optional<String> parserClassName = Optional.absent();
 
-    private PseudoNativeMbMessage message;
+    private transient PseudoNativeMbMessage message;
 
     // Constructors
 
@@ -77,6 +78,7 @@ public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> imple
 
     private PseudoNativeMbElement(int type) {
         this.type = type;
+        // TODO: What should name be set to?
         PseudoNativeMbElementManager.getInstance().register(this);
     }
 
@@ -225,7 +227,7 @@ public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> imple
     }
 
     public String getParserClassName() throws MbException {
-        return parserClassName.isPresent() ? parserClassName.get() : parent.getParserClassName();
+        return parserClassName.isPresent() ? parserClassName.get() : parent == null ? null : parent.getParserClassName();
     }
 
     public PseudoNativeMbElement getNextSibling() throws MbException {
@@ -414,8 +416,8 @@ public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> imple
     }
 
     public void detach() throws MbException {
-        previousSibling.nextSibling = nextSibling;
-        nextSibling.previousSibling = previousSibling;
+        if (previousSibling != null) previousSibling.nextSibling = nextSibling;
+        if (nextSibling != null) nextSibling.previousSibling = previousSibling;
         if (parent.firstChild == this) parent.firstChild = this.nextSibling;
         if (parent.lastChild == this) parent.lastChild = this.previousSibling;
         this.path = null;
