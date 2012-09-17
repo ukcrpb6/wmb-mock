@@ -28,7 +28,7 @@ import java.io.Serializable;
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
-public class PseudoNativeMbMessage extends AbstractPseudoNative<MbMessage> implements MbVisitable, Cloneable, Serializable {
+public class PseudoNativeMbMessage extends AbstractPseudoNative<MbMessage> implements MbVisitable, Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(PseudoNativeMbMessage.class);
 
@@ -83,13 +83,6 @@ public class PseudoNativeMbMessage extends AbstractPseudoNative<MbMessage> imple
 
     @Override public boolean isManaged() {
         return PseudoNativeMbMessageManager.getInstance().isManaged(this);
-    }
-
-    @Override public Object clone() throws CloneNotSupportedException {
-        PseudoNativeMbMessage clone = (PseudoNativeMbMessage) super.clone();
-        clone.rootElement = this.rootElement.clone();
-        clone.rootElement.setMessage(this);
-        return clone;
     }
 
     public void setRootElement(PseudoNativeMbElement rootElement) {

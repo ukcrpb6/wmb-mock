@@ -450,6 +450,40 @@ public class MbJUnitRunnerTest {
 //        os.close();
     }
 
+    @Test
+    public void testMbMessageClone() throws Exception {
+        MbMessageAssembly assembly = createInputAssembly();
+
+        Object o = assembly.getMessage().getRootElement().evaluateXPath("?XMLNSC/?root");
+        MbElement el = ((List<MbElement>) o).get(0);
+
+        MbElement attribute1 = el.createElementAsLastChild(MbXMLNSC.ATTRIBUTE, "attribute1", "value1");
+        el.createElementAsLastChild(MbXMLNSC.ATTRIBUTE, "attribute2", "value2");
+        attribute1.createElementAfter(MbXMLNSC.ATTRIBUTE, "attribute2", "value2");
+
+        MbElement clone = el.copy();
+        Assert.assertNotNull(clone);
+
+        MbMessage newMbMessage = new MbMessage(assembly.getMessage());
+        Assert.assertNotNull(newMbMessage);
+        el.createElementAsLastChild(MbXMLNSC.ATTRIBUTE, "attribute3", "value3");
+        Assert.assertNotNull(assembly.getMessage().evaluateXPath("root/attribute3"));
+        Assert.assertNotSame(o, assembly.getMessage().evaluateXPath("root"));
+        Assert.assertEquals(0, ((List<?>)newMbMessage.evaluateXPath("root/attribute3")).size());
+    }
+
+    private MbMessageAssembly createInputAssembly() throws MbException {
+   		// Build a sample input assembly
+   		MbMessageAssembly assembly = PseudoNativeMbMessageAssemblyManager.getInstance()
+   				.createBlankReadOnlyMessageAssembly();
+   		MbMessage message = new MbMessage(assembly.getMessage());
+
+   		// Modify message to simulate input
+   		// ... //
+   		return new MbMessageAssembly(assembly, message);
+   	}
+
+
     @After
     public void dumpMessages() throws Exception {
         logger.info(" *** START *** ");

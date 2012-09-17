@@ -23,9 +23,4 @@ public abstract class AbstractPseudoNative<T> implements NativeFor<T> {
         return handle;
     }
 
-    @Override protected Object clone() throws CloneNotSupportedException {
-        AbstractPseudoNative clone = (AbstractPseudoNative) super.clone();
-        clone.handle = clone.hashCode();
-        return clone;
-    }
 }
