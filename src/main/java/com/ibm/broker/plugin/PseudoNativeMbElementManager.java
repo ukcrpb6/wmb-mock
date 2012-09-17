@@ -15,9 +15,9 @@
  */
 package com.ibm.broker.plugin;
 
-import com.google.common.base.Throwables;
 import com.ibm.broker.plugin.visitor.MbMessageVisitor;
 import com.ibm.broker.plugin.visitor.MbVisitable;
+import com.pressassociation.bus.NiceMbException;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -226,8 +226,7 @@ public class PseudoNativeMbElementManager extends AbstractNativeManager<MbElemen
         try {
             duration = DatatypeFactory.newInstance().newDuration(paramInt1 == 1, paramInt2, paramInt3, paramInt4, paramInt5, paramInt6, paramInt7);
         } catch (DatatypeConfigurationException e) {
-            // TODO: Wrap as MbException
-            throw Throwables.propagate(e);
+            throw NiceMbException.propagate(e);
         }
         getNative(handle).setValue(duration);
     }

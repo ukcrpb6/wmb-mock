@@ -17,8 +17,8 @@ package com.ibm.broker.plugin;
 
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
+import com.pressassociation.bus.NiceMbException;
 import org.jaxen.SimpleNamespaceContext;
 import org.jaxen.SimpleVariableContext;
 import org.jaxen.saxpath.SAXPathException;
@@ -120,7 +120,7 @@ public class PseudoNativeMbXPath extends AbstractPseudoNative<MbXPath> {
                 navigator.clearDocumentNode();
             }
         } catch (SAXPathException e) {
-            throw Throwables.propagate(e);
+            throw NiceMbException.propagate(e);
         }
     }
 
