@@ -84,7 +84,7 @@ updated to simulate each input that may pass through the node. To create a blank
 MbMessage assembly the singleton message assembly manager can be used as follows.
 
 ```java
-private MbMessageAssembly createInputAssembly() {
+private MbMessageAssembly createInputAssembly() throws MbException {
     // Build a sample input assembly
 	MbMessageAssembly assembly = PseudoNativeMbMessageAssemblyManager.getInstance()
 		.createBlankReadOnlyMessageAssembly();
@@ -151,7 +151,7 @@ public void testMyFirstJavaComputeNodeWithInput() throws MbException {
     MbMessageAssembly assembly = createInputAssembly();
 
     // invoke against our mocked out compute node
-    LinkedListMultimap<MbMessageAssembly> propagatedAssemblies = evaluate(assembly);
+    LinkedListMultimap<String, MbMessageAssembly> propagatedAssemblies = evaluate(assembly);
 
 	// Verify expected output - for example
 
@@ -198,7 +198,7 @@ public class MyFirstJavaComputeNodeTest {
 	@Mock MbOutputTerminal mockOutputTerminal;
 	@Mock MbOutputTerminal mockAlternateTerminal;
 
-    private MbMessageAssembly createInputAssembly() {
+    private MbMessageAssembly createInputAssembly() throws MbException {
         // Build a sample input assembly
 		MbMessageAssembly assembly = PseudoNativeMbMessageAssemblyManager.getInstance()
 			.createBlankReadOnlyMessageAssembly();
@@ -251,7 +251,7 @@ public class MyFirstJavaComputeNodeTest {
 	    MbMessageAssembly assembly = createInputAssembly();
 
 	    // invoke against our mocked out compute node
-	    LinkedListMultimap<MbMessageAssembly> propagatedAssemblies = evaluate(assembly);
+	    LinkedListMultimap<String, MbMessageAssembly> propagatedAssemblies = evaluate(assembly);
 
 		// Verify expected output - for example
 
