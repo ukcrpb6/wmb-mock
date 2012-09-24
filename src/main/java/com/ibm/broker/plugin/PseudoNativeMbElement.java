@@ -414,13 +414,14 @@ public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> imple
     }
 
     public void detach() throws MbException {
-        previousSibling.nextSibling = nextSibling;
-        nextSibling.previousSibling = previousSibling;
+        if(previousSibling != null) previousSibling.nextSibling = nextSibling;
+        if(nextSibling != null) nextSibling.previousSibling = previousSibling;
         if (parent.firstChild == this) parent.firstChild = this.nextSibling;
         if (parent.lastChild == this) parent.lastChild = this.previousSibling;
         this.path = null;
         this.parent = null;
         this.message = null;
+        this.previousSibling = this.nextSibling = null;
         modcount++;
     }
 
