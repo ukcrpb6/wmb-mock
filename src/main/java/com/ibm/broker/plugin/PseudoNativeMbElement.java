@@ -454,6 +454,7 @@ public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> imple
         this.path = null;
         this.parent = null;
         this.message = null;
+        this.previousSibling = this.nextSibling = null;
         modcount++;
     }
 
