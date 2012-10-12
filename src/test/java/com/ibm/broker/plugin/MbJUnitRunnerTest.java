@@ -337,6 +337,15 @@ public class MbJUnitRunnerTest {
     }
 
     @Test
+    public void testGetAllElement() throws Exception {
+        MbTestObject o = createTestTree();
+        List<?> elements = (List) o.root.evaluateXPath("//field-1");
+        Assert.assertNotNull(elements);
+        Assert.assertEquals(2, elements.size());
+        Assert.assertTrue(elements.get(0) instanceof MbElement);
+    }
+
+    @Test
     public void testMessageAssembly() throws Exception {
         MbMessageAssembly assembly = PseudoNativeMbMessageAssemblyManager.getInstance().createBlankReadOnlyMessageAssembly();
         Assert.assertNotNull(assembly);
