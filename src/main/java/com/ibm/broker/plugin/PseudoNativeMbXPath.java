@@ -17,8 +17,8 @@ package com.ibm.broker.plugin;
 
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
+import com.pressassociation.bus.NiceMbException;
 import org.jaxen.SimpleNamespaceContext;
 import org.jaxen.SimpleVariableContext;
 import org.jaxen.saxpath.SAXPathException;
@@ -104,22 +104,23 @@ public class PseudoNativeMbXPath extends AbstractPseudoNative<MbXPath> {
 
     Object evaluateNativeXPath(PseudoNativeMbElement nativeMbElement) throws MbException {
         try {
-            PseudoNativeMbElement context = PseudoNativeMbElementManager.getInstance().getNative(contextHandle);
-            if (context == null) {
-                context = PseudoNativeMbElementManager.getInstance()
-                        .getNative(nativeMbElement.getMbMessage().getRootElement().getLastChild().getHandle());
-            }
-            if (context == null) {
-                throw new IllegalStateException("No XPath context provided and message has no children");
-            }
-            navigator.setDocumentNode(context);
+// TODO: what does contextHandle do, how does it effect the XPath engine in IBM implementation
+//            PseudoNativeMbElement context = PseudoNativeMbElementManager.getInstance().getNative(contextHandle);
+//            if (context == null) {
+//                context = nativeMbElement.getNativeMbMessage().getRootElement().getLastChild();
+//            }
+//            if (context == null) {
+//                // TODO: should this return an empty list or is null correct?
+//                return null;
+//            }
+//            navigator.setDocumentNode(context);
             try {
-                return navigator.parseXPath(xpath).selectNodes(context);
+                return navigator.parseXPath(xpath).selectNodes(nativeMbElement);
             } finally {
                 navigator.clearDocumentNode();
             }
         } catch (SAXPathException e) {
-            throw Throwables.propagate(e);
+            throw NiceMbException.propagate(e);
         }
     }
 

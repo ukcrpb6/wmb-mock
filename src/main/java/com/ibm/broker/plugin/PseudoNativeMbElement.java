@@ -20,17 +20,19 @@ import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.*;
 import com.ibm.broker.plugin.visitor.MbMessageVisitor;
 import com.ibm.broker.plugin.visitor.MbVisitable;
+import com.pressassociation.bus.NiceMbException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.xml.datatype.Duration;
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * @author Bob Browning <bob.browning@pressassociation.com>
  */
-public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> implements MbVisitable, Cloneable {
+public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> implements MbVisitable, Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(PseudoNativeMbElement.class);
 
@@ -54,9 +56,9 @@ public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> imple
 
     // Private Fields
 
-    private transient int modcount;
+    private transient volatile int modcount;
 
-    private String path = null;
+    private transient String path = null;
 
     private String name = "";
 
@@ -68,7 +70,7 @@ public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> imple
 
     private Optional<String> parserClassName = Optional.absent();
 
-    private PseudoNativeMbMessage message;
+    private transient PseudoNativeMbMessage message;
 
     // Constructors
 
@@ -77,6 +79,7 @@ public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> imple
 
     private PseudoNativeMbElement(int type) {
         this.type = type;
+        // TODO: What should name be set to?
         PseudoNativeMbElementManager.getInstance().register(this);
     }
 
@@ -91,6 +94,40 @@ public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> imple
         this.name = name;
         this.value = Optional.fromNullable(value);
         PseudoNativeMbElementManager.getInstance().register(this);
+    }
+
+    /*
+     * Copy Constructor
+     */
+    public PseudoNativeMbElement(PseudoNativeMbElement original) throws MbException {
+
+        PseudoNativeMbElementManager.getInstance().register(this);
+
+        this.parserClassName = Optional.fromNullable(original.parserClassName.orNull());
+        this.type = original.type;
+        this.name = original.name;
+        this.namespace = original.namespace;
+
+        if (original.value.isPresent()) {
+            final Object realValue = original.value.get();
+            final Class<?> klass = realValue.getClass();
+            if (klass.isPrimitive() || IMMUTABLE_VALUES.contains(klass)) {
+                this.value = Optional.fromNullable(realValue);
+            } else {
+                if (realValue instanceof Calendar) {
+                    this.value = Optional.of(((Calendar) realValue).clone());
+                } else if (realValue instanceof BitSet) {
+                    this.value = Optional.of(((BitSet) realValue).clone());
+                } else {
+                    throw new NiceMbException("Unsupported type " + klass);
+                }
+            }
+        }
+
+        Iterator<PseudoNativeMbElement> iter = original.childIterator();
+        while (iter.hasNext()) {
+            this.addAsLastChild(new PseudoNativeMbElement(iter.next()));
+        }
     }
 
     // Methods
@@ -116,11 +153,7 @@ public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> imple
     }
 
     public PseudoNativeMbElement copy() throws MbException {
-        try {
-            return this.clone();
-        } catch (CloneNotSupportedException e) {
-            throw Throwables.propagate(e); // TODO: Change to MbException
-        }
+        return new PseudoNativeMbElement(this);
     }
 
     public int getType() throws MbException {
@@ -225,7 +258,7 @@ public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> imple
     }
 
     public String getParserClassName() throws MbException {
-        return parserClassName.isPresent() ? parserClassName.get() : parent.getParserClassName();
+        return parserClassName.isPresent() ? parserClassName.get() : parent == null ? null : parent.getParserClassName();
     }
 
     public PseudoNativeMbElement getNextSibling() throws MbException {
@@ -277,7 +310,7 @@ public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> imple
             PseudoNativeMbElement next = start;
 
             @Override protected PseudoNativeMbElement computeNext() {
-                if(currentModCount != modcount) {
+                if (currentModCount != modcount) {
                     throw new ConcurrentModificationException();
                 }
                 if (next != end && next != null) {
@@ -314,7 +347,7 @@ public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> imple
             return name == null ? "/" : "/" + name;
         }
         String parentPath = parent.getPath();
-        return parentPath.charAt(parentPath.length() - 1) == '/' ? parentPath + name :  parentPath + "/" + name;
+        return parentPath.charAt(parentPath.length() - 1) == '/' ? parentPath + name : parentPath + "/" + name;
     }
 
     public PseudoNativeMbElement getFirstElementByPath(String arg0) throws MbException {
@@ -357,6 +390,7 @@ public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> imple
         element.previousSibling = this.previousSibling;
         element.nextSibling = this;
         this.previousSibling = element;
+        this.parent.modcount++;
         return element;
     }
 
@@ -368,6 +402,7 @@ public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> imple
         element.nextSibling = this.nextSibling;
         element.previousSibling = this;
         this.nextSibling = element;
+        this.parent.modcount++;
         return element;
     }
 
@@ -377,10 +412,12 @@ public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> imple
 
     public PseudoNativeMbElement addAsFirstChild(PseudoNativeMbElement element) throws MbException {
         Preconditions.checkNotNull(element);
+        Preconditions.checkState((firstChild != null && lastChild != null) || firstChild == lastChild);
+
         element.parent = this;
-        if (this.firstChild != null) this.firstChild.previousSibling = element;
-        element.nextSibling = this.firstChild;
-        this.firstChild = element;
+        if (firstChild != null) firstChild.previousSibling = element;
+        element.nextSibling = firstChild;
+        firstChild = element;
         if (lastChild == null) lastChild = firstChild;
         modcount++;
         return element;
@@ -405,17 +442,13 @@ public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> imple
 
         Iterator<PseudoNativeMbElement> iter = original.childIterator();
         while (iter.hasNext()) {
-            try {
-                addAsLastChild(iter.next().clone());
-            } catch (CloneNotSupportedException e) {
-                throw Throwables.propagate(e); // Should never occur - TODO: replace with MbException
-            }
+            addAsLastChild(new PseudoNativeMbElement(iter.next()));
         }
     }
 
     public void detach() throws MbException {
-        if(previousSibling != null) previousSibling.nextSibling = nextSibling;
-        if(nextSibling != null) nextSibling.previousSibling = previousSibling;
+        if (previousSibling != null) previousSibling.nextSibling = nextSibling;
+        if (nextSibling != null) nextSibling.previousSibling = previousSibling;
         if (parent.firstChild == this) parent.firstChild = this.nextSibling;
         if (parent.lastChild == this) parent.lastChild = this.previousSibling;
         this.path = null;
@@ -512,44 +545,4 @@ public class PseudoNativeMbElement extends AbstractPseudoNative<MbElement> imple
         return PseudoNativeMbElementManager.getInstance().isManaged(this);
     }
 
-    /*
-     * Cloneable Interface
-     */
-    @Override
-    public PseudoNativeMbElement clone() throws CloneNotSupportedException {
-        PseudoNativeMbElement clone = (PseudoNativeMbElement) super.clone();
-        PseudoNativeMbElementManager.getInstance().register(clone);
-
-        clone.parserClassName = Optional.fromNullable(this.parserClassName.orNull());
-        clone.type = this.type;
-        clone.name = this.name;
-        clone.namespace = this.namespace;
-
-        if (value.isPresent()) {
-            final Object realValue = value.get();
-            final Class<?> klass = realValue.getClass();
-            if (klass.isPrimitive() || IMMUTABLE_VALUES.contains(klass)) {
-                clone.value = Optional.fromNullable(realValue);
-            } else {
-                if (realValue instanceof Calendar) {
-                    clone.value = Optional.of(((Calendar) realValue).clone());
-                } else if (realValue instanceof BitSet) {
-                    clone.value = Optional.of(((BitSet) realValue).clone());
-                } else {
-                    throw new CloneNotSupportedException("Cannot clone value type " + klass);
-                }
-            }
-        }
-
-        Iterator<PseudoNativeMbElement> iter = childIterator();
-        while (iter.hasNext()) {
-            try {
-                clone.addAsLastChild(iter.next().clone());
-            } catch (MbException e) {
-                throw new CloneNotSupportedException(e.getMessage());
-            }
-        }
-
-        return clone;
-    }
 }

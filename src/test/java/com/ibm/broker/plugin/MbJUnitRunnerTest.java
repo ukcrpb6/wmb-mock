@@ -16,6 +16,8 @@
 package com.ibm.broker.plugin;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Throwables;
+import com.google.gson.*;
 import com.ibm.broker.plugin.visitor.DefaultMbMessageVisitor;
 import com.ibm.broker.trace.Trace;
 import com.ibm.broker.trace.TraceRule;
@@ -30,8 +32,11 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileWriter;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.BitSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -299,12 +304,12 @@ public class MbJUnitRunnerTest {
     @Test
     public void testMbXPath() throws Exception {
         MbTestObject o = createTestTree();
-        MbXPath x = new MbXPath("/field-1");
+        MbXPath x = new MbXPath("/XMLNSC/field-1");
         List result = (List) o.root.evaluateXPath(x);
         Assert.assertEquals(1, result.size());
 
-        x = new MbXPath("/field-1", o.root.getLastChild());
-        result = (List) o.root.evaluateXPath(x);
+        x = new MbXPath("field-1", o.root.getLastChild());
+        result = (List) o.root.getLastChild().evaluateXPath(x);
         Assert.assertEquals(1, result.size());
 
         x = new MbXPath("/field-1", o.root);
@@ -394,6 +399,99 @@ public class MbJUnitRunnerTest {
     public void testMbException() throws Exception {
         throw new MbException("a", "b", "c", "d", "", new Object[]{""});
     }
+
+    @Test
+    public void testSerialization() throws Exception {
+        MbTestObject tree = createTestTree();
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(MbElement.class, new JsonSerializer<MbElement>() {
+            @Override
+            public JsonElement serialize(MbElement element, Type type, JsonSerializationContext jsonSerializationContext) {
+                return jsonSerializationContext.serialize(PseudoNativeMbElementManager.getInstance().getNative(element.getHandle()));
+            }
+        });
+
+        builder.registerTypeAdapter(MbMessage.class, new JsonSerializer<MbMessage>() {
+            @Override
+            public JsonElement serialize(MbMessage element, Type type, JsonSerializationContext jsonSerializationContext) {
+                return jsonSerializationContext.serialize(PseudoNativeMbMessageManager.getInstance().getNative(element.getHandle()));
+            }
+        });
+
+
+        builder.registerTypeAdapter(PseudoNativeMbElement.class, new JsonSerializer<PseudoNativeMbElement>() {
+            @Override
+            public JsonElement serialize(PseudoNativeMbElement pseudoNativeMbElement, Type type, JsonSerializationContext jsonSerializationContext) {
+                System.out.println("In " + pseudoNativeMbElement.getHandle());
+                try {
+                    JsonObject o = new JsonObject();
+                    o.addProperty("parserClassName", pseudoNativeMbElement.getParserClassName());
+                    if(pseudoNativeMbElement.getNamespace() != null) o.addProperty("namespace", pseudoNativeMbElement.getNamespace());
+                    if(pseudoNativeMbElement.getName() != null) o.addProperty("name", pseudoNativeMbElement.getName());
+                    if(pseudoNativeMbElement.getValue() != null) o.add("value", jsonSerializationContext.serialize(pseudoNativeMbElement.getValue()));
+                    if(pseudoNativeMbElement.getFirstChild() != null) {
+                        JsonArray children = new JsonArray();
+
+                        Iterator<PseudoNativeMbElement> iter = pseudoNativeMbElement.childIterator();
+                        while(iter.hasNext()) {
+                            children.add(jsonSerializationContext.serialize(iter.next()));
+                        }
+
+                        o.getAsJsonObject().add("children", children);
+                    }
+                    return o;
+                } catch (MbException e) {
+                    throw Throwables.propagate(e);
+                }
+            }
+        });
+
+        Gson gson = builder.setPrettyPrinting().create();
+        String serializedMessage = gson.toJson(tree.message);
+        FileWriter writer = new FileWriter("serialized.json");
+        writer.write(serializedMessage);
+        writer.close();
+
+//        ObjectOutputStream os;
+//        FileOutputStream fos = new FileOutputStream("serialized.txt");
+//        os = new ObjectOutputStream(fos);
+//        os.writeObject(nativeObject);
+//        os.close();
+    }
+
+    @Test
+    public void testMbMessageClone() throws Exception {
+        MbMessageAssembly assembly = createInputAssembly();
+
+        Object o = assembly.getMessage().getRootElement().evaluateXPath("?XMLNSC/?root");
+        MbElement el = ((List<MbElement>) o).get(0);
+
+        MbElement attribute1 = el.createElementAsLastChild(MbXMLNSC.ATTRIBUTE, "attribute1", "value1");
+        el.createElementAsLastChild(MbXMLNSC.ATTRIBUTE, "attribute2", "value2");
+        attribute1.createElementAfter(MbXMLNSC.ATTRIBUTE, "attribute2", "value2");
+
+        MbElement clone = el.copy();
+        Assert.assertNotNull(clone);
+
+        MbMessage newMbMessage = new MbMessage(assembly.getMessage());
+        Assert.assertNotNull(newMbMessage);
+        el.createElementAsLastChild(MbXMLNSC.ATTRIBUTE, "attribute3", "value3");
+        Assert.assertNotNull(assembly.getMessage().evaluateXPath("root/attribute3"));
+        Assert.assertNotSame(o, assembly.getMessage().evaluateXPath("root"));
+        Assert.assertEquals(0, ((List<?>)newMbMessage.evaluateXPath("root/attribute3")).size());
+    }
+
+    private MbMessageAssembly createInputAssembly() throws MbException {
+   		// Build a sample input assembly
+   		MbMessageAssembly assembly = PseudoNativeMbMessageAssemblyManager.getInstance()
+   				.createBlankReadOnlyMessageAssembly();
+   		MbMessage message = new MbMessage(assembly.getMessage());
+
+   		// Modify message to simulate input
+   		// ... //
+   		return new MbMessageAssembly(assembly, message);
+   	}
+
 
     @After
     public void dumpMessages() throws Exception {
