@@ -4,7 +4,7 @@
 
     <groupId>com.pressassociation.bus</groupId>
     <artifactId>wmb-mock</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2-SNAPSHOT</version>
 
     <name>Websphere Message Broker - Mock Framework</name>
     <description>
@@ -51,7 +51,7 @@
         <connection>scm:git:git://github.com/ukcrpb6/wmb-mock</connection>
         <developerConnection>scm:git:git@github.com:ukcrpb6/wmb-mock.git</developerConnection>
         <url>http://www.github.com/ukcrpb6/wmb-mock</url>
-      <tag>v1.0.1</tag>
+      <tag>HEAD</tag>
   </scm>
     <issueManagement>
         <system>github</system>
