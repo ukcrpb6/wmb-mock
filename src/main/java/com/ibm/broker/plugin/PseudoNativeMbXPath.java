@@ -21,6 +21,7 @@ import com.google.common.collect.Lists;
 import com.pressassociation.bus.NiceMbException;
 import org.jaxen.SimpleNamespaceContext;
 import org.jaxen.SimpleVariableContext;
+import org.jaxen.XPath;
 import org.jaxen.saxpath.SAXPathException;
 
 import java.util.List;
@@ -115,7 +116,10 @@ public class PseudoNativeMbXPath extends AbstractPseudoNative<MbXPath> {
 //            }
 //            navigator.setDocumentNode(context);
             try {
-                return navigator.parseXPath(xpath).selectNodes(nativeMbElement);
+                XPath xp = navigator.parseXPath(xpath);
+                xp.setNamespaceContext(namespaceContext);
+                xp.setVariableContext(variableContext);
+                return xp.selectNodes(nativeMbElement);
             } finally {
                 navigator.clearDocumentNode();
             }
